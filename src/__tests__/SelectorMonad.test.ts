@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import SelectorMonad from '../SelectorMonad';
 import {createAdaptedSelector} from '../createAdaptedSelector';
-import {Person, State, state} from '../__data__/state';
+import {State, state} from '../__data__/state';
 
 
 const getPerson = (state: State, props: { id: number }) => state.persons[props.id];
@@ -30,7 +30,7 @@ describe('SelectorMonad', () => {
         expect(getPersonByMessageId(state, { id: 200 })).toBe('Harry Potter');
     });
 
-    test('should implement aggregation by single selector', () => {
+    test('should implement aggregation for collection by single item selector', () => {
         const getPersons = (state: State) => state.persons;
 
         const getLongestFullName =

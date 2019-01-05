@@ -4,7 +4,7 @@ export type Diff<T, U> = Pick<T, Exclude<keyof T, keyof U>>
 
 export function createAdaptedSelector<S, P1, P2, R>(
     baseSelector: ParametricSelector<S, P1, R>,
-    mapping: (props: P1) => P2
+    mapping: (props: P2) => P1
 ): ParametricSelector<S, P2, R>
 
 export function createAdaptedSelector<S, P1, P2 extends Partial<P1>, R>(
@@ -14,16 +14,16 @@ export function createAdaptedSelector<S, P1, P2 extends Partial<P1>, R>(
     ? Selector<S, R>
     : ParametricSelector<S, Diff<P1, P2>, R>
 
-export function createAdaptedSelector<S, P, R>(baseSelector: any, mappingOrBinding: any) {
+export function createAdaptedSelector(baseSelector: any, mappingOrBinding: any) {
     if (typeof mappingOrBinding === "function") {
         const mapping = mappingOrBinding;
 
-        return (state: S, props: P) => baseSelector(state, mapping(props))
+        return (state: any, props: any) => baseSelector(state, mapping(props))
     }
 
     const binding = mappingOrBinding;
 
-    return (state: S, props: P) => baseSelector(state, {
+    return (state: any, props: any) => baseSelector(state, {
         ...(props || {}),
         ...(binding || {}),
     })

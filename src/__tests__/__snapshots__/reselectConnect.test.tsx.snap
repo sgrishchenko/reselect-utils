@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`reselectConnect should proxy all props and renders wrapped component 1`] = `
+<Connect(InnerConnect(ReselectConnect(TestComponent)))
+  prop="prop1"
+>
+  <InnerConnect(ReselectConnect(TestComponent))
+    prop="prop1"
+  >
+    <ReselectConnect(TestComponent)
+      prop="prop1"
+    >
+      <TestComponent
+        prop="prop1"
+      >
+        TestComponent Content
+      </TestComponent>
+    </ReselectConnect(TestComponent)>
+  </InnerConnect(ReselectConnect(TestComponent))>
+</Connect(InnerConnect(ReselectConnect(TestComponent)))>
+`;

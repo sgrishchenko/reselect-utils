@@ -4,18 +4,17 @@ import {createAdaptedSelector} from '../createAdaptedSelector';
 import {State, state} from '../__data__/state';
 
 
-const getPerson = (state: State, props: { id: number }) => state.persons[props.id];
-const getMessage = (state: State, props: { id: number }) => state.messages[props.id];
-
-const getFullName = createSelector(
-    [
-        getPerson,
-    ],
-    ({firstName, secondName}) => `${firstName} ${secondName}`
-);
-
-
 describe('SelectorMonad', () => {
+    const getPerson = (state: State, props: { id: number }) => state.persons[props.id];
+    const getMessage = (state: State, props: { id: number }) => state.messages[props.id];
+
+    const getFullName = createSelector(
+        [
+            getPerson,
+        ],
+        ({firstName, secondName}) => `${firstName} ${secondName}`
+    );
+
     test('should implement simple selector chain', () => {
         const getPersonByMessageId = SelectorMonad.of(getMessage)
             .chain(message => (

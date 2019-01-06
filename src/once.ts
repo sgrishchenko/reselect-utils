@@ -5,8 +5,8 @@ export const once = <S, P, R>(
     selector: ReturnType<OutputParametricCachedSelector<S, P, R, any>>
 ) => (state: S, props: P) => {
 
-    const matchingSelector = selector.getMatchingSelector(state, props);
+    const result = selector(state, props);
     removeMatchingSelectorRecursively(selector)(state, props);
 
-    return matchingSelector(state, props)
+    return result
 };

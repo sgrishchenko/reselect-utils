@@ -74,7 +74,7 @@ export function createPathSelector(baseSelector: any) {
 
 const innerCreatePathSelector = (baseSelector: any, path: PropertyKey[] = []): any => {
 
-    const target = ((defaultValue?: any) => {
+    const target = (defaultValue?: any) => {
         const resultSelector = (...args: any[]) => {
             let result = baseSelector(...args);
 
@@ -92,7 +92,7 @@ const innerCreatePathSelector = (baseSelector: any, path: PropertyKey[] = []): a
         resultSelector.dependencies = [baseSelector];
 
         return resultSelector;
-    });
+    };
 
     return new Proxy(
         target,

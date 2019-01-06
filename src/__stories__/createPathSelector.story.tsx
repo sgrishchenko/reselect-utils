@@ -4,7 +4,7 @@ import {action} from '@storybook/addon-actions';
 import {createSelector} from 'reselect';
 import SelectorGraph from './SelectorGraph';
 // @ts-ignore
-import {selectorGraph, registerSelectors} from 'reselect-tools';
+import {selectorGraph, registerSelectors, reset} from 'reselect-tools';
 import {State} from "../__data__/state";
 import {createPathSelector} from "../createPathSelector";
 
@@ -25,14 +25,15 @@ const getPersonShortName = createSelector(
     }
 );
 
-registerSelectors({
-    getPerson,
-    getPersonFullName,
-    getPersonShortName,
-});
-
 storiesOf('createPathSelector', module)
     .add('example', () => {
+        reset();
+        registerSelectors({
+            getPerson,
+            getPersonFullName,
+            getPersonShortName,
+        });
+
         const {nodes, edges} = selectorGraph();
         return (
             <SelectorGraph

@@ -11,6 +11,7 @@
     "storybook": "start-storybook -p 9001"
   },
   "devDependencies": {
+    "@babel/core": "^7.2.2",
     "@storybook/addon-actions": "^4.1.4",
     "@storybook/react": "^4.1.4",
     "@types/cytoscape": "^3.2.9",
@@ -23,6 +24,7 @@
     "@types/storybook__addon-actions": "^3.4.1",
     "@types/storybook__react": "^4.0.0",
     "@types/webpack": "^4.4.22",
+    "babel-loader": "^8.0.5",
     "cytoscape": "^3.3.1",
     "cytoscape-dagre": "^2.2.2",
     "enzyme": "^3.8.0",

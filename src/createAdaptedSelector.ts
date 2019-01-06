@@ -2,6 +2,10 @@ import {ParametricSelector, Selector} from "./types";
 
 export type Diff<T, U> = Pick<T, Exclude<keyof T, keyof U>>
 
+const generateMappingName = (mapping: {}) => (
+    `${Object.keys(mapping).join()} -> ${Object.values(mapping).join()}`
+);
+
 export function createAdaptedSelector<S, P1, P2, R>(
     baseSelector: ParametricSelector<S, P1, R>,
     mapping: (props: P2) => P1
@@ -15,16 +19,39 @@ export function createAdaptedSelector<S, P1, P2 extends Partial<P1>, R>(
     : ParametricSelector<S, Diff<P1, P2>, R>
 
 export function createAdaptedSelector(baseSelector: any, mappingOrBinding: any) {
+    const baseName = baseSelector.selectorName || baseSelector.name;
+
     if (typeof mappingOrBinding === "function") {
         const mapping = mappingOrBinding;
 
-        return (state: any, props: any) => baseSelector(state, mapping(props))
+        const resultSelector: any = (state: any, props: any) => baseSelector(state, mapping(props));
+
+        const mappingResult = mapping(new Proxy(
+            {},
+            {
+                get: (target, key) => key
+            },
+        ));
+
+        const mappingName = mapping.name || generateMappingName(mappingResult);
+
+        resultSelector.selectorName = `${baseName} (${mappingName})`;
+        resultSelector.dependencies = [baseSelector];
+
+        return resultSelector
     }
 
     const binding = mappingOrBinding;
 
-    return (state: any, props: any) => baseSelector(state, {
+    const resultSelector: any = (state: any, props: any) => baseSelector(state, {
         ...(props || {}),
         ...(binding || {}),
-    })
+    });
+
+    const mappingName = generateMappingName(binding);
+
+    resultSelector.selectorName = `${baseName} (${mappingName})`;
+    resultSelector.dependencies = [baseSelector];
+
+    return resultSelector;
 }

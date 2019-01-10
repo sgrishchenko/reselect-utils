@@ -3,17 +3,20 @@ import { Core as CytoscapeCore} from 'cytoscape';
 // @ts-ignore
 import {checkSelector} from 'reselect-tools';
 import {Edges, Nodes, Node} from "./types";
-import {createCytoElements, drawCytoscapeGraph} from "./cytoscapeUtils";
+import {drawCytoscapeGraph, updateCytoscapeGraph} from "./cytoscapeUtils";
+import {CSSProperties} from "react";
 
 export type SelectorGraphProps = {
     nodes: Nodes,
     edges: Edges,
-    onNodeClick: (name: string, node: Node) => void
+    onNodeClick: (name: string, node: Node) => void,
+    style: CSSProperties
 }
 
 export default class SelectorGraph extends React.Component<SelectorGraphProps> {
     static defaultProps = {
-        onNodeClick: () => undefined
+        onNodeClick: () => undefined,
+        style: {},
     };
 
     private cy!: CytoscapeCore;
@@ -35,8 +38,7 @@ export default class SelectorGraph extends React.Component<SelectorGraphProps> {
             return;
         }
 
-        const elements = createCytoElements(nodes, edges);
-        this.cy.json({elements});
+        updateCytoscapeGraph(this.cy, nodes, edges);
     }
 
     componentWillUnmount() {
@@ -49,7 +51,7 @@ export default class SelectorGraph extends React.Component<SelectorGraphProps> {
 
         return (
             <div
-                style={{height: '100%'}}
+                style={{height: '100%', ...this.props.style}}
                 ref={(element) => this.cyElement = element}
             />
         );

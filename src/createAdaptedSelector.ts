@@ -48,7 +48,11 @@ export function createAdaptedSelector(baseSelector: any, mappingOrBinding: any) 
         ...(binding || {}),
     });
 
-    const mappingName = generateMappingName(binding);
+    const bindingStructure = Object.keys(binding).reduce((structure, key) => ({
+        ...structure,
+        [key]: '[*]'
+    }), {});
+    const mappingName = generateMappingName(bindingStructure);
 
     resultSelector.selectorName = `${baseName} (${mappingName})`;
     resultSelector.dependencies = [baseSelector];

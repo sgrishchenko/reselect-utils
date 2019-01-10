@@ -52,5 +52,40 @@ describe('SelectorMonad', () => {
                 .buildSelector();
 
         expect(getLongestFullName(state)).toBe('Marry Poppins');
-    })
+    });
+
+    test('should cached chain callback by result of input selector', () => {
+        const selectorStub = () => '';
+        const chainMock = jest.fn(() => selectorStub);
+
+        const getSomeByMessageId = SelectorMonad.of(getMessage)
+            .chain(chainMock)
+            .buildSelector();
+
+        getSomeByMessageId(state, { id: 100 });
+        getSomeByMessageId(state, { id: 100 });
+        getSomeByMessageId(state, { id: 100 });
+        expect(chainMock).toHaveBeenCalledTimes(1);
+
+        getSomeByMessageId(state, { id: 200 });
+        expect(chainMock).toHaveBeenCalledTimes(2);
+    });
+
+    test('should build selector with resultChain property for unit test', () => {
+        const firstSelector = () => 'firstChain';
+        const firstChain = () => firstSelector;
+        const secondSelector = () => () => 'secondChain';
+        const secondChain = () => secondSelector;
+
+        const getSomeByMessageId = SelectorMonad.of(getMessage)
+            .chain(firstChain)
+            .chain(secondChain)
+            .buildSelector();
+
+        expect(getSomeByMessageId.resultChain).toBeDefined();
+        expect(getSomeByMessageId.resultChain[0]).toBe(firstChain);
+        expect(getSomeByMessageId.resultChain[0]()).toBe(firstSelector);
+        expect(getSomeByMessageId.resultChain[1]).toBe(secondChain);
+        expect(getSomeByMessageId.resultChain[1]()).toBe(secondSelector);
+    });
 });

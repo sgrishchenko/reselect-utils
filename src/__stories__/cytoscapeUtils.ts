@@ -1,9 +1,16 @@
-import cytoscape from "cytoscape";
+import cytoscape, {Core} from "cytoscape";
 // @ts-ignore
 import dagre from 'cytoscape-dagre';
 import {Edges, Nodes} from "./types";
 
 cytoscape.use(dagre);
+
+const dagreLayout = {
+    name: 'dagre',
+    rankDir: 'BT',
+    ranker: 'longest-path',
+    nodeDimensionsIncludeLabels: true,
+};
 
 const cytoDefaults = {
     style: [
@@ -26,12 +33,7 @@ const cytoDefaults = {
         }
     ],
 
-    layout: {
-        name: 'dagre',
-        rankDir: 'BT',
-        ranker: 'longest-path',
-        nodeDimensionsIncludeLabels: true,
-    }
+    layout: dagreLayout,
 };
 
 export const createCytoElements = (nodes: Nodes, edges: Edges) => {
@@ -75,4 +77,10 @@ export const drawCytoscapeGraph = (
     });
 
     return cy;
+};
+
+export const updateCytoscapeGraph = (cy: Core, nodes: Nodes, edges: Edges) => {
+    const elements = createCytoElements(nodes, edges);
+    cy.json({elements});
+    cy.layout(dagreLayout).run();
 };

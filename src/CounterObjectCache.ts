@@ -63,8 +63,7 @@ export default class CounterObjectCache implements ICacheObject {
     }
 
     clear() {
-        Object.keys(this.cache)
-            .forEach(key => this.remove(key));
+        this.cache = {};
     }
 
     isValidCacheKey(key: Key) {

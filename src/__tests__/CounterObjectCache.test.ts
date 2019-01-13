@@ -6,18 +6,10 @@ jest.useFakeTimers();
 
 describe('CounterObjectCache', () => {
   describe('instance', () => {
-    type State = {
-      value: string;
-    };
-
-    type Props = {
-      prop: string;
-    };
-
     const makeSelector = (removeDelay = 0) =>
       createCachedSelector(
-        (state: State) => state.value,
-        (state: State, props: Props) => props.prop,
+        (state: { value: string }) => state.value,
+        (state: { value: string }, props: { prop: string }) => props.prop,
         jest.fn(),
       )((state, props) => props.prop, {
         cacheObject: new CounterObjectCache({

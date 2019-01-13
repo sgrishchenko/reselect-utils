@@ -23,7 +23,7 @@ function createAdaptedSelector(baseSelector: any, mappingOrBinding: any) {
   if (typeof mappingOrBinding === 'function') {
     const mapping = mappingOrBinding;
 
-    const resultSelector: any = (state: any, props: any) =>
+    const mappedSelector: any = (state: any, props: any) =>
       baseSelector(state, mapping(props));
 
     const mappingResult = mapping(
@@ -37,15 +37,15 @@ function createAdaptedSelector(baseSelector: any, mappingOrBinding: any) {
 
     const mappingName = mapping.name || generateMappingName(mappingResult);
 
-    resultSelector.selectorName = `${baseName} (${mappingName})`;
-    resultSelector.dependencies = [baseSelector];
+    mappedSelector.selectorName = `${baseName} (${mappingName})`;
+    mappedSelector.dependencies = [baseSelector];
 
-    return resultSelector;
+    return mappedSelector;
   }
 
   const binding = mappingOrBinding;
 
-  const resultSelector: any = (state: any, props: any) =>
+  const boundSelector: any = (state: any, props: any) =>
     baseSelector(state, {
       ...(props || {}),
       ...(binding || {}),
@@ -58,12 +58,12 @@ function createAdaptedSelector(baseSelector: any, mappingOrBinding: any) {
     }),
     {},
   );
-  const mappingName = generateMappingName(bindingStructure);
+  const bindingName = generateMappingName(bindingStructure);
 
-  resultSelector.selectorName = `${baseName} (${mappingName})`;
-  resultSelector.dependencies = [baseSelector];
+  boundSelector.selectorName = `${baseName} (${bindingName})`;
+  boundSelector.dependencies = [baseSelector];
 
-  return resultSelector;
+  return boundSelector;
 }
 
 export default createAdaptedSelector;

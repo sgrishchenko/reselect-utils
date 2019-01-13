@@ -2,15 +2,15 @@ import { Selector, ParametricSelector } from './types';
 
 export type Defined<T> = Exclude<T, undefined>;
 
-export interface SelectorBuilder<S, R, D> {
+export type SelectorBuilder<S, R, D> = {
   (): Selector<S, Defined<R> | undefined, D>;
 
   (defaultValue: NonNullable<R>): Selector<S, NonNullable<R>, D>;
 
   (nullDefaultValue: R extends null ? null : never): Selector<S, Defined<R>, D>;
-}
+};
 
-export interface ParametricSelectorBuilder<S, P, R, D> {
+export type ParametricSelectorBuilder<S, P, R, D> = {
   (): ParametricSelector<S, P, Defined<R> | undefined, D>;
 
   (defaultValue: NonNullable<R>): ParametricSelector<S, P, NonNullable<R>, D>;
@@ -21,7 +21,7 @@ export interface ParametricSelectorBuilder<S, P, R, D> {
     Defined<R>,
     D
   >;
-}
+};
 
 export type ObjectSelectorWrapper<S, R, D> = {
   [K in keyof R]-?: PathSelectorType<S, R[K], D>
@@ -31,17 +31,17 @@ export type ObjectParametricSelectorWrapper<S, P, R, D> = {
   [K in keyof R]-?: PathParametricSelectorType<S, P, R[K], D>
 };
 
-export interface ArraySelectorWrapper<S, R, D> {
+export type ArraySelectorWrapper<S, R, D> = {
   length: PathSelectorType<S, number, D>;
 
   [K: number]: PathSelectorType<S, R, D>;
-}
+};
 
-export interface ArrayParametricSelectorWrapper<S, P, R, D> {
+export type ArrayParametricSelectorWrapper<S, P, R, D> = {
   length: PathParametricSelectorType<S, P, number, D>;
 
   [K: number]: PathParametricSelectorType<S, P, R, D>;
-}
+};
 
 export type DataSelectorWrapper<S, R, D> = R extends any[]
   ? ArraySelectorWrapper<S, R[number], D>

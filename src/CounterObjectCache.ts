@@ -24,67 +24,15 @@ const defaultOptions: CounterObjectCacheOptions = {
 };
 
 export default class CounterObjectCache implements ICacheObject {
-  private cache: Cache = {};
+  public static addRefRecursively = CounterObjectCache.makeRecursivelyHandler(
+    'addRef',
+    'addRefRecursively',
+  );
 
-  private options: CounterObjectCacheOptions;
-
-  constructor(options: CounterObjectCacheOptions = {}) {
-    this.options = {
-      ...defaultOptions,
-      ...options,
-    };
-  }
-
-  set(key: Key, selector: ParametricSelector<any, any, any>) {
-    this.cache[key] = {
-      selector: Object.assign(selector, { key }),
-      refCount: 0,
-    };
-  }
-
-  get(key: Key) {
-    const cacheItem = this.cache[key];
-    if (cacheItem === undefined) {
-      return undefined;
-    }
-
-    return cacheItem.selector;
-  }
-
-  remove(key: Key) {
-    delete this.cache[key];
-  }
-
-  clear() {
-    this.cache = {};
-  }
-
-  /* eslint-disable-next-line class-methods-use-this */
-  isValidCacheKey(key: Key) {
-    return typeof key === 'string' || typeof key === 'number';
-  }
-
-  addRef(selector: TaggedSelector) {
-    const cacheItem = this.cache[selector.key];
-
-    if (cacheItem) {
-      cacheItem.refCount += 1;
-      clearTimeout(cacheItem.removeTimeoutHandle);
-    }
-  }
-
-  removeRef(selector: TaggedSelector) {
-    const cacheItem = this.cache[selector.key];
-
-    if (cacheItem) {
-      cacheItem.refCount -= 1;
-      if (cacheItem.refCount === 0) {
-        cacheItem.removeTimeoutHandle = setTimeout(() => {
-          this.remove(selector.key);
-        }, this.options.removeDelay);
-      }
-    }
-  }
+  public static removeRefRecursively = CounterObjectCache.makeRecursivelyHandler(
+    'removeRef',
+    'removeRefRecursively',
+  );
 
   private static makeRecursivelyHandler(
     handler: 'addRef' | 'removeRef',
@@ -108,13 +56,65 @@ export default class CounterObjectCache implements ICacheObject {
     };
   }
 
-  static addRefRecursively = CounterObjectCache.makeRecursivelyHandler(
-    'addRef',
-    'addRefRecursively',
-  );
+  private cache: Cache = {};
 
-  static removeRefRecursively = CounterObjectCache.makeRecursivelyHandler(
-    'removeRef',
-    'removeRefRecursively',
-  );
+  private options: CounterObjectCacheOptions;
+
+  constructor(options: CounterObjectCacheOptions = {}) {
+    this.options = {
+      ...defaultOptions,
+      ...options,
+    };
+  }
+
+  public set(key: Key, selector: ParametricSelector<any, any, any>) {
+    this.cache[key] = {
+      selector: Object.assign(selector, { key }),
+      refCount: 0,
+    };
+  }
+
+  public get(key: Key) {
+    const cacheItem = this.cache[key];
+    if (cacheItem === undefined) {
+      return undefined;
+    }
+
+    return cacheItem.selector;
+  }
+
+  public remove(key: Key) {
+    delete this.cache[key];
+  }
+
+  public clear() {
+    this.cache = {};
+  }
+
+  /* eslint-disable-next-line class-methods-use-this */
+  public isValidCacheKey(key: Key) {
+    return typeof key === 'string' || typeof key === 'number';
+  }
+
+  public addRef(selector: TaggedSelector) {
+    const cacheItem = this.cache[selector.key];
+
+    if (cacheItem) {
+      cacheItem.refCount += 1;
+      clearTimeout(cacheItem.removeTimeoutHandle);
+    }
+  }
+
+  public removeRef(selector: TaggedSelector) {
+    const cacheItem = this.cache[selector.key];
+
+    if (cacheItem) {
+      cacheItem.refCount -= 1;
+      if (cacheItem.refCount === 0) {
+        cacheItem.removeTimeoutHandle = setTimeout(() => {
+          this.remove(selector.key);
+        }, this.options.removeDelay);
+      }
+    }
+  }
 }

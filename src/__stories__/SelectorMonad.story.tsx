@@ -9,6 +9,7 @@ import { Message, Person, commonState, State } from '../__data__/state';
 import createAdaptedSelector from '../createAdaptedSelector';
 import SelectorMonad from '../SelectorMonad';
 import { Selector } from '../types';
+/* tslint:disable:member-ordering */
 
 const getPerson = (state: State, props: { id: number }) =>
   state.persons[props.id];
@@ -40,7 +41,7 @@ class SelectorMonadGraph extends React.Component<{
     this.forceUpdate();
   };
 
-  render() {
+  public render() {
     const { nodes, edges } = selectorGraph();
 
     return (

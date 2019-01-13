@@ -1,91 +1,87 @@
 import { createSelector } from 'reselect';
 import SelectorMonad from '../SelectorMonad';
-import {createAdaptedSelector} from '../createAdaptedSelector';
-import {State, state} from '../__data__/state';
-
+import createAdaptedSelector from '../createAdaptedSelector';
+import { State, commonState } from '../__data__/state';
 
 describe('SelectorMonad', () => {
-    const getPerson = (state: State, props: { id: number }) => state.persons[props.id];
-    const getMessage = (state: State, props: { id: number }) => state.messages[props.id];
+  const getPerson = (state: State, props: { id: number }) =>
+    state.persons[props.id];
+  const getMessage = (state: State, props: { id: number }) =>
+    state.messages[props.id];
 
-    const getFullName = createSelector(
-        [
-            getPerson,
-        ],
-        ({firstName, secondName}) => `${firstName} ${secondName}`
+  const getFullName = createSelector(
+    [getPerson],
+    ({ firstName, secondName }) => `${firstName} ${secondName}`,
+  );
+
+  test('should implement simple selector chain', () => {
+    const getPersonByMessageId = SelectorMonad.of(getMessage)
+      .chain(message =>
+        createAdaptedSelector(getPerson, { id: message.personId }),
+      )
+      .chain(person => createAdaptedSelector(getFullName, { id: person.id }))
+      .buildSelector();
+
+    expect(getPersonByMessageId(commonState, { id: 100 })).toBe(
+      'Marry Poppins',
     );
+    expect(getPersonByMessageId(commonState, { id: 200 })).toBe('Harry Potter');
+  });
 
-    test('should implement simple selector chain', () => {
-        const getPersonByMessageId = SelectorMonad.of(getMessage)
-            .chain(message => (
-                createAdaptedSelector(getPerson, {id: message.personId}))
-            )
-            .chain(person => (
-                createAdaptedSelector(getFullName, {id: person.id}))
-            )
-            .buildSelector();
+  test('should implement aggregation for collection by single item selector', () => {
+    const getPersons = (state: State) => state.persons;
 
-        expect(getPersonByMessageId(state, { id: 100 })).toBe('Marry Poppins');
-        expect(getPersonByMessageId(state, { id: 200 })).toBe('Harry Potter');
-    });
+    const getLongestFullName = SelectorMonad.of(getPersons)
+      .chain(persons => {
+        const dependencies = Object.values(persons).map(person =>
+          createAdaptedSelector(getFullName, { id: person.id }),
+        );
 
-    test('should implement aggregation for collection by single item selector', () => {
-        const getPersons = (state: State) => state.persons;
+        return createSelector(
+          dependencies,
+          (...fullNames) =>
+            fullNames.reduce((longest, current) =>
+              current.length > longest.length ? current : longest,
+            ),
+        );
+      })
+      .buildSelector();
 
-        const getLongestFullName =
-            SelectorMonad.of(getPersons)
-                .chain(persons => {
-                    const dependencies = Object.values(persons).map(person => (
-                        createAdaptedSelector(getFullName, { id: person.id }))
-                    );
+    expect(getLongestFullName(commonState)).toBe('Marry Poppins');
+  });
 
-                    return createSelector(
-                        dependencies,
-                        (...fullNames) => fullNames
-                            .reduce((longest, current) => (
-                                current.length > longest.length
-                                    ? current
-                                    : longest
-                            ))
-                    );
-                })
-                .buildSelector();
+  test('should cached chain callback by result of input selector', () => {
+    const selectorStub = () => '';
+    const chainMock = jest.fn(() => selectorStub);
 
-        expect(getLongestFullName(state)).toBe('Marry Poppins');
-    });
+    const getSomeByMessageId = SelectorMonad.of(getMessage)
+      .chain(chainMock)
+      .buildSelector();
 
-    test('should cached chain callback by result of input selector', () => {
-        const selectorStub = () => '';
-        const chainMock = jest.fn(() => selectorStub);
+    getSomeByMessageId(commonState, { id: 100 });
+    getSomeByMessageId(commonState, { id: 100 });
+    getSomeByMessageId(commonState, { id: 100 });
+    expect(chainMock).toHaveBeenCalledTimes(1);
 
-        const getSomeByMessageId = SelectorMonad.of(getMessage)
-            .chain(chainMock)
-            .buildSelector();
+    getSomeByMessageId(commonState, { id: 200 });
+    expect(chainMock).toHaveBeenCalledTimes(2);
+  });
 
-        getSomeByMessageId(state, { id: 100 });
-        getSomeByMessageId(state, { id: 100 });
-        getSomeByMessageId(state, { id: 100 });
-        expect(chainMock).toHaveBeenCalledTimes(1);
+  test('should build selector with resultChain property for unit test', () => {
+    const firstSelector = () => 'firstChain';
+    const firstChain = () => firstSelector;
+    const secondSelector = () => () => 'secondChain';
+    const secondChain = () => secondSelector;
 
-        getSomeByMessageId(state, { id: 200 });
-        expect(chainMock).toHaveBeenCalledTimes(2);
-    });
+    const getSomeByMessageId = SelectorMonad.of(getMessage)
+      .chain(firstChain)
+      .chain(secondChain)
+      .buildSelector();
 
-    test('should build selector with resultChain property for unit test', () => {
-        const firstSelector = () => 'firstChain';
-        const firstChain = () => firstSelector;
-        const secondSelector = () => () => 'secondChain';
-        const secondChain = () => secondSelector;
-
-        const getSomeByMessageId = SelectorMonad.of(getMessage)
-            .chain(firstChain)
-            .chain(secondChain)
-            .buildSelector();
-
-        expect(getSomeByMessageId.resultChain).toBeDefined();
-        expect(getSomeByMessageId.resultChain[0]).toBe(firstChain);
-        expect(getSomeByMessageId.resultChain[0]()).toBe(firstSelector);
-        expect(getSomeByMessageId.resultChain[1]).toBe(secondChain);
-        expect(getSomeByMessageId.resultChain[1]()).toBe(secondSelector);
-    });
+    expect(getSomeByMessageId.resultChain).toBeDefined();
+    expect(getSomeByMessageId.resultChain[0]).toBe(firstChain);
+    expect(getSomeByMessageId.resultChain[0]()).toBe(firstSelector);
+    expect(getSomeByMessageId.resultChain[1]).toBe(secondChain);
+    expect(getSomeByMessageId.resultChain[1]()).toBe(secondSelector);
+  });
 });

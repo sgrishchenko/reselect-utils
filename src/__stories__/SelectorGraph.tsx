@@ -1,59 +1,57 @@
-import * as React from 'react';
-import { Core as CytoscapeCore} from 'cytoscape';
+import React, { CSSProperties } from 'react';
+import { Core as CytoscapeCore } from 'cytoscape';
 // @ts-ignore
-import {checkSelector} from 'reselect-tools';
-import {Edges, Nodes, Node} from "./types";
-import {drawCytoscapeGraph, updateCytoscapeGraph} from "./cytoscapeUtils";
-import {CSSProperties} from "react";
+import { checkSelector } from 'reselect-tools';
+import { Edges, Nodes, Node } from './types';
+import { drawCytoscapeGraph, updateCytoscapeGraph } from './cytoscapeUtils';
 
 export type SelectorGraphProps = {
-    nodes: Nodes,
-    edges: Edges,
-    onNodeClick: (name: string, node: Node) => void,
-    style: CSSProperties
-}
+  nodes: Nodes;
+  edges: Edges;
+  onNodeClick: (name: string, node: Node) => void;
+  style: CSSProperties;
+};
 
 export default class SelectorGraph extends React.Component<SelectorGraphProps> {
-    static defaultProps = {
-        onNodeClick: () => undefined,
-        style: {},
-    };
+  static defaultProps = {
+    onNodeClick: () => undefined,
+    style: {},
+  };
 
-    private cy!: CytoscapeCore;
-    private cyElement!: HTMLElement | null;
+  componentDidMount() {
+    const { nodes, edges, onNodeClick } = this.props;
 
-    componentDidMount() {
-        const {nodes, edges, onNodeClick} = this.props;
+    this.cy = drawCytoscapeGraph(this.cyElement, nodes, edges, name => {
+      onNodeClick(name, checkSelector(name));
+    });
+  }
 
-        this.cy = drawCytoscapeGraph(this.cyElement, nodes, edges, name => {
-            onNodeClick(name, checkSelector(name))
-        });
+  componentDidUpdate(prevProps: SelectorGraphProps) {
+    const { nodes, edges } = this.props;
+
+    if (prevProps.nodes === nodes && prevProps.edges === edges) {
+      return;
     }
 
-    componentDidUpdate(prevProps: SelectorGraphProps) {
-        const {nodes, edges} = this.props;
+    updateCytoscapeGraph(this.cy, nodes, edges);
+  }
 
-        if (prevProps.nodes === nodes
-            && prevProps.edges === edges) {
-            return;
-        }
-
-        updateCytoscapeGraph(this.cy, nodes, edges);
+  componentWillUnmount() {
+    if (this.cy) {
+      this.cy.destroy();
     }
+  }
 
-    componentWillUnmount() {
-        if (this.cy) {
-            this.cy.destroy();
-        }
-    }
+  private setCyElement = (element: HTMLElement | null) => {
+    this.cyElement = element;
+  };
 
-    render() {
+  private cy!: CytoscapeCore;
 
-        return (
-            <div
-                style={{height: '100%', ...this.props.style}}
-                ref={(element) => this.cyElement = element}
-            />
-        );
-    }
+  private cyElement!: HTMLElement | null;
+
+  render() {
+    const { style } = this.props;
+    return <div style={{ height: '100%', ...style }} ref={this.setCyElement} />;
+  }
 }

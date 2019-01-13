@@ -1,4 +1,4 @@
-import {configure} from "@storybook/react";
+import { configure } from '@storybook/react';
 
 const req = require.context('../src/__stories__', true, /\.story\.tsx$/);
 

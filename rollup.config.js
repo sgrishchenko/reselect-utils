@@ -3,10 +3,7 @@ import babel from 'rollup-plugin-babel';
 
 export default {
   input: 'src/index.ts',
-  external: [
-    'react',
-    'react-redux',
-  ],
+  external: ['react', 'react-redux'],
   plugins: [
     resolve({
       extensions: ['.ts', '.tsx'],

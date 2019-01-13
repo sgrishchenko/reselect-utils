@@ -1,0 +1,5 @@
+.git/
+coverage/
+dist/
+es/
+lib/

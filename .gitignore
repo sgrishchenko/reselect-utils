@@ -62,3 +62,8 @@ typings/
 # next.js build output
 .next
 
+# build output
+lib
+es
+dist
+

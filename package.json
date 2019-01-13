@@ -3,15 +3,33 @@
   "version": "1.0.0",
   "description": "A collection of helpers and utilities for selectors",
   "main": "lib/index.js",
+  "module": "es/index.js",
+  "browser": "dist/index.js",
+  "typings": "src/index.ts",
+  "sideEffects": false,
   "repository": "git+https://github.com/sgrishchenko/reselect-utils.git",
   "author": "Sergei Grishchenko",
   "license": "MIT",
+  "files": [
+    "dist",
+    "es",
+    "lib",
+    "src",
+    "!__data__",
+    "!__tests__",
+    "!__stories__"
+  ],
   "scripts": {
+    "clean": "rimraf lib es dist",
+    "build": "yarn clean && gulp && rollup -c",
     "test": "jest",
     "storybook": "start-storybook -p 9001"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
+    "@babel/plugin-proposal-class-properties": "^7.2.3",
+    "@babel/preset-env": "^7.2.3",
+    "@babel/preset-typescript": "^7.1.0",
     "@storybook/addon-actions": "^4.1.4",
     "@storybook/react": "^4.1.4",
     "@types/cytoscape": "^3.2.9",
@@ -30,6 +48,9 @@
     "enzyme": "^3.8.0",
     "enzyme-adapter-react-16": "^1.7.1",
     "enzyme-to-json": "^3.3.5",
+    "gulp": "^4.0.0",
+    "gulp-babel": "^8.0.0",
+    "gulp-cli": "^2.0.1",
     "jest": "^23.6.0",
     "re-reselect": "^2.3.0",
     "react": "^16.6.3",
@@ -38,10 +59,13 @@
     "redux": "^4.0.1",
     "reselect": "^4.0.0",
     "reselect-tools": "^0.0.7",
+    "rimraf": "^2.6.3",
+    "rollup": "^1.1.0",
+    "rollup-plugin-babel": "^4.3.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
     "ts-jest": "^23.10.5",
     "ts-loader": "^5.3.3",
     "ts-node": "^7.0.1",
     "typescript": "^3.2.2"
-  },
-  "dependencies": {}
+  }
 }

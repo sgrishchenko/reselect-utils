@@ -1,32 +1,35 @@
 import {ComponentType, createElement, Component, ComponentClass} from "react";
 import {connect} from "react-redux";
 import {OutputParametricCachedSelector} from "re-reselect";
-import {removeMatchingSelectorRecursively} from "./removeMatchingSelectorRecursively";
-import {shallowEqual} from 'shallow-equal-object'
+import CounterObjectCache from "./CounterObjectCache";
 
 export const reselectConnect = <S, P, R>(
     selector: ReturnType<OutputParametricCachedSelector<S, P, R, any>>
 ) => <C extends ComponentType<P>>(WrappedComponent: C): ComponentClass<JSX.LibraryManagedAttributes<C, P>> => {
 
     const wrappedComponentName =
-        WrappedComponent.displayName || WrappedComponent.name || 'Component';
+        WrappedComponent.displayName
+        || /* istanbul ignore next */ WrappedComponent.name
+        || /* istanbul ignore next */ 'Component';
 
-    const clearCache = removeMatchingSelectorRecursively(selector);
+    const addRef = CounterObjectCache.addRefRecursively(selector);
+    const removeRef = CounterObjectCache.removeRefRecursively(selector);
     const state = Symbol('state');
 
     class Wrapper extends Component<P & { [state]: S }> {
         public static displayName = `ReselectConnect(${wrappedComponentName})`;
 
-        public shouldComponentUpdate(nextProps: P & { [state]: S }) {
-            return !shallowEqual(this.props, nextProps)
+        public componentDidMount() {
+            addRef(this.props[state], this.props)
         }
 
         public componentDidUpdate(prevProps: P & { [state]: S }) {
-            clearCache(prevProps[state], prevProps)
+            removeRef(prevProps[state], prevProps);
+            addRef(this.props[state], this.props);
         }
 
         public componentWillUnmount() {
-            clearCache(this.props[state], this.props)
+            removeRef(this.props[state], this.props)
         }
 
         public render() {

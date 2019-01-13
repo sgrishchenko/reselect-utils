@@ -1,13 +1,17 @@
 import {ParametricSelector} from 'reselect';
-import {ICacheObject} from 're-reselect';
+import {ICacheObject, OutputParametricCachedSelector} from 're-reselect';
+
+type Key = string | number;
+
+type TaggedSelector = ParametricSelector<any, any, any> & {
+    key: Key
+}
 
 type CacheItem = {
-    selector: ParametricSelector<any, any, any>,
+    selector: TaggedSelector,
     refCount: number,
     removeTimeoutHandle?: number,
 }
-
-type Key = string | number;
 
 type Cache = {
     [K in Key]: CacheItem
@@ -34,8 +38,8 @@ export default class CounterObjectCache implements ICacheObject {
 
     set(key: Key, selector: ParametricSelector<any, any, any>) {
         this.cache[key] = {
-            selector,
-            refCount: 1,
+            selector: Object.assign(selector, {key}),
+            refCount: 0,
         };
     }
 
@@ -45,21 +49,11 @@ export default class CounterObjectCache implements ICacheObject {
             return undefined
         }
 
-        cacheItem.refCount++;
-        clearTimeout(cacheItem.removeTimeoutHandle);
-
         return cacheItem.selector;
     }
 
     remove(key: Key) {
-        const cacheItem = this.cache[key];
-        cacheItem.refCount--;
-
-        if (cacheItem.refCount === 0) {
-            cacheItem.removeTimeoutHandle = setTimeout(() => {
-                delete this.cache[key];
-            }, this.options.removeDelay);
-        }
+        delete this.cache[key]
     }
 
     clear() {
@@ -69,4 +63,60 @@ export default class CounterObjectCache implements ICacheObject {
     isValidCacheKey(key: Key) {
         return typeof key === 'string' || typeof key === 'number';
     }
+
+    addRef(selector: TaggedSelector) {
+        const cacheItem = this.cache[selector.key];
+
+        if (cacheItem) {
+            cacheItem.refCount++;
+            clearTimeout(cacheItem.removeTimeoutHandle);
+        }
+    }
+
+    removeRef(selector: TaggedSelector) {
+        const cacheItem = this.cache[selector.key];
+
+        if (cacheItem) {
+            cacheItem.refCount--;
+            if (cacheItem.refCount === 0) {
+                cacheItem.removeTimeoutHandle = setTimeout(() => {
+                    this.remove(selector.key);
+                }, this.options.removeDelay);
+            }
+        }
+    }
+
+    private static makeRecursivelyHandler(
+        handler: 'addRef' | 'removeRef',
+        recursivelyHandler: 'addRefRecursively' | 'removeRefRecursively'
+    ) {
+        return <S, P, R>(
+            selector: ReturnType<OutputParametricCachedSelector<S, P, R, any>>
+        ) => (state: S, props: P) => {
+
+            if (typeof selector.getMatchingSelector === 'function') {
+                const selectorInstance = selector.getMatchingSelector(state, props);
+                if (selector.cache instanceof CounterObjectCache) {
+                    selector.cache[handler](selectorInstance as any)
+                }
+            }
+
+            if (Array.isArray((selector as any).dependencies)) {
+                (selector as any).dependencies
+                    .forEach((dep: any) => {
+                        CounterObjectCache[recursivelyHandler](dep)(state, props)
+                    })
+            }
+        }
+    }
+
+    static addRefRecursively = CounterObjectCache.makeRecursivelyHandler(
+        'addRef',
+        'addRefRecursively'
+    );
+
+    static removeRefRecursively = CounterObjectCache.makeRecursivelyHandler(
+        'removeRef',
+        'removeRefRecursively'
+    );
 }

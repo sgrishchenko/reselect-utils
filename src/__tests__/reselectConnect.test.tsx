@@ -1,11 +1,13 @@
 import * as React from "react";
 import {FunctionComponent} from "react";
-import {mount, shallow} from "enzyme";
-import {compose, createStore} from "redux";
+import {mount} from "enzyme";
+import {createStore} from "redux";
 import {connect, Provider} from "react-redux";
-import createCachedSelector from "re-reselect";
+import createCachedSelector, {OutputParametricCachedSelector} from "re-reselect";
 import CounterObjectCache from "../CounterObjectCache";
 import {reselectConnect} from "../reselectConnect";
+
+jest.useFakeTimers();
 
 describe('reselectConnect', () => {
     type State = {
@@ -16,21 +18,28 @@ describe('reselectConnect', () => {
         prop: string
     }
 
-    test('should proxy all props and renders wrapped component', () => {
-        const selector = createCachedSelector(
-            (state: State) => state.value,
-            (state: State, props: Props) => props.prop,
-            jest.fn(() => ({})),
-        )((state, props) => props.prop, {
-            cacheObject: new CounterObjectCache()
-        });
+    const state = {value: 'value'};
 
-        const TestComponent: FunctionComponent<Props> = jest.fn(() => 'TestComponent Content');
+    const makeSelector = (removeDelay = 0) => createCachedSelector(
+        (state: State) => state.value,
+        (state: State, props: Props) => props.prop,
+        jest.fn(() => ({
+            propFromSelector: 'prop2'
+        })),
+    )((state, props) => props.prop, {
+        cacheObject: new CounterObjectCache({
+            removeDelay,
+        })
+    });
+
+    const makeWrapper = (
+        selector: ReturnType<OutputParametricCachedSelector<State, Props, any, any>>
+    ) => {
+        const TestComponent: FunctionComponent<Props> = jest.fn(
+            () => 'TestComponent Content'
+        );
         TestComponent.displayName = 'TestComponent';
-        /*const ConnectedTestComponent = compose(
-            connect(selector),
-            reselectConnect(selector),
-        )(TestComponent);*/
+
         const ConnectedTestComponent =
             connect(selector, {})(
                 reselectConnect(selector)(
@@ -38,31 +47,102 @@ describe('reselectConnect', () => {
                 )
             );
 
-
-        const store = createStore(() => ({}), {});
+        const store = createStore(() => ({...state}));
 
         const wrapper = mount(
             <Provider store={store}>
                 <ConnectedTestComponent prop="prop1"/>
             </Provider>
-        ).children();
+        );
 
-        /*wrapper.setProps({
-            children: <ConnectedTestComponent prop="prop1"/>
-        });
+        return {
+            TestComponent,
+            ConnectedTestComponent,
+            store,
+            wrapper,
+        }
+    };
 
-        wrapper.setProps({
-            children: <ConnectedTestComponent prop="prop2"/>
-        });
 
-        wrapper.setProps({
-            children: <ConnectedTestComponent prop="prop1"/>
-        });*/
+    test('should proxy all props and renders wrapped component', () => {
+        const selector = makeSelector();
+        const {wrapper} = makeWrapper(selector);
 
         expect(wrapper).toMatchSnapshot()
     });
 
-    test('should clear cache after component unmount', () => {
+    test('should create instance of selector and reuse it in another usages', () => {
+        const selector = makeSelector();
 
+        // first call on mount
+        makeWrapper(selector);
+
+        // second call here
+        selector(state, {prop: 'prop1'});
+
+
+        expect(selector.resultFunc).toHaveBeenCalledTimes(1)
+    });
+
+    test('should clear cache after component unmount', () => {
+        const selector = makeSelector();
+        const {wrapper} = makeWrapper(selector);
+        wrapper.unmount();
+        jest.runAllTimers();
+
+        selector(state, {prop: 'prop1'});
+
+        expect(selector.resultFunc).toHaveBeenCalledTimes(2)
+    });
+
+    test('should reuse selector on fast remount', () => {
+        const selector = makeSelector(100);
+        const {wrapper} = makeWrapper(selector);
+        wrapper.unmount();
+
+        jest.advanceTimersByTime(50);
+        wrapper.mount();
+
+
+        selector(state, {prop: 'prop1'});
+
+        expect(selector.resultFunc).toHaveBeenCalledTimes(1)
+    });
+
+    test('should clear cache after props changing', () => {
+        const selector = makeSelector();
+        const {wrapper, ConnectedTestComponent} = makeWrapper(selector);
+        wrapper.setProps({
+            children: <ConnectedTestComponent prop="prop2"/>
+        });
+        jest.runAllTimers();
+
+        selector(state, {prop: 'prop1'});
+
+        expect(selector.resultFunc).toHaveBeenCalledTimes(3)
+    });
+
+    test('should not accumulate ref count on parent re-renders', () => {
+        const selector = makeSelector();
+        const {wrapper, ConnectedTestComponent, store} = makeWrapper(selector);
+
+        // force update root of store
+        store.dispatch({type: 'ANY_ACTION'});
+        wrapper.setProps({
+            children: <ConnectedTestComponent prop="prop1"/>
+        });
+
+        // force update root of store
+        store.dispatch({type: 'ANY_ACTION'});
+        wrapper.setProps({
+            children: <ConnectedTestComponent prop="prop1"/>
+        });
+
+        wrapper.unmount();
+        jest.runAllTimers();
+
+        selector(state, {prop: 'prop1'});
+
+        expect(selector.resultFunc).toHaveBeenCalledTimes(2)
     })
 });

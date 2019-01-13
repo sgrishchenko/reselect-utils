@@ -43,7 +43,5 @@
     "ts-node": "^7.0.1",
     "typescript": "^3.2.2"
   },
-  "dependencies": {
-    "shallow-equal-object": "^1.1.1"
-  }
+  "dependencies": {}
 }

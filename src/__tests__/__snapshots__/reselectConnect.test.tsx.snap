@@ -1,21 +1,36 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`reselectConnect should proxy all props and renders wrapped component 1`] = `
-<Connect(InnerConnect(ReselectConnect(TestComponent)))
-  prop="prop1"
+<Provider
+  store={
+    Object {
+      "dispatch": [Function],
+      "getState": [Function],
+      "replaceReducer": [Function],
+      "subscribe": [Function],
+      Symbol(observable): [Function],
+    }
+  }
 >
-  <InnerConnect(ReselectConnect(TestComponent))
+  <Connect(InnerConnect(ReselectConnect(TestComponent)))
     prop="prop1"
   >
-    <ReselectConnect(TestComponent)
+    <InnerConnect(ReselectConnect(TestComponent))
       prop="prop1"
+      propFromSelector="prop2"
     >
-      <TestComponent
+      <ReselectConnect(TestComponent)
         prop="prop1"
+        propFromSelector="prop2"
       >
-        TestComponent Content
-      </TestComponent>
-    </ReselectConnect(TestComponent)>
-  </InnerConnect(ReselectConnect(TestComponent))>
-</Connect(InnerConnect(ReselectConnect(TestComponent)))>
+        <TestComponent
+          prop="prop1"
+          propFromSelector="prop2"
+        >
+          TestComponent Content
+        </TestComponent>
+      </ReselectConnect(TestComponent)>
+    </InnerConnect(ReselectConnect(TestComponent))>
+  </Connect(InnerConnect(ReselectConnect(TestComponent)))>
+</Provider>
 `;

@@ -1,11 +1,9 @@
 import createCachedSelector from "re-reselect";
 import {state, State} from "../__data__/state";
-import {removeMatchingSelectorRecursively} from "../removeMatchingSelectorRecursively"
+import CounterObjectCache from "../CounterObjectCache"
 import {once} from "../once";
 
-jest.mock('../removeMatchingSelectorRecursively', () => ({
-    removeMatchingSelectorRecursively: jest.fn(() => () => undefined)
-}));
+jest.useFakeTimers();
 
 describe('once', () => {
     const getPerson = (state: State, props: { id: number }) => state.persons[props.id];
@@ -15,14 +13,16 @@ describe('once', () => {
             getPerson,
         ],
         ({firstName, secondName}) => `${firstName} ${secondName}`
-    )((state, props) => props.id);
+    )((state, props) => props.id, {
+        cacheObject: new CounterObjectCache()
+    });
 
     test('should remove cached selector after using', () => {
         const actual = once(getFullName)(state, {id: 1});
 
         expect(actual).toBe('Marry Poppins');
+        jest.runAllTimers();
 
-        expect(removeMatchingSelectorRecursively).toHaveBeenCalledTimes(1);
-        expect(removeMatchingSelectorRecursively).toHaveBeenCalledWith(getFullName)
+        expect(getFullName.getMatchingSelector(state, {id: 1})).toBeUndefined()
     })
 });

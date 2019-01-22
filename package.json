@@ -26,7 +26,7 @@
     "build:es": "tsc -m es2015 -p tsconfig.build.json --outDir es",
     "build": "yarn clean && yarn build:commonjs && yarn build:umd && yarn build:es",
     "test": "jest",
-    "lint": "eslint --ext .ts,.tsx src/ && tslint -p tsconfig.json",
+    "lint": "eslint --ext .js,.ts,.tsx . && tslint -p tsconfig.json",
     "format": "prettier --write **/*.{js,ts,tsx,json,md}",
     "storybook": "start-storybook -p 9001"
   },

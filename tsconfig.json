@@ -4,6 +4,8 @@
     "module": "commonjs",
     "lib": ["es2018", "dom"],
     "strict": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
     "esModuleInterop": true,
     "jsx": "react",
     "noUnusedLocals": true

@@ -1,5 +1,5 @@
-import { ParametricSelector } from 'reselect';
 import { ICacheObject, OutputParametricCachedSelector } from 're-reselect';
+import { Selector, ParametricSelector } from './types';
 
 type Key = string | number;
 
@@ -13,7 +13,7 @@ type CacheItem = {
   removeTimeoutHandle?: number;
 };
 
-type Cache = { [K in Key]: CacheItem };
+type Cache = { [K in Key]?: CacheItem };
 
 type CounterObjectCacheOptions = {
   removeDelay?: number;
@@ -39,9 +39,9 @@ export default class CounterObjectCache implements ICacheObject {
     recursivelyHandler: 'addRefRecursively' | 'removeRefRecursively',
   ) {
     return <S, P, R>(
-      selector: ReturnType<OutputParametricCachedSelector<S, P, R, any>>,
+      selector: Selector<S, R> | ParametricSelector<S, P, R>,
     ) => (state: S, props: P) => {
-      if (typeof selector.getMatchingSelector === 'function') {
+      if (CounterObjectCache.isReReselectSelector(selector)) {
         const selectorInstance = selector.getMatchingSelector(state, props);
         if (selector.cache instanceof CounterObjectCache) {
           selector.cache[handler](selectorInstance as any);
@@ -54,6 +54,12 @@ export default class CounterObjectCache implements ICacheObject {
         });
       }
     };
+  }
+
+  private static isReReselectSelector<S, P, R>(
+    selector: any,
+  ): selector is ReturnType<OutputParametricCachedSelector<S, P, R, any>> {
+    return typeof selector.getMatchingSelector === 'function';
   }
 
   private cache: Cache = {};
@@ -92,7 +98,7 @@ export default class CounterObjectCache implements ICacheObject {
   }
 
   /* eslint-disable-next-line class-methods-use-this */
-  public isValidCacheKey(key: Key) {
+  public isValidCacheKey(key: any) {
     return typeof key === 'string' || typeof key === 'number';
   }
 

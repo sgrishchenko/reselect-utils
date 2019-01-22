@@ -63,6 +63,7 @@ typings/
 .next
 
 # build output
+.rpt2_cache
 lib
 es
 dist

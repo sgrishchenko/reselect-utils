@@ -2,9 +2,9 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { createSelector } from 'reselect';
+// @ts-ignore
 import { selectorGraph, registerSelectors, reset } from 'reselect-tools';
 import SelectorGraph from './SelectorGraph';
-// @ts-ignore
 import { State } from '../__data__/state';
 import createPathSelector from '../createPathSelector';
 

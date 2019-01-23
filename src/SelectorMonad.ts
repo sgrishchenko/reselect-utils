@@ -12,26 +12,32 @@ const generateSelectorKey = (selector: any) =>
     sumString(selector),
   );
 
-export type SelectorChain = () =>
-  | Selector<any, any>
-  | ParametricSelector<any, any, any>;
+export type SelectorChain<R1, S, P, R2> =
+  | ((result: R1) => Selector<S, R2>)
+  | ((result: R1) => ParametricSelector<S, P, R2>);
+
+export type SelectorChainHierarchy<
+  C extends SelectorChain<any, any, any, any>,
+  H extends SelectorChainHierarchy<any, any>
+> = C & { parentChain?: H };
 
 export default class SelectorMonad<
   S1,
   P1,
   R1,
-  SelectorType extends Selector<S1, R1> | ParametricSelector<S1, P1, R1>
+  SelectorType extends Selector<S1, R1> | ParametricSelector<S1, P1, R1>,
+  SelectorChainType extends SelectorChainHierarchy<any, any>
 > {
   public static of<S, R>(
     selector: Selector<S, R>,
-  ): SelectorMonad<S, void, R, Selector<S, R>>;
+  ): SelectorMonad<S, void, R, Selector<S, R>, void>;
 
   public static of<S, P, R>(
     selector: ParametricSelector<S, P, R>,
-  ): SelectorMonad<S, P, R, ParametricSelector<S, P, R>>;
+  ): SelectorMonad<S, P, R, ParametricSelector<S, P, R>, void>;
 
   public static of(selector: any) {
-    return new SelectorMonad<any, any, any, any>(selector);
+    return new SelectorMonad<any, any, any, any, void>(selector);
   }
 
   private prevResult?: R1;
@@ -42,9 +48,9 @@ export default class SelectorMonad<
 
   private readonly selector: SelectorType;
 
-  private readonly prevChain: SelectorChain[];
+  private readonly prevChain?: SelectorChainType;
 
-  private constructor(selector: SelectorType, prevChain: SelectorChain[] = []) {
+  private constructor(selector: SelectorType, prevChain?: SelectorChainType) {
     this.selector = selector;
     this.prevChain = prevChain;
   }
@@ -52,8 +58,26 @@ export default class SelectorMonad<
   public chain<S2, R2>(
     fn: (result: R1) => Selector<S2, R2>,
   ): SelectorType extends ParametricSelector<S1, P1, R1>
-    ? SelectorMonad<S1 & S2, P1, R2, ParametricSelector<S1 & S2, P1, R2>>
-    : SelectorMonad<S1 & S2, void, R2, Selector<S1 & S2, R2>>;
+    ? SelectorMonad<
+        S1 & S2,
+        P1,
+        R2,
+        ParametricSelector<S1 & S2, P1, R2>,
+        SelectorChainHierarchy<
+          (result: R1) => Selector<S2, R2>,
+          SelectorChainType
+        >
+      >
+    : SelectorMonad<
+        S1 & S2,
+        void,
+        R2,
+        Selector<S1 & S2, R2>,
+        SelectorChainHierarchy<
+          (result: R1) => Selector<S2, R2>,
+          SelectorChainType
+        >
+      >;
 
   public chain<S2, P2, R2>(
     fn: (result: R1) => ParametricSelector<S2, P2, R2>,
@@ -61,7 +85,11 @@ export default class SelectorMonad<
     S1 & S2,
     P1 & P2,
     R2,
-    ParametricSelector<S1 & S2, P1 & P2, R2>
+    ParametricSelector<S1 & S2, P1 & P2, R2>,
+    SelectorChainHierarchy<
+      (result: R1) => ParametricSelector<S2, P2, R2>,
+      SelectorChainType
+    >
   >;
 
   public chain(fn: any) {
@@ -84,7 +112,7 @@ export default class SelectorMonad<
         this.cachedSelector!.dependencies = [
           ...(this.cachedSelector!.dependencies || []),
           this.selector,
-        ] as [];
+        ];
       }
 
       const dependencyName = this.cachedSelector!.selectorName;
@@ -100,15 +128,17 @@ export default class SelectorMonad<
     combinedSelector.selectorName = `${baseName} (chained)`;
     combinedSelector.dependencies = [this.selector];
 
-    return new SelectorMonad<any, any, any, any>(combinedSelector, [
-      ...this.prevChain,
-      fn,
-    ]);
+    return new SelectorMonad<any, any, any, any, any>(
+      combinedSelector,
+      Object.assign(fn, {
+        parentChain: this.prevChain,
+      }),
+    );
   }
 
   public buildSelector() {
     return Object.assign(this.selector, {
-      resultChain: this.prevChain,
+      chainHierarchy: this.prevChain,
     });
   }
 }

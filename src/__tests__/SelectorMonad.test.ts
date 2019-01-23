@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import SelectorMonad from '../SelectorMonad';
 import createAdaptedSelector from '../createAdaptedSelector';
-import { State, commonState } from '../__data__/state';
+import { State, commonState, Message } from '../__data__/state';
 
 describe('SelectorMonad', () => {
   const getPerson = (state: State, props: { id: number }) =>
@@ -67,21 +67,32 @@ describe('SelectorMonad', () => {
     expect(chainMock).toHaveBeenCalledTimes(2);
   });
 
-  test('should build selector with resultChain property for unit test', () => {
-    const firstSelector = () => 'firstChain';
-    const firstChain = () => firstSelector;
-    const secondSelector = () => () => 'secondChain';
-    const secondChain = () => secondSelector;
+  test('should build selector with chainHierarchy property for unit test', () => {
+    type FirstState = { firstValue: string };
+    const firstSelector = (state: FirstState) => state.firstValue;
+    const firstChain = (message: Message) => firstSelector;
+
+    type SecondState = { secondValue: number };
+    type SecondProps = { prop: boolean };
+    const secondSelector = (state: SecondState, prop: SecondProps) =>
+      state.secondValue;
+    const secondChain = (firstValue: string) => secondSelector;
 
     const getSomeByMessageId = SelectorMonad.of(getMessage)
       .chain(firstChain)
       .chain(secondChain)
       .buildSelector();
 
-    expect(getSomeByMessageId.resultChain).toBeDefined();
-    expect(getSomeByMessageId.resultChain[0]).toBe(firstChain);
-    expect(getSomeByMessageId.resultChain[0]()).toBe(firstSelector);
-    expect(getSomeByMessageId.resultChain[1]).toBe(secondChain);
-    expect(getSomeByMessageId.resultChain[1]()).toBe(secondSelector);
+    expect(getSomeByMessageId.chainHierarchy).toBeDefined();
+
+    const lastChain = getSomeByMessageId.chainHierarchy!;
+    expect(lastChain('firstValue')).toBe(secondSelector);
+    expect(lastChain('firstValue')({ secondValue: 2 }, { prop: true })).toBe(2);
+
+    const lastButOneChain = getSomeByMessageId.chainHierarchy!.parentChain!;
+    expect(lastButOneChain({} as Message)).toBe(firstSelector);
+    expect(lastButOneChain({} as Message)({ firstValue: 'firstValue' })).toBe(
+      'firstValue',
+    );
   });
 });

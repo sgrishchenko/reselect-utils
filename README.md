@@ -33,6 +33,7 @@ Such projects as [Reselect](https://github.com/reduxjs/reselect) and [Re-reselec
   - [Counter Cache](/docs/quickstart.md#counter-cache)
 - [API](/docs/api.md)
   - [createPathSelector](/docs/api.md#createPathSelector)
+  - [createPropSelector](/docs/api.md#createPropSelector)
   - [createAdaptedSelector](/docs/api.md#createAdaptedSelector)
   - [SelectorMonad](/docs/api.md#SelectorMonad)
   - [CounterObjectCache](/docs/api.md#CounterObjectCache)

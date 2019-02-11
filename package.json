@@ -1,11 +1,11 @@
 {
   "name": "reselect-utils",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A collection of helpers and utilities for selectors",
   "main": "lib/index.js",
   "module": "es/index.js",
   "browser": "dist/index.js",
-  "typings": "src/index.ts",
+  "typings": "lib/index.d.ts",
   "repository": "git+https://github.com/sgrishchenko/reselect-utils.git",
   "author": "Sergei Grishchenko",
   "license": "MIT",
@@ -13,7 +13,6 @@
     "dist",
     "es",
     "lib",
-    "src",
     "!__data__",
     "!__tests__",
     "!__stories__"
@@ -21,7 +20,7 @@
   "sideEffects": false,
   "scripts": {
     "clean": "rimraf lib es dist",
-    "build:commonjs": "tsc -p tsconfig.build.json --outDir lib",
+    "build:commonjs": "tsc -p tsconfig.build.json --outDir lib -d",
     "build:umd": "rollup -c rollup.config.ts",
     "build:es": "tsc -m es2015 -p tsconfig.build.json --outDir es",
     "build": "yarn clean && yarn build:commonjs && yarn build:umd && yarn build:es",

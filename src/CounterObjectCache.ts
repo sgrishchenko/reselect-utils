@@ -43,7 +43,7 @@ export default class CounterObjectCache implements ICacheObject {
     ) => (state: S, props: P) => {
       if (CounterObjectCache.isReReselectSelector(selector)) {
         const selectorInstance = selector.getMatchingSelector(state, props);
-        if (selector.cache instanceof CounterObjectCache) {
+        if (selector.cache instanceof CounterObjectCache && selectorInstance) {
           selector.cache[handler](selectorInstance as any);
         }
       }

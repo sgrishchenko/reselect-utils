@@ -1,10 +1,10 @@
 import { ComponentType, createElement, Component, ComponentClass } from 'react';
 import { connect } from 'react-redux';
-import { OutputParametricCachedSelector } from 're-reselect';
 import CounterObjectCache from './CounterObjectCache';
+import { ParametricSelector, Selector } from './types';
 
 export default <S, P, R>(
-  selector: ReturnType<OutputParametricCachedSelector<S, P, R, any>>,
+  selector: Selector<S, R> | ParametricSelector<S, P, R>,
 ) => <C extends ComponentType<P>>(
   WrappedComponent: C,
 ): ComponentClass<JSX.LibraryManagedAttributes<C, P>> => {

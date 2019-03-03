@@ -1,4 +1,5 @@
 import { Selector, ParametricSelector } from './types';
+import CounterObjectCache from './CounterObjectCache';
 
 const sumString = (stringSource: object): number =>
   Array.from(stringSource.toString()).reduce(
@@ -39,6 +40,10 @@ export default class SelectorMonad<
   public static of(selector: any) {
     return new SelectorMonad<any, any, any, any, void>(selector);
   }
+
+  private prevState?: S1;
+
+  private prevProps?: P1;
 
   private prevResult?: R1;
 
@@ -96,11 +101,25 @@ export default class SelectorMonad<
     const baseName = this.selector.selectorName || this.selector.name;
 
     const combinedSelector = (state: any, props: any) => {
-      const newState = this.selector(state, props);
+      const newResult = this.selector(state, props);
 
-      if (this.prevResult === undefined || this.prevResult !== newState) {
-        this.prevResult = newState;
-        this.cachedSelector = fn(newState);
+      if (this.prevResult === undefined || this.prevResult !== newResult) {
+        const newSelector = fn(newResult);
+
+        if (
+          this.cachedSelector !== undefined &&
+          this.cachedSelector !== newSelector
+        ) {
+          CounterObjectCache.removeRefRecursively(this.cachedSelector)(
+            this.prevState,
+            this.prevProps,
+          );
+        }
+
+        this.prevResult = newResult;
+        this.cachedSelector = newSelector;
+        this.prevState = state;
+        this.prevProps = props;
 
         this.cachedSelector!.selectorName =
           this.cachedSelector!.selectorName ||
@@ -109,18 +128,16 @@ export default class SelectorMonad<
             this.cachedSelector,
           )})`;
 
-        this.cachedSelector!.dependencies = [
-          ...(this.cachedSelector!.dependencies || []),
+        const dependencyName = this.cachedSelector!.selectorName;
+
+        if (combinedSelector.selectorName.startsWith(baseName)) {
+          combinedSelector.selectorName = `${baseName} (chained by ${dependencyName})`;
+        }
+        combinedSelector.dependencies = [
           this.selector,
+          this.cachedSelector as SelectorType,
         ];
       }
-
-      const dependencyName = this.cachedSelector!.selectorName;
-
-      if (combinedSelector.selectorName.startsWith(baseName)) {
-        combinedSelector.selectorName = `${baseName} (chained by ${dependencyName})`;
-      }
-      combinedSelector.dependencies = [this.cachedSelector as SelectorType];
 
       return this.cachedSelector!(state, props);
     };

@@ -1,8 +1,8 @@
-import { OutputParametricCachedSelector } from 're-reselect';
 import CounterObjectCache from './CounterObjectCache';
+import { ParametricSelector, Selector } from './types';
 
 export default <S, P, R>(
-  selector: ReturnType<OutputParametricCachedSelector<S, P, R, any>>,
+  selector: Selector<S, R> | ParametricSelector<S, P, R>,
 ) => (state: S, props: P) => {
   const result = selector(state, props);
   CounterObjectCache.addRefRecursively(selector)(state, props);

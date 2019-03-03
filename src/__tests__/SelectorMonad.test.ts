@@ -1,7 +1,7 @@
-import { createSelector } from 'reselect';
 import createCachedSelector from 're-reselect';
 import SelectorMonad from '../SelectorMonad';
 import createBoundSelector from '../createBoundSelector';
+import createSequenceSelector from '../createSequenceSelector';
 import CounterObjectCache from '../CounterObjectCache';
 import { State, commonState, Message } from '../__data__/state';
 
@@ -36,19 +36,18 @@ describe('SelectorMonad', () => {
     const getPersons = (state: State) => state.persons;
 
     const getLongestFullName = SelectorMonad.of(getPersons)
-      .chain(persons => {
-        const dependencies = Object.values(persons).map(person =>
-          createBoundSelector(getFullName, { id: person.id }),
-        );
-
-        return createSelector(
-          dependencies,
-          (...fullNames) =>
-            fullNames.reduce((longest, current) =>
-              current.length > longest.length ? current : longest,
-            ),
-        );
-      })
+      .chain(persons =>
+        createSequenceSelector(
+          Object.values(persons).map(person =>
+            createBoundSelector(getFullName, { id: person.id }),
+          ),
+        ),
+      )
+      .chain(fullNames => () =>
+        fullNames.reduce((longest, current) =>
+          current.length > longest.length ? current : longest,
+        ),
+      )
       .buildSelector();
 
     expect(getLongestFullName(commonState)).toBe('Marry Poppins');

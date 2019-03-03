@@ -7,6 +7,7 @@ import { selectorGraph, registerSelectors, reset } from 'reselect-tools';
 import SelectorGraph from './SelectorGraph';
 import { Message, Person, commonState, State } from '../__data__/state';
 import createBoundSelector from '../createBoundSelector';
+import createSequenceSelector from '../createSequenceSelector';
 import SelectorMonad from '../SelectorMonad';
 import { Selector } from '../types';
 /* tslint:disable:member-ordering */
@@ -95,19 +96,18 @@ storiesOf('SelectorMonad', module)
     const getPersons = (state: State) => state.persons;
 
     const getLongestFullName = SelectorMonad.of(getPersons)
-      .chain(persons => {
-        const dependencies = Object.values(persons).map((person: Person) =>
-          createBoundSelector(getFullName, { id: person.id }),
-        );
-
-        return createSelector(
-          dependencies,
-          (...fullNames) =>
-            fullNames.reduce((longest, current) =>
-              current.length > longest.length ? current : longest,
-            ),
-        );
-      })
+      .chain(persons =>
+        createSequenceSelector(
+          Object.values(persons).map((person: Person) =>
+            createBoundSelector(getFullName, { id: person.id }),
+          ),
+        ),
+      )
+      .chain(fullNames => () =>
+        fullNames.reduce((longest, current) =>
+          current.length > longest.length ? current : longest,
+        ),
+      )
       .buildSelector();
 
     reset();

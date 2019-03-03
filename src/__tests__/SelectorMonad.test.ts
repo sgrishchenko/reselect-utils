@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import createCachedSelector from 're-reselect';
 import SelectorMonad from '../SelectorMonad';
-import createAdaptedSelector from '../createAdaptedSelector';
+import createBoundSelector from '../createBoundSelector';
 import CounterObjectCache from '../CounterObjectCache';
 import { State, commonState, Message } from '../__data__/state';
 
@@ -21,9 +21,9 @@ describe('SelectorMonad', () => {
   test('should implement simple selector chain', () => {
     const getPersonByMessageId = SelectorMonad.of(getMessage)
       .chain(message =>
-        createAdaptedSelector(getPerson, { id: message.personId }),
+        createBoundSelector(getPerson, { id: message.personId }),
       )
-      .chain(person => createAdaptedSelector(getFullName, { id: person.id }))
+      .chain(person => createBoundSelector(getFullName, { id: person.id }))
       .buildSelector();
 
     expect(getPersonByMessageId(commonState, { id: 100 })).toBe(
@@ -38,7 +38,7 @@ describe('SelectorMonad', () => {
     const getLongestFullName = SelectorMonad.of(getPersons)
       .chain(persons => {
         const dependencies = Object.values(persons).map(person =>
-          createAdaptedSelector(getFullName, { id: person.id }),
+          createBoundSelector(getFullName, { id: person.id }),
         );
 
         return createSelector(
@@ -101,7 +101,7 @@ describe('SelectorMonad', () => {
   });
 
   test('should not mutate dependencies of chaining selectors', () => {
-    const getFirstPerson = createAdaptedSelector(getPerson, { id: 1 });
+    const getFirstPerson = createBoundSelector(getPerson, { id: 1 });
 
     const getMonadicFirstPerson = SelectorMonad.of(() => '')
       .chain(() => getFirstPerson)

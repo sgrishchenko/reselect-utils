@@ -6,7 +6,7 @@ import { createSelector } from 'reselect';
 import { selectorGraph, registerSelectors, reset } from 'reselect-tools';
 import SelectorGraph from './SelectorGraph';
 import { Message, Person, commonState, State } from '../__data__/state';
-import createAdaptedSelector from '../createAdaptedSelector';
+import createBoundSelector from '../createBoundSelector';
 import SelectorMonad from '../SelectorMonad';
 import { Selector } from '../types';
 /* tslint:disable:member-ordering */
@@ -66,10 +66,10 @@ storiesOf('SelectorMonad', module)
   .add('entity chain example', () => {
     const getPersonByDocumentId = SelectorMonad.of(getDocument)
       .chain(document =>
-        createAdaptedSelector(getMessage, { id: document.messageId }),
+        createBoundSelector(getMessage, { id: document.messageId }),
       )
       .chain(message =>
-        createAdaptedSelector(getFullName, { id: message.personId }),
+        createBoundSelector(getFullName, { id: message.personId }),
       )
       .buildSelector();
 
@@ -97,7 +97,7 @@ storiesOf('SelectorMonad', module)
     const getLongestFullName = SelectorMonad.of(getPersons)
       .chain(persons => {
         const dependencies = Object.values(persons).map((person: Person) =>
-          createAdaptedSelector(getFullName, { id: person.id }),
+          createBoundSelector(getFullName, { id: person.id }),
         );
 
         return createSelector(
@@ -131,8 +131,8 @@ storiesOf('SelectorMonad', module)
       .chain(
         document =>
           (document.messageId === 100
-            ? createAdaptedSelector(getPerson, { id: 1 })
-            : createAdaptedSelector(getMessage, {
+            ? createBoundSelector(getPerson, { id: 1 })
+            : createBoundSelector(getMessage, {
                 id: document.messageId,
               })) as Selector<State, Person | Message>,
       )

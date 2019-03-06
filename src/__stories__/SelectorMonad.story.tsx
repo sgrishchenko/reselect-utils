@@ -103,7 +103,7 @@ storiesOf('SelectorMonad', module)
           ),
         ),
       )
-      .chain(fullNames => () =>
+      .map(fullNames =>
         fullNames.reduce((longest, current) =>
           current.length > longest.length ? current : longest,
         ),

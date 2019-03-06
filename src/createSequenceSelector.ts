@@ -1,5 +1,5 @@
-import { ParametricSelector, Selector } from './types';
 import { createSelector } from 'reselect';
+import { ParametricSelector, Selector } from './types';
 
 function createSequenceSelector<S, R>(
   selectors: Selector<S, R>[],

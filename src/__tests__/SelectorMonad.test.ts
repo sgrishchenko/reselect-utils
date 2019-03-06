@@ -43,7 +43,7 @@ describe('SelectorMonad', () => {
           ),
         ),
       )
-      .chain(fullNames => () =>
+      .map(fullNames =>
         fullNames.reduce((longest, current) =>
           current.length > longest.length ? current : longest,
         ),

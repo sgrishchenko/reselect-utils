@@ -153,6 +153,10 @@ export default class SelectorMonad<
     );
   }
 
+  public map<R2>(fn: (result: R1) => R2) {
+    return this.chain(result => () => fn(result));
+  }
+
   public buildSelector() {
     return Object.assign(this.selector, {
       chainHierarchy: this.prevChain,

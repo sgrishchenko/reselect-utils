@@ -62,12 +62,12 @@ export default class SelectorMonad<
 
   public chain<S2, R2>(
     fn: (result: R1) => Selector<S2, R2>,
-  ): SelectorType extends ParametricSelector<S1, P1, R1>
+  ): SelectorType extends Selector<S1, R1>
     ? SelectorMonad<
         S1 & S2,
-        P1,
+        void,
         R2,
-        ParametricSelector<S1 & S2, P1, R2>,
+        Selector<S1 & S2, R2>,
         SelectorChainHierarchy<
           (result: R1) => Selector<S2, R2>,
           SelectorChainType
@@ -75,9 +75,9 @@ export default class SelectorMonad<
       >
     : SelectorMonad<
         S1 & S2,
-        void,
+        P1,
         R2,
-        Selector<S1 & S2, R2>,
+        ParametricSelector<S1 & S2, P1, R2>,
         SelectorChainHierarchy<
           (result: R1) => Selector<S2, R2>,
           SelectorChainType

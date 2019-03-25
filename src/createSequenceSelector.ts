@@ -11,7 +11,7 @@ function createSequenceSelector<S, P, R>(
 
 function createSequenceSelector(selectors: any) {
   return createSelector(
-    [...selectors],
+    selectors,
     (...results) => results,
   );
 }

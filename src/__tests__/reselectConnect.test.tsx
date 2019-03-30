@@ -36,7 +36,7 @@ describe('reselectConnect', () => {
 
   const makeWrapper = (
     selector: ReturnType<
-      OutputParametricCachedSelector<State, Props, any, any>
+      OutputParametricCachedSelector<State, Props, any, any, any>
     >,
   ) => {
     const TestComponent: FunctionComponent<Props> = jest.fn(

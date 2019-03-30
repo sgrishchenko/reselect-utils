@@ -154,7 +154,10 @@ export default class SelectorMonad<
   }
 
   public map<R2>(fn: (result: R1) => R2) {
-    return this.chain(result => () => fn(result));
+    return this.chain(result => {
+      const output = fn(result);
+      return () => output;
+    });
   }
 
   public buildSelector() {

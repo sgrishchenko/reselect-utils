@@ -1,6 +1,7 @@
 import { createStructuredSelector } from 'reselect';
 import { Message, Person, commonState, State } from '../__data__/state';
 import createBoundSelector from '../createBoundSelector';
+import createCachedSelector from 're-reselect';
 
 describe('createAdaptedSelector', () => {
   const getPerson = (state: State, props: { personId: number }) =>
@@ -61,5 +62,31 @@ describe('createAdaptedSelector', () => {
 
     expect(marryAndHello.person.firstName).toBe('Marry');
     expect(marryAndHello.message.text).toBe('Hello');
+  });
+
+  describe('integration with re-reselect', () => {
+    const getCachedFullName = createCachedSelector(
+      [getPerson],
+      ({ firstName, secondName }) => `${firstName} ${secondName}`,
+    )((state, props) => props.personId);
+
+    test('should decorate getMatchingSelector and removeMatchingSelector of dependency', () => {
+      const getMarry = createBoundSelector(getCachedFullName, {
+        personId: 1,
+      });
+
+      const dependency: any = getMarry.dependencies![0];
+
+      let selectorInstance = dependency.getMatchingSelector(commonState);
+      expect(selectorInstance).toBeUndefined();
+
+      getMarry(commonState);
+      selectorInstance = dependency.getMatchingSelector(commonState);
+      expect(selectorInstance).toBeInstanceOf(Function);
+
+      dependency.removeMatchingSelector(commonState);
+      selectorInstance = dependency.getMatchingSelector(commonState);
+      expect(selectorInstance).toBeUndefined();
+    });
   });
 });

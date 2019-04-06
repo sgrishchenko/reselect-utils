@@ -5,6 +5,7 @@ import createBoundSelector from '../createBoundSelector';
 import createSequenceSelector from '../createSequenceSelector';
 import CounterObjectCache from '../CounterObjectCache';
 import { State, commonState, Message } from '../__data__/state';
+import createPathSelector from '../createPathSelector';
 
 describe('SelectorMonad', () => {
   const getPerson = (state: State, props: { id: number }) =>
@@ -112,8 +113,56 @@ describe('SelectorMonad', () => {
     expect(firstDependencies!.length).toBe(secondDependencies!.length);
   });
 
-  describe('integration with re-reselect and CounterObjectCache', () => {
+  describe('integration with re-reselect', () => {
     const getCachedFullName = createCachedSelector(
+      [getPerson],
+      ({ firstName, secondName }) => `${firstName} ${secondName}`,
+    )((state, props) => props.id);
+
+    afterEach(() => {
+      getCachedFullName.clearCache();
+      getCachedFullName.resetRecomputations();
+    });
+
+    test('should not invalidate cache for input parametric selector', () => {
+      const chainFn = jest.fn(result => () => result);
+      const getCachedFullNameProxy = SelectorMonad.of(getCachedFullName)
+        .chain(chainFn)
+        .buildSelector();
+
+      getCachedFullNameProxy(commonState, { id: 1 });
+      getCachedFullNameProxy(commonState, { id: 2 });
+      getCachedFullNameProxy(commonState, { id: 1 });
+      getCachedFullNameProxy(commonState, { id: 2 });
+
+      expect(getCachedFullName.recomputations()).toBe(2);
+      expect(chainFn).toHaveBeenCalledTimes(2);
+    });
+
+    test('should not invalidate cache for input path parametric selector', () => {
+      const getCachedPerson = createCachedSelector(
+        [getPerson],
+        person => person,
+      )((state, props) => props.id);
+
+      const chainFn = jest.fn(result => () => result);
+      const getCachedNameProxy = SelectorMonad.of(
+        createPathSelector(getCachedPerson).firstName(),
+      )
+        .chain(chainFn)
+        .buildSelector();
+
+      getCachedNameProxy(commonState, { id: 1 });
+      getCachedNameProxy(commonState, { id: 2 });
+      getCachedNameProxy(commonState, { id: 1 });
+      getCachedNameProxy(commonState, { id: 2 });
+
+      expect(chainFn).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('integration with CounterObjectCache', () => {
+    const getCounterCachedFullName = createCachedSelector(
       [getPerson],
       ({ firstName, secondName }) => `${firstName} ${secondName}`,
     )((state, props) => props.id, {
@@ -128,7 +177,7 @@ describe('SelectorMonad', () => {
 
       const getFullNameByProp = SelectorMonad.of(getUseFullName)
         .chain(useFullName =>
-          useFullName ? getCachedFullName : () => undefined,
+          useFullName ? getCounterCachedFullName : () => undefined,
         )
         .buildSelector();
 
@@ -143,10 +192,19 @@ describe('SelectorMonad', () => {
       const nextProps = { id: 1, useFullName: false };
       getFullNameByProp(commonState, nextProps);
 
+      CounterObjectCache.removeRefRecursively(getFullNameByProp)(
+        commonState,
+        nextProps,
+      );
+
       jest.runAllTimers();
 
       expect(
-        getCachedFullName.getMatchingSelector(commonState, { id: 1 }),
+        getCounterCachedFullName.getMatchingSelector(commonState, initialProps),
+      ).toBeUndefined();
+
+      expect(
+        getCounterCachedFullName.getMatchingSelector(commonState, nextProps),
       ).toBeUndefined();
 
       jest.useRealTimers();

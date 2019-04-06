@@ -1,5 +1,6 @@
 import { Selector, ParametricSelector } from './types';
 import CounterObjectCache from './CounterObjectCache';
+import { OutputParametricCachedSelector } from 're-reselect';
 
 const sumString = (stringSource: object): number =>
   Array.from(stringSource.toString()).reduce(
@@ -13,6 +14,24 @@ const generateSelectorKey = (selector: any) =>
     sumString(selector),
   );
 
+const tryExtractCachedSelector = (
+  selector:
+    | ParametricSelector<any, any, any>
+    | ReturnType<OutputParametricCachedSelector<any, any, any, any, any>>,
+):
+  | ReturnType<OutputParametricCachedSelector<any, any, any, any, any>>
+  | undefined => {
+  if ('getMatchingSelector' in selector) {
+    return selector;
+  } else if (selector.dependencies && selector.dependencies.length === 1) {
+    // pathSelector case
+    const [dependency] = selector.dependencies;
+    return tryExtractCachedSelector(dependency);
+  } else {
+    return undefined;
+  }
+};
+
 export type SelectorChain<R1, S, P, R2> =
   | ((result: R1) => Selector<S, R2>)
   | ((result: R1) => ParametricSelector<S, P, R2>);
@@ -21,6 +40,16 @@ export type SelectorChainHierarchy<
   C extends SelectorChain<any, any, any, any>,
   H extends SelectorChainHierarchy<any, any>
 > = C & { parentChain?: H };
+
+export type CacheContainer<S, P, R> = {
+  prevState?: S;
+
+  prevProps?: P;
+
+  prevResult?: R;
+
+  cachedSelector?: Selector<any, any> | ParametricSelector<any, any, any>;
+};
 
 export default class SelectorMonad<
   S1,
@@ -41,15 +70,9 @@ export default class SelectorMonad<
     return new SelectorMonad<any, any, any, any, void>(selector);
   }
 
-  private prevState?: S1;
+  private cacheContainer: CacheContainer<S1, P1, R1> = {};
 
-  private prevProps?: P1;
-
-  private prevResult?: R1;
-
-  private cachedSelector?:
-    | Selector<any, any>
-    | ParametricSelector<any, any, any>;
+  private cacheContainerSymbol = Symbol('Selector Monad Cache Container');
 
   private readonly selector: SelectorType;
 
@@ -102,44 +125,48 @@ export default class SelectorMonad<
 
     const combinedSelector = (state: any, props: any) => {
       const newResult = this.selector(state, props);
+      const cacheContainer = this.resolveCacheContainer(state, props);
+      const {
+        prevState,
+        prevProps,
+        prevResult,
+        cachedSelector,
+      } = cacheContainer;
 
-      if (this.prevResult === undefined || this.prevResult !== newResult) {
+      if (prevResult === undefined || prevResult !== newResult) {
         const newSelector = fn(newResult);
 
-        if (
-          this.cachedSelector !== undefined &&
-          this.cachedSelector !== newSelector
-        ) {
-          CounterObjectCache.removeRefRecursively(this.cachedSelector)(
-            this.prevState,
-            this.prevProps,
+        if (cachedSelector !== undefined && cachedSelector !== newSelector) {
+          CounterObjectCache.removeRefRecursively(cachedSelector)(
+            prevState,
+            prevProps,
           );
         }
 
-        this.prevResult = newResult;
-        this.cachedSelector = newSelector;
-        this.prevState = state;
-        this.prevProps = props;
+        cacheContainer.prevResult = newResult;
+        cacheContainer.cachedSelector = newSelector;
+        cacheContainer.prevState = state;
+        cacheContainer.prevProps = props;
 
-        this.cachedSelector!.selectorName =
-          this.cachedSelector!.selectorName ||
-          this.cachedSelector!.name ||
+        cacheContainer.cachedSelector!.selectorName =
+          cacheContainer.cachedSelector!.selectorName ||
+          cacheContainer.cachedSelector!.name ||
           `derived from ${baseName} (${generateSelectorKey(
-            this.cachedSelector,
+            cacheContainer.cachedSelector,
           )})`;
 
-        const dependencyName = this.cachedSelector!.selectorName;
+        const dependencyName = cacheContainer.cachedSelector!.selectorName;
 
         if (combinedSelector.selectorName.startsWith(baseName)) {
           combinedSelector.selectorName = `${baseName} (chained by ${dependencyName})`;
         }
         combinedSelector.dependencies = [
           this.selector,
-          this.cachedSelector as SelectorType,
+          cacheContainer.cachedSelector as SelectorType,
         ];
       }
 
-      return this.cachedSelector!(state, props);
+      return cacheContainer.cachedSelector!(state, props);
     };
 
     combinedSelector.selectorName = `${baseName} (chained)`;
@@ -151,6 +178,28 @@ export default class SelectorMonad<
         parentChain: this.prevChain,
       }),
     );
+  }
+
+  private resolveCacheContainer(
+    state: S1,
+    props: P1,
+  ): CacheContainer<S1, P1, R1> {
+    const cachedSelector = tryExtractCachedSelector(this.selector);
+
+    if (cachedSelector) {
+      const selectorInstance: any = cachedSelector.getMatchingSelector(
+        state,
+        props,
+      );
+      if (selectorInstance) {
+        if (!selectorInstance[this.cacheContainerSymbol]) {
+          selectorInstance[this.cacheContainerSymbol] = {};
+        }
+
+        return selectorInstance[this.cacheContainerSymbol];
+      }
+    }
+    return this.cacheContainer;
   }
 
   public map<R2>(fn: (result: R1) => R2) {

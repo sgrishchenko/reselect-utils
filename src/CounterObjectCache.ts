@@ -58,7 +58,7 @@ export default class CounterObjectCache implements ICacheObject {
 
   private static isReReselectSelector<S, P, R>(
     selector: any,
-  ): selector is ReturnType<OutputParametricCachedSelector<S, P, R, any>> {
+  ): selector is ReturnType<OutputParametricCachedSelector<S, P, R, any, any>> {
     return typeof selector.getMatchingSelector === 'function';
   }
 

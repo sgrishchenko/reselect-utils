@@ -24,7 +24,7 @@ const tryExtractCachedSelector = (
   if ('getMatchingSelector' in selector) {
     return selector;
   } else if (selector.dependencies && selector.dependencies.length === 1) {
-    // pathSelector case
+    // adaptedSelector, boundSelector and pathSelector cases
     const [dependency] = selector.dependencies;
     return tryExtractCachedSelector(dependency);
   } else {

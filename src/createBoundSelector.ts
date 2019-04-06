@@ -50,7 +50,7 @@ export default <S, P1, P2 extends Partial<P1>, R>(
 
   if ('getMatchingSelector' in baseSelector) {
     const decoratedBaseSelector = Object.assign(
-      (state: S, props: any) => baseSelector(state, props),
+      (state: S, props: P1) => baseSelector(state, props),
       baseSelector,
     );
 

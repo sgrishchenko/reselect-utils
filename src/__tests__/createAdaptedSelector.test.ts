@@ -1,6 +1,7 @@
 import { createStructuredSelector } from 'reselect';
 import { Message, Person, commonState, State } from '../__data__/state';
 import createAdaptedSelector from '../createAdaptedSelector';
+import createCachedSelector from 're-reselect';
 
 describe('createAdaptedSelector', () => {
   const getPerson = (state: State, props: { id: number }) =>
@@ -48,5 +49,42 @@ describe('createAdaptedSelector', () => {
 
     expect(actual.person.firstName).toBe('Marry');
     expect(actual.message.text).toBe('Hello');
+  });
+
+  describe('integration with re-reselect', () => {
+    const getCachedFullName = createCachedSelector(
+      [getPerson],
+      ({ firstName, secondName }) => `${firstName} ${secondName}`,
+    )((state, props) => props.id);
+
+    test('should decorate getMatchingSelector and removeMatchingSelector of dependency', () => {
+      const adaptedGetCachedFullName = createAdaptedSelector(
+        getCachedFullName,
+        (props: { personId: number }) => ({
+          id: props.personId,
+        }),
+      );
+
+      const dependency: any = adaptedGetCachedFullName.dependencies![0];
+
+      let selectorInstance = dependency.getMatchingSelector(commonState, {
+        personId: 1,
+      });
+      expect(selectorInstance).toBeUndefined();
+
+      adaptedGetCachedFullName(commonState, { personId: 1 });
+      selectorInstance = dependency.getMatchingSelector(commonState, {
+        personId: 1,
+      });
+      expect(selectorInstance).toBeInstanceOf(Function);
+
+      dependency.removeMatchingSelector(commonState, {
+        personId: 1,
+      });
+      selectorInstance = dependency.getMatchingSelector(commonState, {
+        personId: 1,
+      });
+      expect(selectorInstance).toBeUndefined();
+    });
   });
 });

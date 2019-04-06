@@ -1,3 +1,4 @@
+import { createSelector } from 'reselect';
 import createCachedSelector from 're-reselect';
 import SelectorMonad from '../SelectorMonad';
 import createBoundSelector from '../createBoundSelector';
@@ -11,12 +12,10 @@ describe('SelectorMonad', () => {
   const getMessage = (state: State, props: { id: number }) =>
     state.messages[props.id];
 
-  const getFullName = createCachedSelector(
+  const getFullName = createSelector(
     [getPerson],
     ({ firstName, secondName }) => `${firstName} ${secondName}`,
-  )((state, props) => props.id, {
-    cacheObject: new CounterObjectCache(),
-  });
+  );
 
   test('should implement simple selector chain', () => {
     const getPersonByMessageId = SelectorMonad.of(getMessage)
@@ -113,36 +112,44 @@ describe('SelectorMonad', () => {
     expect(firstDependencies!.length).toBe(secondDependencies!.length);
   });
 
-  test('should remove references for unused selectors after switching dependencies', () => {
-    jest.useFakeTimers();
+  describe('integration with re-reselect and CounterObjectCache', () => {
+    const getCachedFullName = createCachedSelector(
+      [getPerson],
+      ({ firstName, secondName }) => `${firstName} ${secondName}`,
+    )((state, props) => props.id, {
+      cacheObject: new CounterObjectCache(),
+    });
 
-    const getUseFullName = (state: {}, props: { useFullName: boolean }) =>
-      props.useFullName;
+    test('should remove references for unused selectors after switching dependencies', () => {
+      jest.useFakeTimers();
 
-    const getFullNameByProp = SelectorMonad.of(getUseFullName)
-      .chain(useFullName => (useFullName ? getFullName : () => undefined))
-      .buildSelector();
+      const getUseFullName = (state: {}, props: { useFullName: boolean }) =>
+        props.useFullName;
 
-    const initialProps = { id: 1, useFullName: true };
-    getFullNameByProp(commonState, initialProps);
-    CounterObjectCache.addRefRecursively(getFullNameByProp)(
-      commonState,
-      initialProps,
-    );
+      const getFullNameByProp = SelectorMonad.of(getUseFullName)
+        .chain(useFullName =>
+          useFullName ? getCachedFullName : () => undefined,
+        )
+        .buildSelector();
 
-    const nextProps = { id: 1, useFullName: false };
-    getFullNameByProp(commonState, nextProps);
-    CounterObjectCache.removeRefRecursively(getFullNameByProp)(
-      commonState,
-      nextProps,
-    );
+      const initialProps = { id: 1, useFullName: true };
+      getFullNameByProp(commonState, initialProps);
 
-    jest.runAllTimers();
+      CounterObjectCache.addRefRecursively(getFullNameByProp)(
+        commonState,
+        initialProps,
+      );
 
-    expect(
-      getFullName.getMatchingSelector(commonState, { id: 1 }),
-    ).toBeUndefined();
+      const nextProps = { id: 1, useFullName: false };
+      getFullNameByProp(commonState, nextProps);
 
-    jest.useRealTimers();
+      jest.runAllTimers();
+
+      expect(
+        getCachedFullName.getMatchingSelector(commonState, { id: 1 }),
+      ).toBeUndefined();
+
+      jest.useRealTimers();
+    });
   });
 });

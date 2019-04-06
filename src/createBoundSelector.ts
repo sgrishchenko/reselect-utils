@@ -6,6 +6,23 @@ export type Diff<T, U> = Pick<T, Exclude<keyof T, keyof U>>;
 const generateMappingName = (mapping: {}) =>
   `${Object.keys(mapping).join()} -> ${Object.values(mapping).join()}`;
 
+const innerCreateBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
+  baseSelector: ParametricSelector<S, P1, R>,
+  binding: P2,
+) => {
+  const boundSelector = (state: S, props: any) =>
+    baseSelector(state, {
+      ...(props || {}),
+      ...(binding || {}),
+    });
+
+  type BoundSelector = Exclude<keyof P1, keyof P2> extends never
+    ? Selector<S, R>
+    : ParametricSelector<S, Diff<P1, P2>, R>;
+
+  return boundSelector as BoundSelector;
+};
+
 export default <S, P1, P2 extends Partial<P1>, R>(
   baseSelector:
     | ParametricSelector<S, P1, R>
@@ -17,11 +34,7 @@ export default <S, P1, P2 extends Partial<P1>, R>(
       ? baseSelector.selectorName
       : baseSelector.name;
 
-  const boundSelector = (state: S, props: any) =>
-    baseSelector(state, {
-      ...(props || {}),
-      ...(binding || {}),
-    });
+  const boundSelector = innerCreateBoundSelector(baseSelector, binding);
 
   const bindingStructure = Object.keys(binding).reduce(
     (structure, key) => ({
@@ -41,24 +54,18 @@ export default <S, P1, P2 extends Partial<P1>, R>(
       baseSelector,
     );
 
-    decoratedBaseSelector.getMatchingSelector = (state: S, props: any) =>
-      baseSelector.getMatchingSelector(state, {
-        ...(props || {}),
-        ...(binding || {}),
-      });
+    decoratedBaseSelector.getMatchingSelector = innerCreateBoundSelector(
+      baseSelector.getMatchingSelector,
+      binding,
+    );
 
-    decoratedBaseSelector.removeMatchingSelector = (state: S, props: any) =>
-      baseSelector.removeMatchingSelector(state, {
-        ...(props || {}),
-        ...(binding || {}),
-      });
+    decoratedBaseSelector.removeMatchingSelector = innerCreateBoundSelector(
+      baseSelector.removeMatchingSelector,
+      binding,
+    );
 
     boundSelector.dependencies = [decoratedBaseSelector];
   }
 
-  type BoundSelector = Exclude<keyof P1, keyof P2> extends never
-    ? Selector<S, R>
-    : ParametricSelector<S, Diff<P1, P2>, R>;
-
-  return boundSelector as BoundSelector;
+  return boundSelector;
 };

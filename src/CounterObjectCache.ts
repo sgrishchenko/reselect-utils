@@ -114,14 +114,12 @@ export default class CounterObjectCache implements ICacheObject {
   public removeRef(selector: TaggedSelector) {
     const cacheItem = this.cache[selector.key];
 
-    if (cacheItem) {
+    if (cacheItem && cacheItem.refCount !== 0) {
       cacheItem.refCount -= 1;
       if (cacheItem.refCount === 0) {
         cacheItem.removeTimeoutHandle = setTimeout(() => {
           this.remove(selector.key);
         }, this.options.removeDelay);
-      } else if (cacheItem.refCount < 0) {
-        console.warn("Ref count for selector can't be negative");
       }
     }
   }

@@ -21,9 +21,12 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
 
-    '@typescript-eslint/tslint/config': ['error', {
-      'lintFile': './tslint.json',
-    }],
+    '@typescript-eslint/tslint/config': [
+      'error',
+      {
+        lintFile: './tslint.json',
+      },
+    ],
 
     'no-dupe-class-members': 'off', // overloads is dupe members
     'react/jsx-filename-extension': ['error', { extensions: ['.tsx'] }],

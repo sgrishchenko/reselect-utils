@@ -44,6 +44,7 @@
     "@typescript-eslint/eslint-plugin-tslint": "^1.6.0",
     "@typescript-eslint/parser": "^1.6.0",
     "babel-loader": "^8.0.5",
+    "coveralls": "^3.0.3",
     "cytoscape": "^3.5.2",
     "cytoscape-dagre": "^2.2.2",
     "enzyme": "^3.9.0",

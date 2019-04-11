@@ -1,7 +1,8 @@
 # Reselect-Utils
 
-[![npm version](https://img.shields.io/npm/v/reselect-utils.svg?style=flat-square)](https://www.npmjs.com/package/reselect-utils)
 [![build status](https://img.shields.io/travis/com/sgrishchenko/reselect-utils/master.svg?style=flat-square)](https://travis-ci.com/sgrishchenko/reselect-utils)
+[![coverage status](https://img.shields.io/coveralls/sgrishchenko/reselect-utils/master.svg?style=flat-square)](https://coveralls.io/github/sgrishchenko/reselect-utils?branch=master)
+[![npm version](https://img.shields.io/npm/v/reselect-utils.svg?style=flat-square)](https://www.npmjs.com/package/reselect-utils)
 
 ## Install
 

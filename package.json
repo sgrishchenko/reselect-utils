@@ -1,6 +1,6 @@
 {
   "name": "reselect-utils",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A collection of helpers and utilities for selectors",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -10,12 +10,9 @@
   "author": "Sergei Grishchenko",
   "license": "MIT",
   "files": [
-    "dist",
-    "es",
-    "lib",
-    "!__data__",
-    "!__tests__",
-    "!__stories__"
+    "dist/",
+    "es/",
+    "lib/"
   ],
   "sideEffects": false,
   "scripts": {

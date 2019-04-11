@@ -25,7 +25,8 @@
     "lint": "eslint --ext .js,.ts,.tsx .",
     "format": "prettier --write **/*.{js,ts,tsx,json,md}",
     "compile": "tsc --noEmit",
-    "storybook": "start-storybook -p 9001"
+    "storybook": "start-storybook -p 9001",
+    "postversion": "git push --tags"
   },
   "husky": {
     "hooks": {

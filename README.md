@@ -1,5 +1,7 @@
 # Reselect-Utils
 
+![npm version](https://img.shields.io/npm/v/normalizr.svg?style=flat-square)
+
 ## Install
 
 Install from the NPM repository using yarn or npm:

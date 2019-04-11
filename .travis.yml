@@ -13,3 +13,9 @@ after_success:
 cache:
   directories:
   - "node_modules"
+deploy:
+  provider: npm
+  email: "s.i.grishchenko@gmail.com"
+  api_key: NPM_AUTH_TOKEN
+  on:
+    tags: true

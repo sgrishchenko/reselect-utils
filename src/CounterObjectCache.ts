@@ -66,7 +66,7 @@ export default class CounterObjectCache implements ICacheObject {
 
   private options: CounterObjectCacheOptions;
 
-  constructor(options: CounterObjectCacheOptions = {}) {
+  public constructor(options: CounterObjectCacheOptions = {}) {
     this.options = {
       ...defaultOptions,
       ...options,

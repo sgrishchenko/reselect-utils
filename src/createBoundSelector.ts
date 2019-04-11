@@ -1,5 +1,5 @@
-import { ParametricSelector, Selector } from './types';
 import { OutputParametricCachedSelector } from 're-reselect';
+import { ParametricSelector, Selector } from './types';
 
 export type Diff<T, U> = Pick<T, Exclude<keyof T, keyof U>>;
 

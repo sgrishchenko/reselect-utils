@@ -1,5 +1,5 @@
-import { ParametricSelector } from './types';
 import { OutputParametricCachedSelector } from 're-reselect';
+import { ParametricSelector } from './types';
 
 const generateMappingName = (mapping: {}) =>
   `${Object.keys(mapping).join()} -> ${Object.values(mapping).join()}`;

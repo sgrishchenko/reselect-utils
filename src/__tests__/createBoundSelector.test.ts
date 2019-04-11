@@ -1,7 +1,7 @@
 import { createStructuredSelector } from 'reselect';
+import createCachedSelector from 're-reselect';
 import { Message, Person, commonState, State } from '../__data__/state';
 import createBoundSelector from '../createBoundSelector';
-import createCachedSelector from 're-reselect';
 
 describe('createAdaptedSelector', () => {
   const getPerson = (state: State, props: { personId: number }) =>

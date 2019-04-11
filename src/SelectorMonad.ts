@@ -1,6 +1,6 @@
+import { OutputParametricCachedSelector } from 're-reselect';
 import { Selector, ParametricSelector } from './types';
 import CounterObjectCache from './CounterObjectCache';
-import { OutputParametricCachedSelector } from 're-reselect';
 
 const sumString = (stringSource: object): number =>
   Array.from(stringSource.toString()).reduce(
@@ -23,13 +23,13 @@ const tryExtractCachedSelector = (
   | undefined => {
   if ('getMatchingSelector' in selector) {
     return selector;
-  } else if (selector.dependencies && selector.dependencies.length === 1) {
+  }
+  if (selector.dependencies && selector.dependencies.length === 1) {
     // adaptedSelector, boundSelector and pathSelector cases
     const [dependency] = selector.dependencies;
     return tryExtractCachedSelector(dependency);
-  } else {
-    return undefined;
   }
+  return undefined;
 };
 
 export type SelectorChain<R1, S, P, R2> =
@@ -180,6 +180,19 @@ export default class SelectorMonad<
     );
   }
 
+  public map<R2>(fn: (result: R1) => R2) {
+    return this.chain(result => {
+      const output = fn(result);
+      return () => output;
+    });
+  }
+
+  public buildSelector() {
+    return Object.assign(this.selector, {
+      chainHierarchy: this.prevChain,
+    });
+  }
+
   private resolveCacheContainer(
     state: S1,
     props: P1,
@@ -200,18 +213,5 @@ export default class SelectorMonad<
       }
     }
     return this.cacheContainer;
-  }
-
-  public map<R2>(fn: (result: R1) => R2) {
-    return this.chain(result => {
-      const output = fn(result);
-      return () => output;
-    });
-  }
-
-  public buildSelector() {
-    return Object.assign(this.selector, {
-      chainHierarchy: this.prevChain,
-    });
   }
 }

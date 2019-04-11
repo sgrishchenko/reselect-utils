@@ -4,7 +4,7 @@ import SelectorMonad from '../SelectorMonad';
 import createBoundSelector from '../createBoundSelector';
 import createSequenceSelector from '../createSequenceSelector';
 import CounterObjectCache from '../CounterObjectCache';
-import { State, commonState, Message } from '../__data__/state';
+import { State, commonState } from '../__data__/state';
 import createPathSelector from '../createPathSelector';
 
 describe('SelectorMonad', () => {
@@ -73,13 +73,13 @@ describe('SelectorMonad', () => {
   test('should build selector with chainHierarchy property for unit test', () => {
     type FirstState = { firstValue: string };
     const firstSelector = (state: FirstState) => state.firstValue;
-    const firstChain = (message: Message) => firstSelector;
+    const firstChain = () => firstSelector;
 
     type SecondState = { secondValue: number };
     type SecondProps = { prop: boolean };
-    const secondSelector = (state: SecondState, prop: SecondProps) =>
-      state.secondValue;
-    const secondChain = (firstValue: string) => secondSelector;
+    const secondSelector = (state: SecondState, props: SecondProps) =>
+      `${state.secondValue} ${props.prop}`;
+    const secondChain = () => secondSelector;
 
     const getSomeByMessageId = SelectorMonad.of(getMessage)
       .chain(firstChain)
@@ -90,13 +90,15 @@ describe('SelectorMonad', () => {
 
     const lastChain = getSomeByMessageId.chainHierarchy!;
     expect(lastChain('firstValue')).toBe(secondSelector);
-    expect(lastChain('firstValue')({ secondValue: 2 }, { prop: true })).toBe(2);
+    expect(lastChain('firstValue')({ secondValue: 2 }, { prop: true })).toBe(
+      '2 true',
+    );
 
     const lastButOneChain = getSomeByMessageId.chainHierarchy!.parentChain!;
-    expect(lastButOneChain({} as Message)).toBe(firstSelector);
-    expect(lastButOneChain({} as Message)({ firstValue: 'firstValue' })).toBe(
-      'firstValue',
-    );
+    expect(lastButOneChain(expect.anything())).toBe(firstSelector);
+    expect(
+      lastButOneChain(expect.anything())({ firstValue: 'firstValue' }),
+    ).toBe('firstValue');
   });
 
   test('should not mutate dependencies of chaining selectors', () => {

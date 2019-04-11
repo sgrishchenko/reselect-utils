@@ -39,9 +39,9 @@ describe('reselectConnect', () => {
       OutputParametricCachedSelector<State, Props, any, any, any>
     >,
   ) => {
-    const TestComponent: FunctionComponent<Props> = jest.fn(
-      () => 'TestComponent Content',
-    );
+    const TestComponent: FunctionComponent<Props> = jest.fn(() => (
+      <>TestComponent Content</>
+    ));
     TestComponent.displayName = 'TestComponent';
 
     const ConnectedTestComponent = connect(

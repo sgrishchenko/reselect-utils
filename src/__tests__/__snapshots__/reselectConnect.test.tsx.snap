@@ -12,10 +12,10 @@ exports[`reselectConnect should proxy all props and renders wrapped component 1`
     }
   }
 >
-  <Connect(InnerConnect(ReselectConnect(TestComponent)))
+  <ConnectFunction
     prop="prop1"
   >
-    <InnerConnect(ReselectConnect(TestComponent))
+    <ConnectFunction
       prop="prop1"
       propFromSelector="prop2"
     >
@@ -30,7 +30,7 @@ exports[`reselectConnect should proxy all props and renders wrapped component 1`
           TestComponent Content
         </TestComponent>
       </ReselectConnect(TestComponent)>
-    </InnerConnect(ReselectConnect(TestComponent))>
-  </Connect(InnerConnect(ReselectConnect(TestComponent)))>
+    </ConnectFunction>
+  </ConnectFunction>
 </Provider>
 `;

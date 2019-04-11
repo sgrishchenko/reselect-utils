@@ -1,6 +1,6 @@
 # Reselect-Utils
 
-![npm version](https://img.shields.io/npm/v/normalizr.svg?style=flat-square)
+[![npm version](https://img.shields.io/npm/v/reselect-utils.svg?style=flat-square)](https://www.npmjs.com/package/reselect-utils)
 
 ## Install
 

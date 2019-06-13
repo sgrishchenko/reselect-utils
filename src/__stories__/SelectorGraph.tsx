@@ -19,6 +19,10 @@ export default class SelectorGraph extends React.Component<SelectorGraphProps> {
     style: {},
   };
 
+  private cy!: CytoscapeCore;
+
+  private cyElement!: HTMLElement | null;
+
   public componentDidMount() {
     const { nodes, edges, onNodeClick } = this.props;
 
@@ -46,10 +50,6 @@ export default class SelectorGraph extends React.Component<SelectorGraphProps> {
   private setCyElement = (element: HTMLElement | null) => {
     this.cyElement = element;
   };
-
-  private cy!: CytoscapeCore;
-
-  private cyElement!: HTMLElement | null;
 
   public render() {
     const { style } = this.props;

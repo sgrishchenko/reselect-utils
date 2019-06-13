@@ -24,11 +24,11 @@ export type ParametricSelectorBuilder<S, P, R, D> = {
 };
 
 export type ObjectSelectorWrapper<S, R, D> = {
-  [K in keyof R]-?: PathSelectorType<S, R[K], D>
+  [K in keyof R]-?: PathSelectorType<S, R[K], D>;
 };
 
 export type ObjectParametricSelectorWrapper<S, P, R, D> = {
-  [K in keyof R]-?: PathParametricSelectorType<S, P, R[K], D>
+  [K in keyof R]-?: PathParametricSelectorType<S, P, R[K], D>;
 };
 
 export type ArraySelectorWrapper<S, R, D> = {

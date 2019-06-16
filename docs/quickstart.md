@@ -64,7 +64,7 @@ import { createPathSelector } from 'reselect-utils';
 
 const getPersonInfo = createSelector(
   createPathSelector(getPerson).address.street('-'),
-  createPathSelector(getPerson).seme.very.deep.field(123),
+  createPathSelector(getPerson).some.very.deep.field(123),
   (street, field) => ({ street, field }),
 );
 ```

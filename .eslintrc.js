@@ -1,5 +1,7 @@
 module.exports = {
   env: {
+    browser: true,
+    node: true,
     jest: true,
   },
   parser: '@typescript-eslint/parser',
@@ -29,7 +31,16 @@ module.exports = {
     ],
 
     'no-dupe-class-members': 'off', // overloads is dupe members
+    'react/prop-types': 'off', // typescript fully cover typing
     'react/jsx-filename-extension': ['error', { extensions: ['.tsx'] }],
+    'jsx-a11y/label-has-for': 'off', // deprecated
+    'jsx-a11y/label-has-associated-control': [
+      'error',
+      {
+        assert: 'either',
+        depth: 25,
+      },
+    ],
     'import/no-extraneous-dependencies': [
       'error',
       {

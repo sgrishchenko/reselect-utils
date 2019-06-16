@@ -37,13 +37,15 @@ Such projects as [Reselect](https://github.com/reduxjs/reselect) and [Re-reselec
   - [Selector Monad](/docs/quickstart.md#selector-monad)
   - [Counter Cache](/docs/quickstart.md#counter-cache)
 - [API](/docs/api.md)
-  - [createPathSelector](/docs/api.md#createPathSelector)
-  - [createPropSelector](/docs/api.md#createPropSelector)
-  - [createAdaptedSelector](/docs/api.md#createAdaptedSelector)
-  - [SelectorMonad](/docs/api.md#SelectorMonad)
-  - [CounterObjectCache](/docs/api.md#CounterObjectCache)
-  - [reselectConnect](/docs/api.md#reselectConnect)
-  - [once](/docs/api.md#once)
+  - [createPathSelector](/docs/api/createPathSelector.md)
+  - [createPropSelector](/docs/api/createPropSelector.md)
+  - [createAdaptedSelector](/docs/api/createAdaptedSelector.md)
+  - [createBoundSelector](/docs/api/createBoundSelector.md)
+  - [createSequenceSelector](/docs/api/createSequenceSelector.md)
+  - [SelectorMonad](/docs/api/SelectorMonad.md)
+  - [CounterObjectCache](/docs/api/CounterObjectCache.md)
+  - [reselectConnect](/docs/api/reselectConnect.md)
+  - [once](/docs/api/once.md)
 
 # Credits
 

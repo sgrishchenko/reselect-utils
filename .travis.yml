@@ -5,6 +5,7 @@ before_install:
 - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.15.2
 - export PATH="$HOME/.yarn/bin:$PATH"
 script:
+- yarn --cwd examples/redux-todos
 - yarn lint
 - yarn build
 - yarn test

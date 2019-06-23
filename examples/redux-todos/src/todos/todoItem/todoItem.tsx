@@ -1,12 +1,13 @@
 import React, { ChangeEvent, FunctionComponent, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { TodoItemOwnProps, TodoItemProps } from './todoItem.interface';
-import { TodosStateSegment } from '../todos.interface';
+import { TodoItemProps } from './todoItem.interface';
 import { TodosAction } from '../todos.action';
+import todoItemPropsSelector from './todoItem.selector';
 
 const TodoItem: FunctionComponent<TodoItemProps> = ({
   todoId,
-  todo,
+  todoName,
+  todoCompleted,
   removeTodo,
   completeTodo,
 }) => {
@@ -26,11 +27,11 @@ const TodoItem: FunctionComponent<TodoItemProps> = ({
       <div>
         <input
           type="checkbox"
-          checked={todo.completed}
+          checked={todoCompleted}
           onChange={onCheckboxChange}
         />
       </div>
-      <div style={{ flexGrow: 1 }}>{todo.name}</div>
+      <div style={{ flexGrow: 1 }}>{todoName}</div>
       <button type="button" onClick={onRemoveClick}>
         <span role="img" aria-label="Remove">
           ❌
@@ -41,9 +42,7 @@ const TodoItem: FunctionComponent<TodoItemProps> = ({
 };
 
 export default connect(
-  (state: TodosStateSegment, props: TodoItemOwnProps) => ({
-    todo: state.todos[props.todoId],
-  }),
+  todoItemPropsSelector,
   {
     removeTodo: TodosAction.remove,
     completeTodo: TodosAction.complete,

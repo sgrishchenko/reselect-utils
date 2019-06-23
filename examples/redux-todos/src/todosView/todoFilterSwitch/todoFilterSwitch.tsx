@@ -1,8 +1,9 @@
 import React, { ChangeEvent, FunctionComponent, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { TodoFilterSwitchProps } from './todoFilterSwitch.interface';
-import { TodoFilter, TodosViewStateSegment } from '../todosView.interface';
+import { TodoFilter } from '../todosView.interface';
 import { TodosViewAction } from '../todosView.action';
+import todoFilterSwitchPropsSelector from './todoFilterSwitch.selector';
 
 const TodoFilterSwitch: FunctionComponent<TodoFilterSwitchProps> = ({
   todoFilter,
@@ -49,9 +50,7 @@ const TodoFilterSwitch: FunctionComponent<TodoFilterSwitchProps> = ({
 };
 
 export default connect(
-  (state: TodosViewStateSegment) => ({
-    todoFilter: state.todosView.filter,
-  }),
+  todoFilterSwitchPropsSelector,
   {
     setTodoFilter: TodosViewAction.setFilter,
   },

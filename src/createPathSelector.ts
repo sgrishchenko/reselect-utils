@@ -3,7 +3,7 @@ import { Selector, ParametricSelector } from './types';
 export type Defined<T> = Exclude<T, undefined>;
 
 export type SelectorBuilder<S, R, D> = {
-  (): Selector<S, Defined<R> | undefined, D>;
+  (noDefaultValue?: undefined): Selector<S, Defined<R> | undefined, D>;
 
   (defaultValue: NonNullable<R>): Selector<S, NonNullable<R>, D>;
 
@@ -11,7 +11,12 @@ export type SelectorBuilder<S, R, D> = {
 };
 
 export type ParametricSelectorBuilder<S, P, R, D> = {
-  (): ParametricSelector<S, P, Defined<R> | undefined, D>;
+  (noDefaultValue?: undefined): ParametricSelector<
+    S,
+    P,
+    Defined<R> | undefined,
+    D
+  >;
 
   (defaultValue: NonNullable<R>): ParametricSelector<S, P, NonNullable<R>, D>;
 

@@ -1,12 +1,12 @@
 import { ActionCreator } from 'typescript-fsa';
-import { Todo } from '../todos.interface';
 
 export type TodoItemOwnProps = {
   todoId: string;
 };
 
 export type TodoItemStateProps = {
-  todo: Todo;
+  todoName: string;
+  todoCompleted: boolean;
 };
 
 export type TodoItemDispatchProps = {

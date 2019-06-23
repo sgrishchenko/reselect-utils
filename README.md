@@ -31,7 +31,6 @@ Such projects as [Reselect](https://github.com/reduxjs/reselect) and [Re-reselec
 ## Documentation
 
 - [Introduction](/docs/introduction.md)
-  - [Build Files](/docs/introduction.md#build-files)
 - [Quick Start](/docs/quickstart.md)
   - [Path Selector](/docs/quickstart.md#path-selector)
   - [Selector Monad](/docs/quickstart.md#selector-monad)

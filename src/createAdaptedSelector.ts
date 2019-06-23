@@ -52,6 +52,11 @@ export default <S, P1, P2, R>(
       mapping,
     );
 
+    decoratedBaseSelector.keySelector = innerCreateAdaptedSelector(
+      baseSelector.keySelector,
+      mapping,
+    );
+
     adaptedSelector.dependencies = [decoratedBaseSelector];
   }
 

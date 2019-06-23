@@ -2,6 +2,7 @@ import { createStructuredSelector } from 'reselect';
 import createCachedSelector from 're-reselect';
 import { Message, Person, commonState, State } from '../__data__/state';
 import createAdaptedSelector from '../createAdaptedSelector';
+import CounterObjectCache from '../CounterObjectCache';
 
 describe('createAdaptedSelector', () => {
   const getPerson = (state: State, props: { id: number }) =>
@@ -85,6 +86,48 @@ describe('createAdaptedSelector', () => {
         personId: 1,
       });
       expect(selectorInstance).toBeUndefined();
+    });
+  });
+
+  describe('integration with CounterObjectCache', () => {
+    jest.useFakeTimers();
+
+    afterAll(() => {
+      jest.useRealTimers();
+    });
+
+    const getCachedFullName = createCachedSelector(
+      [getPerson],
+      ({ firstName, secondName }) => `${firstName} ${secondName}`,
+    )((state, props) => props.id, {
+      cacheObject: new CounterObjectCache(),
+    });
+
+    test('should clear cache of dependency after removing ref', () => {
+      const adaptedGetCachedFullName = createAdaptedSelector(
+        getCachedFullName,
+        (props: { personId: number }) => ({
+          id: props.personId,
+        }),
+      );
+
+      adaptedGetCachedFullName(commonState, { personId: 1 });
+      CounterObjectCache.addRefRecursively(adaptedGetCachedFullName)(
+        commonState,
+        { personId: 1 },
+      );
+      expect(
+        getCachedFullName.getMatchingSelector(commonState, { id: 1 }),
+      ).toBeDefined();
+
+      CounterObjectCache.removeRefRecursively(adaptedGetCachedFullName)(
+        commonState,
+        { personId: 1 },
+      );
+      jest.runAllTimers();
+      expect(
+        getCachedFullName.getMatchingSelector(commonState, { id: 1 }),
+      ).toBeUndefined();
     });
   });
 });

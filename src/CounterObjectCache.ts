@@ -3,12 +3,8 @@ import { Selector, ParametricSelector } from './types';
 
 type Key = string | number;
 
-type TaggedSelector = ParametricSelector<any, any, any> & {
-  key: Key;
-};
-
 type CacheItem = {
-  selector: TaggedSelector;
+  selector: ParametricSelector<any, any, any>;
   refCount: number;
   removeTimeoutHandle?: number;
 };
@@ -19,7 +15,7 @@ type CounterObjectCacheOptions = {
   removeDelay?: number;
 };
 
-const defaultOptions: CounterObjectCacheOptions = {
+const defaultOptions: Required<CounterObjectCacheOptions> = {
   removeDelay: 0,
 };
 
@@ -41,22 +37,22 @@ export default class CounterObjectCache implements ICacheObject {
     return <S, P, R>(
       selector: Selector<S, R> | ParametricSelector<S, P, R>,
     ) => (state: S, props: P) => {
-      if (CounterObjectCache.isReReselectSelector(selector)) {
-        const selectorInstance = selector.getMatchingSelector(state, props);
-        if (selector.cache instanceof CounterObjectCache && selectorInstance) {
-          selector.cache[handler](selectorInstance as any);
+      if (CounterObjectCache.isCachedSelector(selector)) {
+        const cacheKey = selector.keySelector(state, props);
+        if (selector.cache instanceof CounterObjectCache) {
+          selector.cache[handler](cacheKey);
         }
       }
 
-      if (Array.isArray((selector as any).dependencies)) {
-        (selector as any).dependencies.forEach((dep: any) => {
+      if (Array.isArray(selector.dependencies)) {
+        selector.dependencies.forEach(dep => {
           CounterObjectCache[recursivelyHandler](dep)(state, props);
         });
       }
     };
   }
 
-  private static isReReselectSelector<S, P, R>(
+  private static isCachedSelector<S, P, R>(
     selector: any,
   ): selector is ReturnType<OutputParametricCachedSelector<S, P, R, any, any>> {
     return typeof selector.getMatchingSelector === 'function';
@@ -75,7 +71,7 @@ export default class CounterObjectCache implements ICacheObject {
 
   public set(key: Key, selector: ParametricSelector<any, any, any>) {
     this.cache[key] = {
-      selector: Object.assign(selector, { key }),
+      selector,
       refCount: 0,
     };
   }
@@ -102,8 +98,8 @@ export default class CounterObjectCache implements ICacheObject {
     return typeof key === 'string' || typeof key === 'number';
   }
 
-  public addRef(selector: TaggedSelector) {
-    const cacheItem = this.cache[selector.key];
+  public addRef(key: Key) {
+    const cacheItem = this.cache[key];
 
     if (cacheItem) {
       cacheItem.refCount += 1;
@@ -111,14 +107,14 @@ export default class CounterObjectCache implements ICacheObject {
     }
   }
 
-  public removeRef(selector: TaggedSelector) {
-    const cacheItem = this.cache[selector.key];
+  public removeRef(key: Key) {
+    const cacheItem = this.cache[key];
 
     if (cacheItem && cacheItem.refCount !== 0) {
       cacheItem.refCount -= 1;
       if (cacheItem.refCount === 0) {
         cacheItem.removeTimeoutHandle = setTimeout(() => {
-          this.remove(selector.key);
+          this.remove(key);
         }, this.options.removeDelay);
       }
     }

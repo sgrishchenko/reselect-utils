@@ -64,6 +64,11 @@ export default <S, P1, P2 extends Partial<P1>, R>(
       binding,
     );
 
+    decoratedBaseSelector.keySelector = innerCreateBoundSelector(
+      baseSelector.keySelector,
+      binding,
+    );
+
     boundSelector.dependencies = [decoratedBaseSelector];
   }
 

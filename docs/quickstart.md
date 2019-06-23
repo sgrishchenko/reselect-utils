@@ -130,11 +130,11 @@ const getPersonByMessageId = SelectorMonad.of(getMessage)
   .buildSelector();
 ```
 
-`SelectorMonad` allows you to create dynamic selectors that depend on the current state. Moreover, the callback that is passed to the `chain` method is cached by input parameters. `createAdaptedSelector` binds the selector to specific parameter values and turns a parametric selector into an non parametric. And at the end you must call the `buildSelector` method to get the normal selector. It’s like a chain of [Promises](https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Promise). [SelectorMonad](/docs/quickstart.md#selector-monad) and [createAdaptedSelector](/docs/api/createAdaptedSelector.md) are described in detail in their [API](/docs/api.md).
+`SelectorMonad` allows you to create dynamic selectors that depend on the current state. Moreover, the callback that is passed to the `chain` method is cached by input parameters. `createAdaptedSelector` binds the selector to specific parameter values and turns a parametric selector into an non parametric. And at the end you must call the `buildSelector` method to get the normal selector. It’s like a chain of [Promises](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise). [SelectorMonad](/docs/quickstart.md#selector-monad) and [createAdaptedSelector](/docs/api/createAdaptedSelector.md) are described in detail in their [API](/docs/api.md).
 
 ## Counter Cache
 
-[Re-reselect](https://github.com/toomuchdesign/re-reselect) library has a good approach to solving the problem of caching parametric selectors. But solving a caching problem you gain a memory management problem. [Re-reselect](https://github.com/toomuchdesign/re-reselect) offers several strategies for [limiting memory](https://github.com/toomuchdesign/re-reselect/tree/master/src/cache#readme), but they are all designed for a fixed cache size. How about trying to allocate and clear memory automatically? `CounterObjectCache` is trying to solve this problem. To use this strategy, you need to specify the `CounterObjectCache` instance as `createCachaedSelector` parameter:
+[Re-reselect](https://github.com/toomuchdesign/re-reselect) library has a good approach to solving the problem of caching parametric selectors. But solving a caching problem you gain a memory management problem. [Re-reselect](https://github.com/toomuchdesign/re-reselect) offers several strategies for [limiting memory](https://github.com/toomuchdesign/re-reselect/tree/master/src/cache#readme), but they are all designed for a fixed cache size. How about trying to allocate and clear memory automatically? `CounterObjectCache` is trying to solve this problem. To use this strategy, you need to specify the `CounterObjectCache` instance as `createCachedSelector` parameter:
 
 ```js
 import createCachedSelector from 're-reselect';
@@ -152,7 +152,7 @@ const getSomething = createCachedSelector(
 
 Now, the allocation of memory for the cache can be tied to the life cycle of the [React](https://reactjs.org/) component:
 
-```js
+```jsx
 import React from 'react';
 import { connect } from 'react-redux';
 import { reselectConnect } from 'reselect-utils';
@@ -169,6 +169,8 @@ Now the instance of `getSomething` selector will be created when `MyComponent` i
 But what if you want to use the selector not only in the component but also somewhere else, for example, in [Redux](https://redux.js.org/) middleware? Usually, the logic in the middleware does not have a lifetime and your selector will be constantly called with different properties. In this case, it is difficult to choose the optimal caching strategy. The easiest way is to simply abandon caching parameterized selectors in the middleware. In order to clear the memory in time when using the caching selector, you can use `once` (otherwise, the memory used will simply increase when you call the selector with different parameters):
 
 ```js
+import { once } from 'reselect-utils';
+
 const { something } = once(getSomething)(state, props);
 ```
 

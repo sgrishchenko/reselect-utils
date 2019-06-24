@@ -27,6 +27,9 @@ describe('CounterObjectCache', () => {
       selector(state, { prop: 'prop2' });
 
       expect(selector.resultFunc).toHaveBeenCalledTimes(2);
+
+      // to suppress lifecycle warning
+      CounterObjectCache.addRefRecursively(selector)(state, { prop: 'prop1' });
     });
 
     test('should remove cache item after removeRefRecursively call', () => {
@@ -106,6 +109,9 @@ describe('CounterObjectCache', () => {
       const state = { value: 'value' };
 
       selector(state, { prop: 'prop1' });
+      // to suppress lifecycle warning
+      CounterObjectCache.addRefRecursively(selector)(state, { prop: 'prop1' });
+
       expect(
         selector.getMatchingSelector(state, { prop: 'prop1' }),
       ).toBeDefined();
@@ -116,6 +122,20 @@ describe('CounterObjectCache', () => {
       expect(
         selector.getMatchingSelector(state, { prop: 'prop1' }),
       ).toBeUndefined();
+    });
+
+    test('should print warning to console if after selector call reference no added', () => {
+      const consoleSpy = jest.spyOn(console, 'warn');
+
+      const selector = makeSelector();
+      const state = { value: 'value' };
+
+      selector(state, { prop: 'prop1' });
+      jest.runAllTimers();
+
+      expect(consoleSpy).toHaveBeenCalledTimes(1);
+
+      consoleSpy.mockRestore();
     });
   });
 

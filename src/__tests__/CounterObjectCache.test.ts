@@ -127,7 +127,7 @@ describe('CounterObjectCache', () => {
     test('should print warning to console if after selector call reference no added', () => {
       const consoleSpy = jest
         .spyOn(console, 'warn')
-        .mockImplementation(() => {});
+        .mockImplementation(() => undefined);
 
       const selector = makeSelector();
       const state = { value: 'value' };

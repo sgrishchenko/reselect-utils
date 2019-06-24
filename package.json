@@ -17,10 +17,10 @@
   "sideEffects": false,
   "scripts": {
     "clean": "rimraf lib es dist coverage",
-    "build:commonjs": "tsc -p tsconfig.build.json --outDir lib -d",
+    "build:cjs": "tsc -p tsconfig.build.json --outDir lib -d",
+    "build:es": "tsc -p tsconfig.build.json --outDir es -m es2015",
     "build:umd": "rollup -c rollup.config.ts",
-    "build:es": "tsc -m es2015 -p tsconfig.build.json --outDir es",
-    "build": "yarn clean && yarn build:commonjs && yarn build:umd && yarn build:es",
+    "build": "yarn clean && yarn build:cjs && yarn build:es && yarn build:umd",
     "test": "jest",
     "lint": "eslint --ext .js,.ts,.tsx .",
     "format": "prettier --write **/*.{js,ts,tsx,json,md}",

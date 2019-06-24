@@ -1,1 +1,7 @@
 **/node_modules
+
+lib
+es
+dist
+
+coverage

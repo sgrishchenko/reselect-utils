@@ -62,6 +62,10 @@ export default class CounterObjectCache implements ICacheObject {
 
   private options: CounterObjectCacheOptions;
 
+  private warningHandled = false;
+
+  private warningTimeoutHandle?: number;
+
   public constructor(options: CounterObjectCacheOptions = {}) {
     this.options = {
       ...defaultOptions,
@@ -77,6 +81,23 @@ export default class CounterObjectCache implements ICacheObject {
   }
 
   public get(key: Key) {
+    if (process.env.NODE_ENV !== 'production') {
+      if (!this.warningHandled) {
+        this.warningHandled = true;
+
+        const { stack } = new Error();
+        this.warningTimeoutHandle = window.setTimeout(() => {
+          /* eslint-disable-next-line no-console,@typescript-eslint/tslint/config */
+          console.warn(
+            'It seems you are using a cached selector ' +
+              'with a CounterObjectCache without controlling the life cycle. ' +
+              'Use reselectConnect and once for caching selectors.',
+            stack,
+          );
+        }, 10);
+      }
+    }
+
     const cacheItem = this.cache[key];
     if (cacheItem === undefined) {
       return undefined;
@@ -99,11 +120,17 @@ export default class CounterObjectCache implements ICacheObject {
   }
 
   public addRef(key: Key) {
+    if (process.env.NODE_ENV !== 'production') {
+      if (this.warningTimeoutHandle) {
+        window.clearTimeout(this.warningTimeoutHandle);
+      }
+    }
+
     const cacheItem = this.cache[key];
 
     if (cacheItem) {
       cacheItem.refCount += 1;
-      clearTimeout(cacheItem.removeTimeoutHandle);
+      window.clearTimeout(cacheItem.removeTimeoutHandle);
     }
   }
 
@@ -113,7 +140,7 @@ export default class CounterObjectCache implements ICacheObject {
     if (cacheItem && cacheItem.refCount !== 0) {
       cacheItem.refCount -= 1;
       if (cacheItem.refCount === 0) {
-        cacheItem.removeTimeoutHandle = setTimeout(() => {
+        cacheItem.removeTimeoutHandle = window.setTimeout(() => {
           this.remove(key);
         }, this.options.removeDelay);
       }

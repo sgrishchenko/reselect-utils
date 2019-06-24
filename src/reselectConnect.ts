@@ -3,11 +3,18 @@ import { connect } from 'react-redux';
 import CounterObjectCache from './CounterObjectCache';
 import { ParametricSelector, Selector } from './types';
 
+export type ReselectConnectedComponent<
+  C extends ComponentType<any>,
+  P
+> = C extends ComponentType<infer CP>
+  ? CP extends P
+    ? ComponentClass<JSX.LibraryManagedAttributes<C, CP>>
+    : never
+  : never;
+
 export default <S, P, R>(
   selector: Selector<S, R> | ParametricSelector<S, P, R>,
-) => <C extends ComponentType<P>>(
-  WrappedComponent: C,
-): ComponentClass<JSX.LibraryManagedAttributes<C, P>> => {
+) => <C extends ComponentType<any>>(WrappedComponent: C) => {
   const wrappedComponentName =
     WrappedComponent.displayName ||
     /* istanbul ignore next */ WrappedComponent.name ||
@@ -17,7 +24,9 @@ export default <S, P, R>(
   const removeRef = CounterObjectCache.removeRefRecursively(selector);
   const state = Symbol('state');
 
-  class Wrapper extends Component<P & { [state]: S }> {
+  type WrapperProps = P & { [state]: S };
+
+  class Wrapper extends Component<WrapperProps> {
     public static displayName = `ReselectConnect(${wrappedComponentName})`;
 
     public componentDidMount() {
@@ -25,7 +34,7 @@ export default <S, P, R>(
       addRef(this.props[state], this.props);
     }
 
-    public componentDidUpdate(prevProps: P & { [state]: S }) {
+    public componentDidUpdate(prevProps: WrapperProps) {
       removeRef(prevProps[state], prevProps);
       /* eslint-disable-next-line react/destructuring-assignment */
       addRef(this.props[state], this.props);
@@ -41,11 +50,12 @@ export default <S, P, R>(
     }
   }
 
-  return connect(
-    reduxState => ({ [state]: reduxState }),
+  const ConnectedWrapper: unknown = connect(
+    (reduxState: S) => ({ [state]: reduxState }),
     {},
     undefined,
     { getDisplayName: name => `InnerConnect(${name})` },
-    // @ts-ignore because something wrong with type Matching in react-redux typing
-  )(Wrapper);
+  )(Wrapper as ComponentType<any>);
+
+  return ConnectedWrapper as ReselectConnectedComponent<C, P>;
 };

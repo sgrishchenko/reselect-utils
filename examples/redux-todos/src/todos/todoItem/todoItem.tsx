@@ -1,5 +1,6 @@
 import React, { ChangeEvent, FunctionComponent, useCallback } from 'react';
 import { connect } from 'react-redux';
+import { reselectConnect } from 'reselect-utils';
 import { TodoItemProps } from './todoItem.interface';
 import { TodosAction } from '../todos.action';
 import todoItemPropsSelector from './todoItem.selector';
@@ -47,4 +48,4 @@ export default connect(
     removeTodo: TodosAction.remove,
     completeTodo: TodosAction.complete,
   },
-)(TodoItem);
+)(reselectConnect(todoItemPropsSelector)(TodoItem));

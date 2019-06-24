@@ -1,5 +1,9 @@
 import createCachedSelector from 're-reselect';
-import { createPathSelector, createPropSelector } from 'reselect-utils';
+import {
+  createPathSelector,
+  createPropSelector,
+  CounterObjectCache,
+} from 'reselect-utils';
 import { todoSelector } from '../todos.selector';
 import { TodoItemOwnProps } from './todoItem.interface';
 
@@ -12,4 +16,6 @@ export default createCachedSelector(
     todoName,
     todoCompleted,
   }),
-)(createPropSelector<TodoItemOwnProps>().todoId());
+)(createPropSelector<TodoItemOwnProps>().todoId(), {
+  cacheObject: new CounterObjectCache(),
+});

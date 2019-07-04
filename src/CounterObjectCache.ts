@@ -11,12 +11,14 @@ type CacheItem = {
 
 type Cache = { [K in Key]?: CacheItem };
 
-type CounterObjectCacheOptions = {
+export type CounterObjectCacheOptions = {
   removeDelay?: number;
+  warnAboutUncontrolled?: boolean;
 };
 
 const defaultOptions: Required<CounterObjectCacheOptions> = {
   removeDelay: 0,
+  warnAboutUncontrolled: true,
 };
 
 export default class CounterObjectCache implements ICacheObject {
@@ -30,9 +32,17 @@ export default class CounterObjectCache implements ICacheObject {
     'removeRefRecursively',
   );
 
+  public static confirmValidAccessRecursively = CounterObjectCache.makeRecursivelyHandler(
+    'confirmValidAccess',
+    'confirmValidAccessRecursively',
+  );
+
   private static makeRecursivelyHandler(
-    handler: 'addRef' | 'removeRef',
-    recursivelyHandler: 'addRefRecursively' | 'removeRefRecursively',
+    handler: 'addRef' | 'removeRef' | 'confirmValidAccess',
+    recursivelyHandler:
+      | 'addRefRecursively'
+      | 'removeRefRecursively'
+      | 'confirmValidAccessRecursively',
   ) {
     return <S, P, R>(
       selector: Selector<S, R> | ParametricSelector<S, P, R>,
@@ -62,9 +72,7 @@ export default class CounterObjectCache implements ICacheObject {
 
   private options: CounterObjectCacheOptions;
 
-  private warningHandled = false;
-
-  private warningTimeoutHandle?: number;
+  private warningTimeoutPool: number[] = [];
 
   public constructor(options: CounterObjectCacheOptions = {}) {
     this.options = {
@@ -82,11 +90,9 @@ export default class CounterObjectCache implements ICacheObject {
 
   public get(key: Key) {
     if (process.env.NODE_ENV !== 'production') {
-      if (!this.warningHandled) {
-        this.warningHandled = true;
-
+      if (this.options.warnAboutUncontrolled) {
         const { stack } = new Error();
-        this.warningTimeoutHandle = window.setTimeout(() => {
+        const warningTimeoutHandle = window.setTimeout(() => {
           /* eslint-disable-next-line no-console,@typescript-eslint/tslint/config */
           console.warn(
             'It seems you are using a cached selector ' +
@@ -95,6 +101,7 @@ export default class CounterObjectCache implements ICacheObject {
             stack,
           );
         }, 10);
+        this.warningTimeoutPool.push(warningTimeoutHandle);
       }
     }
 
@@ -120,12 +127,6 @@ export default class CounterObjectCache implements ICacheObject {
   }
 
   public addRef(key: Key) {
-    if (process.env.NODE_ENV !== 'production') {
-      if (this.warningTimeoutHandle) {
-        window.clearTimeout(this.warningTimeoutHandle);
-      }
-    }
-
     const cacheItem = this.cache[key];
 
     if (cacheItem) {
@@ -145,5 +146,9 @@ export default class CounterObjectCache implements ICacheObject {
         }, this.options.removeDelay);
       }
     }
+  }
+
+  public confirmValidAccess() {
+    window.clearTimeout(this.warningTimeoutPool.pop());
   }
 }

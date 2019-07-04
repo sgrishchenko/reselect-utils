@@ -100,7 +100,7 @@ describe('createAdaptedSelector', () => {
       [getPerson],
       ({ firstName, secondName }) => `${firstName} ${secondName}`,
     )((state, props) => props.id, {
-      cacheObject: new CounterObjectCache(),
+      cacheObject: new CounterObjectCache({ warnAboutUncontrolled: false }),
     });
 
     test('should clear cache of dependency after removing ref', () => {

@@ -8,3 +8,4 @@ export { default as SelectorMonad } from './SelectorMonad';
 export { default as CounterObjectCache } from './CounterObjectCache';
 export { default as once } from './once';
 export { default as reselectConnect } from './reselectConnect';
+export { default as useSelector } from './useSelector';

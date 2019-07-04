@@ -1,61 +1,45 @@
-import { ComponentType, createElement, Component, ComponentClass } from 'react';
-import { connect } from 'react-redux';
-import CounterObjectCache from './CounterObjectCache';
+import { ComponentType, createElement, FunctionComponent } from 'react';
+import { useSelector as useReduxSelector } from 'react-redux';
 import { ParametricSelector, Selector } from './types';
+import useSelector, { UseSelectorOptions } from './useSelector';
+import CounterObjectCache from './CounterObjectCache';
 
 export type ReselectConnectedComponent<
   C extends ComponentType<any>,
   P
 > = C extends ComponentType<infer CP>
   ? CP extends P
-    ? ComponentClass<JSX.LibraryManagedAttributes<C, CP>>
+    ? ComponentType<JSX.LibraryManagedAttributes<C, CP>>
     : never
   : never;
 
 export default <S, P, R>(
   selector: Selector<S, R> | ParametricSelector<S, P, R>,
+  options?: UseSelectorOptions,
 ) => <C extends ComponentType<any>>(WrappedComponent: C) => {
+  const Wrapper: FunctionComponent<P> = props => {
+    useSelector(selector, props, options);
+
+    useReduxSelector((currentState: S) => {
+      if (process.env.NODE_ENV !== 'production') {
+        CounterObjectCache.confirmValidAccessRecursively(selector)(
+          currentState,
+          props,
+        );
+      }
+
+      return null;
+    });
+
+    return createElement(WrappedComponent, props);
+  };
+
   const wrappedComponentName =
     WrappedComponent.displayName ||
     /* istanbul ignore next */ WrappedComponent.name ||
     /* istanbul ignore next */ 'Component';
 
-  const addRef = CounterObjectCache.addRefRecursively(selector);
-  const removeRef = CounterObjectCache.removeRefRecursively(selector);
-  const state = Symbol('state');
+  Wrapper.displayName = `ReselectConnect(${wrappedComponentName})`;
 
-  type WrapperProps = P & { [state]: S };
-
-  class Wrapper extends Component<WrapperProps> {
-    public static displayName = `ReselectConnect(${wrappedComponentName})`;
-
-    public componentDidMount() {
-      /* eslint-disable-next-line react/destructuring-assignment */
-      addRef(this.props[state], this.props);
-    }
-
-    public componentDidUpdate(prevProps: WrapperProps) {
-      removeRef(prevProps[state], prevProps);
-      /* eslint-disable-next-line react/destructuring-assignment */
-      addRef(this.props[state], this.props);
-    }
-
-    public componentWillUnmount() {
-      /* eslint-disable-next-line react/destructuring-assignment */
-      removeRef(this.props[state], this.props);
-    }
-
-    public render() {
-      return createElement(WrappedComponent, this.props);
-    }
-  }
-
-  const ConnectedWrapper: unknown = connect(
-    (reduxState: S) => ({ [state]: reduxState }),
-    {},
-    undefined,
-    { getDisplayName: name => `InnerConnect(${name})` },
-  )(Wrapper as ComponentType<any>);
-
-  return ConnectedWrapper as ReselectConnectedComponent<C, P>;
+  return Wrapper as ReselectConnectedComponent<C, P>;
 };

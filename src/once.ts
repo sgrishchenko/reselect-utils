@@ -10,6 +10,10 @@ function once<S, P, R>(
 function once(selector: any) {
   return (state: any, props: any) => {
     const result = selector(state, props);
+
+    if (process.env.NODE_ENV !== 'production') {
+      CounterObjectCache.confirmValidAccessRecursively(selector)(state, props);
+    }
     CounterObjectCache.addRefRecursively(selector)(state, props);
     CounterObjectCache.removeRefRecursively(selector)(state, props);
 

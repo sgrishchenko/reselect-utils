@@ -8,9 +8,9 @@ import SelectorGraph from './SelectorGraph';
 import { Message, Person, State } from '../__data__/state';
 import createAdaptedSelector from '../createAdaptedSelector';
 
-const getPerson = (state: State, props: { id: number }) =>
+const personSelector = (state: State, props: { id: number }) =>
   state.persons[props.id];
-const getMessage = (state: State, props: { id: number }) =>
+const messageSelector = (state: State, props: { id: number }) =>
   state.messages[props.id];
 
 type PersonAndMessageProps = {
@@ -24,16 +24,19 @@ type PersonAndMessage = {
 };
 
 storiesOf('createAdaptedSelector', module).add('example', () => {
-  const getPersonAndMessage = createStructuredSelector<
+  const personAndMessageSelector = createStructuredSelector<
     State,
     PersonAndMessageProps,
     PersonAndMessage
   >({
-    person: createAdaptedSelector(getPerson, (props: { personId: number }) => ({
-      id: props.personId,
-    })),
+    person: createAdaptedSelector(
+      personSelector,
+      (props: { personId: number }) => ({
+        id: props.personId,
+      }),
+    ),
     message: createAdaptedSelector(
-      getMessage,
+      messageSelector,
       (props: { messageId: number }) => ({
         id: props.messageId,
       }),
@@ -42,9 +45,9 @@ storiesOf('createAdaptedSelector', module).add('example', () => {
 
   reset();
   registerSelectors({
-    getPerson,
-    getMessage,
-    getPersonAndMessage,
+    personSelector,
+    messageSelector,
+    personAndMessageSelector,
   });
 
   const { nodes, edges } = selectorGraph();

@@ -41,17 +41,17 @@ const state = {
   },
 };
 
-const getPerson = (state, props) => state.persons[props.personId];
+const personSelector = (state, props) => state.persons[props.personId];
 
-const getPersonInfo = createSelector(
-  createPathSelector(getPerson).firstName(),
-  createPathSelector(getPerson).secondName(),
-  createPathSelector(getPerson).some.deep.optional('default'),
+const personInfoSelector = createSelector(
+  createPathSelector(personSelector).firstName(),
+  createPathSelector(personSelector).secondName(),
+  createPathSelector(personSelector).some.deep.optional('default'),
   (firstName, secondName, deepProp) =>
     `${firstName} ${secondName} (${deepProp})`,
 );
 
-getPersonInfo(state, { personId: 1 }); // => 'Marry Poppins (default)'
-getPersonInfo(state, { personId: 2 }); // => 'Harry Potter (value)'
-getPersonInfo(state, { personId: 3 }); // => 'undefined undefined (value)'
+personInfoSelector(state, { personId: 1 }); // => 'Marry Poppins (default)'
+personInfoSelector(state, { personId: 2 }); // => 'Harry Potter (value)'
+personInfoSelector(state, { personId: 3 }); // => 'undefined undefined (value)'
 ```

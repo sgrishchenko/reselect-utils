@@ -1,12 +1,8 @@
-# createPropSelector(selector)
+# createPropSelector()
 
 ## Description
 
 Shortcut for `createPathSelector((state, props) => props)` (see [createPathSelector](/docs/api/createPathSelector.md)).
-
-## Parameters
-
-- _selector_ - base selector for getting properties.
 
 ## Returns
 
@@ -33,16 +29,16 @@ const state = {
   },
 };
 
-const getPersons = state => state.persons;
+const personsSelector = state => state.persons;
 
-const getPerson = createSelector(
-  getPersons,
+const personSelector = createSelector(
+  personsSelector,
   createPropSelector().personId(),
   (persons, personId) => persons[personId],
 );
 
-getPerson(state, { personId: 1 }); // => 'Marry Poppins'
-getPerson(state, { personId: 2 }); // => 'Harry Potter'
+personSelector(state, { personId: 1 }); // => 'Marry Poppins'
+personSelector(state, { personId: 2 }); // => 'Harry Potter'
 ```
 
 With TypeScript:
@@ -52,8 +48,8 @@ type Props = {
   personId: number;
 };
 
-const getPerson = createSelector(
-  getPersons,
+const personSelector = createSelector(
+  personsSelector,
   createPropSelector<Props>().personId(),
   (persons, personId) => persons[personId],
 );

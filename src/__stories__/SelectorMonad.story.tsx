@@ -12,15 +12,15 @@ import SelectorMonad from '../SelectorMonad';
 import { Selector } from '../types';
 /* tslint:disable:member-ordering */
 
-const getPerson = (state: State, props: { id: number }) =>
+const personSelector = (state: State, props: { id: number }) =>
   state.persons[props.id];
-const getMessage = (state: State, props: { id: number }) =>
+const messageSelector = (state: State, props: { id: number }) =>
   state.messages[props.id];
-const getDocument = (state: State, props: { id: number }) =>
+const documentSelector = (state: State, props: { id: number }) =>
   state.documents[props.id];
 
-const getFullName = createSelector(
-  [getPerson],
+const fullNameSelector = createSelector(
+  [personSelector],
   ({ firstName, secondName }) => `${firstName} ${secondName}`,
 );
 
@@ -65,26 +65,26 @@ class SelectorMonadGraph extends React.Component<{
 
 storiesOf('SelectorMonad', module)
   .add('entity chain example', () => {
-    const getPersonByDocumentId = SelectorMonad.of(getDocument)
+    const personByDocumentIdSelector = SelectorMonad.of(documentSelector)
       .chain(document =>
-        createBoundSelector(getMessage, { id: document.messageId }),
+        createBoundSelector(messageSelector, { id: document.messageId }),
       )
       .chain(message =>
-        createBoundSelector(getFullName, { id: message.personId }),
+        createBoundSelector(fullNameSelector, { id: message.personId }),
       )
       .buildSelector();
 
     reset();
     registerSelectors({
-      getPerson,
-      getMessage,
-      getDocument,
-      getFullName,
-      getPersonByDocumentId,
+      personSelector,
+      messageSelector,
+      documentSelector,
+      fullNameSelector,
+      personByDocumentIdSelector,
     });
 
     const onCallButtonClick = () => {
-      const personByDocumentId = getPersonByDocumentId(commonState, {
+      const personByDocumentId = personByDocumentIdSelector(commonState, {
         id: 111,
       });
       action('personByDocumentId')(personByDocumentId);
@@ -93,13 +93,13 @@ storiesOf('SelectorMonad', module)
     return <SelectorMonadGraph onCallButtonClick={onCallButtonClick} />;
   })
   .add('aggregation example', () => {
-    const getPersons = (state: State) => state.persons;
+    const personsSelector = (state: State) => state.persons;
 
-    const getLongestFullName = SelectorMonad.of(getPersons)
+    const longestFullNameSelector = SelectorMonad.of(personsSelector)
       .chain(persons =>
         createSequenceSelector(
           Object.values(persons).map((person: Person) =>
-            createBoundSelector(getFullName, { id: person.id }),
+            createBoundSelector(fullNameSelector, { id: person.id }),
           ),
         ),
       )
@@ -112,14 +112,14 @@ storiesOf('SelectorMonad', module)
 
     reset();
     registerSelectors({
-      getPerson,
-      getPersons,
-      getFullName,
-      getLongestFullName,
+      personSelector,
+      personsSelector,
+      fullNameSelector,
+      longestFullNameSelector,
     });
 
     const onCallButtonClick = () => {
-      const longestFullName = getLongestFullName(commonState);
+      const longestFullName = longestFullNameSelector(commonState);
       action('longestFullName')(longestFullName);
     };
 
@@ -127,12 +127,14 @@ storiesOf('SelectorMonad', module)
   })
 
   .add('switch dependency example', () => {
-    const getPersonOrMessageByDocumentId = SelectorMonad.of(getDocument)
+    const personOrMessageByDocumentIdSelector = SelectorMonad.of(
+      documentSelector,
+    )
       .chain(
         document =>
           (document.messageId === 100
-            ? createBoundSelector(getPerson, { id: 1 })
-            : createBoundSelector(getMessage, {
+            ? createBoundSelector(personSelector, { id: 1 })
+            : createBoundSelector(messageSelector, {
                 id: document.messageId,
               })) as Selector<State, Person | Message>,
       )
@@ -140,17 +142,17 @@ storiesOf('SelectorMonad', module)
 
     reset();
     registerSelectors({
-      getPerson,
-      getMessage,
-      getDocument,
-      getPersonOrMessageByDocumentId,
+      personSelector,
+      messageSelector,
+      documentSelector,
+      personOrMessageByDocumentIdSelector,
     });
 
     const onCallButtonClick = () => {
       const longestFullName =
         Math.random() > 0.5
-          ? getPersonOrMessageByDocumentId(commonState, { id: 111 })
-          : getPersonOrMessageByDocumentId(commonState, { id: 222 });
+          ? personOrMessageByDocumentIdSelector(commonState, { id: 111 })
+          : personOrMessageByDocumentIdSelector(commonState, { id: 222 });
 
       action('longestFullName')(longestFullName);
     };

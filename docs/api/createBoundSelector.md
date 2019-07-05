@@ -33,22 +33,22 @@ const state = {
   },
 };
 
-const getPerson = (state, props) => state.persons[props.personId];
+const personSelector = (state, props) => state.persons[props.personId];
 
-const getMarry = createBoundSelector(getPerson, { personId: 1 });
-const getHarry = createBoundSelector(getPerson, { personId: 2 });
+const exactMarrySelector = createBoundSelector(personSelector, { personId: 1 });
+const exactHarrySelector = createBoundSelector(personSelector, { personId: 2 });
 
-getMarry(state); // => 'Marry Poppins'
-getHarry(state); // => 'Harry Potter'
+exactMarrySelector(state); // => 'Marry Poppins'
+exactHarrySelector(state); // => 'Harry Potter'
 ```
 
 Partial binding:
 
 ```js
-const getSum = (state, props) => props.x + props.y;
+const sumSelector = (state, props) => props.x + props.y;
 
-const getPlusOne = createBoundSelector(getSum, { y: 1 });
+const plusOneSelector = createBoundSelector(sumSelector, { y: 1 });
 
-getPlusOne(null, { x: 2 }); // => 3
-getPlusOne(null, { x: 3 }); // => 4
+plusOneSelector(null, { x: 2 }); // => 3
+plusOneSelector(null, { x: 3 }); // => 4
 ```

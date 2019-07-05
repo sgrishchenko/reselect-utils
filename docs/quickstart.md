@@ -24,7 +24,7 @@ const state = {
 And you want to build something like this selector:
 
 ```js
-const getPersonFullName = createSelector(
+const personFullNameSelector = createSelector(
   (state, props) => state.persons[props.personId].firstName,
   (state, props) => state.persons[props.personId].secondName,
   (firstName, secondName) => `${firstName} ${secondName}`,
@@ -36,11 +36,11 @@ As you can see in the dependencies of this selector quite a lot of boilerplate c
 ```js
 import { createPathSelector } from 'reselect-utils';
 
-const getPerson = (state, props) => state.persons[props.personId];
+const personSelector = (state, props) => state.persons[props.personId];
 
-const getPersonFullName = createSelector(
-  createPathSelector(getPerson).firstName(),
-  createPathSelector(getPerson).secondName(),
+const personFullNameSelector = createSelector(
+  createPathSelector(personSelector).firstName(),
+  createPathSelector(personSelector).secondName(),
   (firstName, secondName) => `${firstName} ${secondName}`,
 );
 ```
@@ -50,9 +50,9 @@ You can also add default values if you want the selector to produce an adequate 
 ```js
 import { createPathSelector } from 'reselect-utils';
 
-const getPersonFullName = createSelector(
-  createPathSelector(getPerson).firstName('John'),
-  createPathSelector(getPerson).secondName('Doe'),
+const personFullNameSelector = createSelector(
+  createPathSelector(personSelector).firstName('John'),
+  createPathSelector(personSelector).secondName('Doe'),
   (firstName, secondName) => `${firstName} ${secondName}`,
 );
 ```
@@ -62,9 +62,9 @@ You can also work with objects of unlimited nesting:
 ```js
 import { createPathSelector } from 'reselect-utils';
 
-const getPersonInfo = createSelector(
-  createPathSelector(getPerson).address.street('-'),
-  createPathSelector(getPerson).some.very.deep.field(123),
+const personSelectorInfo = createSelector(
+  createPathSelector(personSelector).address.street('-'),
+  createPathSelector(personSelector).some.very.deep.field(123),
   (street, field) => ({ street, field }),
 );
 ```
@@ -108,7 +108,7 @@ const state = {
 And you want to select a person by the message id. You can write something like this:
 
 ```js
-const getPersonByMessageId = (state, props) => {
+const personSelectorByMessageId = (state, props) => {
   const message = state.messages[props.messageId];
 
   return state.persons[message.personId];
@@ -118,19 +118,19 @@ const getPersonByMessageId = (state, props) => {
 This is an acceptable solution, but what if the chain is longer? `SelectorMonad` will help to solve such problems:
 
 ```js
-import { SelectorMonad, createAdaptedSelector } from 'reselect-utils';
+import { SelectorMonad, createBoundSelector } from 'reselect-utils';
 
-const getMessage = (state, props) => state.messages[props.messageId];
-const getPerson = (state, props) => state.persons[props.personId];
+const messageSelector = (state, props) => state.messages[props.messageId];
+const personSelector = (state, props) => state.persons[props.personId];
 
-const getPersonByMessageId = SelectorMonad.of(getMessage)
+const personSelectorByMessageId = SelectorMonad.of(messageSelector)
   .chain(message =>
-    createAdaptedSelector(getPerson, { personId: message.personId }),
+    createBoundSelector(personSelector, { personId: message.personId }),
   )
   .buildSelector();
 ```
 
-`SelectorMonad` allows you to create dynamic selectors that depend on the current state. Moreover, the callback that is passed to the `chain` method is cached by input parameters. `createAdaptedSelector` binds the selector to specific parameter values and turns a parametric selector into an non parametric. And at the end you must call the `buildSelector` method to get the normal selector. It’s like a chain of [Promises](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise). [SelectorMonad](/docs/quickstart.md#selector-monad) and [createAdaptedSelector](/docs/api/createAdaptedSelector.md) are described in detail in their [API](/docs/api.md).
+`SelectorMonad` allows you to create dynamic selectors that depend on the current state. Moreover, the callback that is passed to the `chain` method is cached by input parameters. `createBoundSelector` binds the selector to specific parameter values and turns a parametric selector into an non parametric. And at the end you must call the `buildSelector` method to get the normal selector. It’s like a chain of [Promises](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise). [SelectorMonad](/docs/quickstart.md#selector-monad) and [createBoundSelector](/docs/api/createBoundSelector.md) are described in detail in their [API](/docs/api.md).
 
 ## Counter Cache
 
@@ -140,7 +140,7 @@ const getPersonByMessageId = SelectorMonad.of(getMessage)
 import createCachedSelector from 're-reselect';
 import { CounterObjectCache } from 'reselect-utils';
 
-const getSomething = createCachedSelector(
+const somethingSelector = createCachedSelector(
   state => state.value,
   (state, props) => props.prop,
 
@@ -159,19 +159,32 @@ import { reselectConnect } from 'reselect-utils';
 
 const MyComponent = ({ something }) => <div>{something}</div>;
 
-const ConnectedMyComponent = connect(getSomething)(
-  reselectConnect(getSomething)(MyComponent),
+const ConnectedMyComponent = connect(somethingSelector)(
+  reselectConnect(somethingSelector)(MyComponent),
 );
 ```
 
-Now the instance of `getSomething` selector will be created when `MyComponent` is mounted, updated when `MyComponent` properties are updated, and when the `MyComponent` is unmounted, the `getSomething` instance will be removed from cache. This is similar to how [selector factories](https://github.com/reduxjs/reselect#sharing-selectors-with-props-across-multiple-component-instances) work, but an instance of a selector for two identical components with the same parameters will be common (because [Re-reselect](https://github.com/toomuchdesign/re-reselect) is used).
+Or you can use hook syntax:
+
+```jsx
+import React from 'react';
+import { useSelector } from 'reselect-utils';
+
+const MyComponent = props => {
+  const something = useSelector(somethingSelector, props);
+
+  return <div>{something}</div>;
+};
+```
+
+Now the instance of `somethingSelector` selector will be created when `MyComponent` is mounted, updated when `MyComponent` properties are updated, and when the `MyComponent` is unmounted, the `somethingSelector` instance will be removed from cache. This is similar to how [selector factories](https://github.com/reduxjs/reselect#sharing-selectors-with-props-across-multiple-component-instances) work, but an instance of a selector for two identical components with the same parameters will be common (because [Re-reselect](https://github.com/toomuchdesign/re-reselect) is used).
 
 But what if you want to use the selector not only in the component but also somewhere else, for example, in [Redux](https://redux.js.org/) middleware? Usually, the logic in the middleware does not have a lifetime and your selector will be constantly called with different properties. In this case, it is difficult to choose the optimal caching strategy. The easiest way is to simply abandon caching parameterized selectors in the middleware. In order to clear the memory in time when using the caching selector, you can use `once` (otherwise, the memory used will simply increase when you call the selector with different parameters):
 
 ```js
 import { once } from 'reselect-utils';
 
-const { something } = once(getSomething)(state, props);
+const { something } = once(somethingSelector)(state, props);
 ```
 
 You can learn more about Counter Cache [here](/docs/api/CounterObjectCache.md).

@@ -93,14 +93,14 @@ const state = {
   },
 };
 
-const getPersons = state => state.persons;
-const getPerson = (state, props) => state.persons[props.id];
+const personsSelector = state => state.persons;
+const personSelector = (state, props) => state.persons[props.id];
 
-const getMessages = state => state.messages;
-const getMessage = (state, props) => state.messages[props.id];
+const messagesSelector = state => state.messages;
+const messageSelector = (state, props) => state.messages[props.id];
 
-const getDocuments = state => state.documents;
-const getDocument = (state, props) => state.documents[props.id];
+const documentsSelector = state => state.documents;
+const documentSelector = (state, props) => state.documents[props.id];
 ```
 
 ### Entity Chain
@@ -109,20 +109,22 @@ const getDocument = (state, props) => state.documents[props.id];
 import { createSelector } from 'reselect';
 import { SelectorMonad, createBoundSelector } from 'reselect-utils';
 
-const getFullName = createSelector(
-  [getPerson],
+const fullNameSelector = createSelector(
+  [personSelector],
   ({ firstName, secondName }) => `${firstName} ${secondName}`,
 );
 
-const getPersonByDocumentId = SelectorMonad.of(getDocument)
+const personByDocumentIdSelector = SelectorMonad.of(documentSelector)
   .chain(document =>
-    createBoundSelector(getMessage, { id: document.messageId }),
+    createBoundSelector(messageSelector, { id: document.messageId }),
   )
-  .chain(message => createBoundSelector(getFullName, { id: message.personId }))
+  .chain(message =>
+    createBoundSelector(fullNameSelector, { id: message.personId }),
+  )
   .buildSelector();
 
-getPersonByDocumentId(state, { id: 111 }); // => 'Marry Poppins'
-getPersonByDocumentId(state, { id: 222 }); // => 'Harry Potter'
+personByDocumentIdSelector(state, { id: 111 }); // => 'Marry Poppins'
+personByDocumentIdSelector(state, { id: 222 }); // => 'Harry Potter'
 ```
 
 ### Aggregation by a calculated property
@@ -135,16 +137,16 @@ import {
   createBoundSelector,
 } from 'reselect-utils';
 
-const getFullName = createSelector(
-  [getPerson],
+const fullNameSelector = createSelector(
+  [personSelector],
   ({ firstName, secondName }) => `${firstName} ${secondName}`,
 );
 
-const getLongestFullName = SelectorMonad.of(getPersons)
+const longestFullNameSelector = SelectorMonad.of(personsSelector)
   .chain(persons =>
     createSequenceSelector(
       Object.values(persons).map(person =>
-        createBoundSelector(getFullName, { id: person.id }),
+        createBoundSelector(fullNameSelector, { id: person.id }),
       ),
     ),
   )
@@ -155,7 +157,7 @@ const getLongestFullName = SelectorMonad.of(getPersons)
   )
   .buildSelector();
 
-getLongestFullName(state); // => 'Marry Poppins'
+longestFullNameSelector(state); // => 'Marry Poppins'
 ```
 
 ### Dynamic switch selector
@@ -164,20 +166,20 @@ getLongestFullName(state); // => 'Marry Poppins'
 import { createSelector } from 'reselect';
 import { SelectorMonad, createPropSelector } from 'reselect-utils';
 
-const getFullName = createSelector(
-  [getPerson],
+const fullNameSelector = createSelector(
+  [personSelector],
   ({ firstName, secondName }) => `${firstName} ${secondName}`,
 );
 
-const getShortName = createSelector(
-  [getPerson],
+const shortNameSelector = createSelector(
+  [personSelector],
   ({ firstName, secondName }) => `${firstName[0]}. ${secondName}`,
 );
 
-const getName = SelectorMonad.of(createPropSelector().isShort())
-  .chain(isShort => (isShort ? getShortName : getFullName))
+const nameSelector = SelectorMonad.of(createPropSelector().isShort())
+  .chain(isShort => (isShort ? shortNameSelector : fullNameSelector))
   .buildSelector();
 
-getName({ id: 1, isShort: false }); // => 'Marry Poppins'
-getName({ id: 1, isShort: true }); // => 'M. Poppins'
+nameSelector({ id: 1, isShort: false }); // => 'Marry Poppins'
+nameSelector({ id: 1, isShort: true }); // => 'M. Poppins'
 ```

@@ -24,7 +24,7 @@ Recursively traverses the dependency chain of the selector and increments the nu
 
 Void.
 
-### removeRefRecursively(selector)
+### removeRefRecursively(selector)(state, props)
 
 #### Description
 

@@ -5,9 +5,9 @@ import createBoundSelector from '../createBoundSelector';
 import CounterObjectCache from '../CounterObjectCache';
 
 describe('createAdaptedSelector', () => {
-  const getPerson = (state: State, props: { personId: number }) =>
+  const personSelector = (state: State, props: { personId: number }) =>
     state.persons[props.personId];
-  const getMessage = (state: State, props: { messageId: number }) =>
+  const messageSelector = (state: State, props: { messageId: number }) =>
     state.messages[props.messageId];
 
   type PersonAndMessageProps = {
@@ -20,32 +20,38 @@ describe('createAdaptedSelector', () => {
     message: Message;
   };
 
-  const getPersonAndMessage = createStructuredSelector<
+  const personAndMessageSelector = createStructuredSelector<
     State,
     PersonAndMessageProps,
     PersonAndMessage
   >({
-    person: getPerson,
-    message: getMessage,
+    person: personSelector,
+    message: messageSelector,
   });
 
   test('should implement binding to partial props', () => {
-    const getMarryAndMessage = createBoundSelector(getPersonAndMessage, {
-      personId: 1,
-    });
+    const marryAndMessageSelector = createBoundSelector(
+      personAndMessageSelector,
+      {
+        personId: 1,
+      },
+    );
 
-    const marryAndMessage = getMarryAndMessage(commonState, {
+    const marryAndMessage = marryAndMessageSelector(commonState, {
       messageId: 100,
     });
 
     expect(marryAndMessage.person.firstName).toBe('Marry');
     expect(marryAndMessage.message.text).toBe('Hello');
 
-    const getPersonAndHello = createBoundSelector(getPersonAndMessage, {
-      messageId: 100,
-    });
+    const personAndHelloSelector = createBoundSelector(
+      personAndMessageSelector,
+      {
+        messageId: 100,
+      },
+    );
 
-    const personAndHello = getPersonAndHello(commonState, {
+    const personAndHello = personAndHelloSelector(commonState, {
       personId: 1,
     });
 
@@ -54,34 +60,37 @@ describe('createAdaptedSelector', () => {
   });
 
   test('should implement binding to full props', () => {
-    const getMarryAndHello = createBoundSelector(getPersonAndMessage, {
-      personId: 1,
-      messageId: 100,
-    });
+    const marryAndHelloSelector = createBoundSelector(
+      personAndMessageSelector,
+      {
+        personId: 1,
+        messageId: 100,
+      },
+    );
 
-    const marryAndHello = getMarryAndHello(commonState);
+    const marryAndHello = marryAndHelloSelector(commonState);
 
     expect(marryAndHello.person.firstName).toBe('Marry');
     expect(marryAndHello.message.text).toBe('Hello');
   });
 
   describe('integration with re-reselect', () => {
-    const getCachedFullName = createCachedSelector(
-      [getPerson],
+    const fullNameCachedSelector = createCachedSelector(
+      [personSelector],
       ({ firstName, secondName }) => `${firstName} ${secondName}`,
     )((state, props) => props.personId);
 
     test('should decorate getMatchingSelector and removeMatchingSelector of dependency', () => {
-      const getMarry = createBoundSelector(getCachedFullName, {
+      const marrySelector = createBoundSelector(fullNameCachedSelector, {
         personId: 1,
       });
 
-      const dependency: any = getMarry.dependencies![0];
+      const dependency: any = marrySelector.dependencies![0];
 
       let selectorInstance = dependency.getMatchingSelector(commonState);
       expect(selectorInstance).toBeUndefined();
 
-      getMarry(commonState);
+      marrySelector(commonState);
       selectorInstance = dependency.getMatchingSelector(commonState);
       expect(selectorInstance).toBeInstanceOf(Function);
 
@@ -98,28 +107,32 @@ describe('createAdaptedSelector', () => {
       jest.useRealTimers();
     });
 
-    const getCachedFullName = createCachedSelector(
-      [getPerson],
+    const fullNameCachedSelector = createCachedSelector(
+      [personSelector],
       ({ firstName, secondName }) => `${firstName} ${secondName}`,
     )((state, props) => props.personId, {
       cacheObject: new CounterObjectCache({ warnAboutUncontrolled: false }),
     });
 
     test('should clear cache of dependency after removing ref', () => {
-      const getMarry = createBoundSelector(getCachedFullName, {
+      const marrySelector = createBoundSelector(fullNameCachedSelector, {
         personId: 1,
       });
 
-      getMarry(commonState);
-      CounterObjectCache.addRefRecursively(getMarry)(commonState, {});
+      marrySelector(commonState);
+      CounterObjectCache.addRefRecursively(marrySelector)(commonState, {});
       expect(
-        getCachedFullName.getMatchingSelector(commonState, { personId: 1 }),
+        fullNameCachedSelector.getMatchingSelector(commonState, {
+          personId: 1,
+        }),
       ).toBeDefined();
 
-      CounterObjectCache.removeRefRecursively(getMarry)(commonState, {});
+      CounterObjectCache.removeRefRecursively(marrySelector)(commonState, {});
       jest.runAllTimers();
       expect(
-        getCachedFullName.getMatchingSelector(commonState, { personId: 1 }),
+        fullNameCachedSelector.getMatchingSelector(commonState, {
+          personId: 1,
+        }),
       ).toBeUndefined();
     });
   });

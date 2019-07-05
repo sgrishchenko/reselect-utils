@@ -8,7 +8,7 @@ describe('createPropSelector', () => {
         to?: number;
       };
     };
-    const props = {
+    const props: Props = {
       range: {
         from: 30,
         to: 70,

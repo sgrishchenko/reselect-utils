@@ -5,19 +5,19 @@ import createAdaptedSelector from '../createAdaptedSelector';
 import CounterObjectCache from '../CounterObjectCache';
 
 describe('createAdaptedSelector', () => {
-  const getPerson = (state: State, props: { id: number }) =>
+  const personSelector = (state: State, props: { id: number }) =>
     state.persons[props.id];
-  const getMessage = (state: State, props: { id: number }) =>
+  const messageSelector = (state: State, props: { id: number }) =>
     state.messages[props.id];
 
-  const adaptedGetPerson = createAdaptedSelector(
-    getPerson,
+  const personAdaptedSelector = createAdaptedSelector(
+    personSelector,
     (props: { personId: number }) => ({
       id: props.personId,
     }),
   );
-  const adaptedGetMessage = createAdaptedSelector(
-    getMessage,
+  const messageAdaptedSelector = createAdaptedSelector(
+    messageSelector,
     (props: { messageId: number }) => ({
       id: props.messageId,
     }),
@@ -33,17 +33,17 @@ describe('createAdaptedSelector', () => {
     message: Message;
   };
 
-  const getPersonAndMessage = createStructuredSelector<
+  const personAndMessageSelector = createStructuredSelector<
     State,
     PersonAndMessageProps,
     PersonAndMessage
   >({
-    person: adaptedGetPerson,
-    message: adaptedGetMessage,
+    person: personAdaptedSelector,
+    message: messageAdaptedSelector,
   });
 
   test('should implement adaptation of selector by mapping function', () => {
-    const actual = getPersonAndMessage(commonState, {
+    const actual = personAndMessageSelector(commonState, {
       personId: 1,
       messageId: 100,
     });
@@ -53,27 +53,27 @@ describe('createAdaptedSelector', () => {
   });
 
   describe('integration with re-reselect', () => {
-    const getCachedFullName = createCachedSelector(
-      [getPerson],
+    const fullNameCachedSelector = createCachedSelector(
+      [personSelector],
       ({ firstName, secondName }) => `${firstName} ${secondName}`,
     )((state, props) => props.id);
 
     test('should decorate getMatchingSelector and removeMatchingSelector of dependency', () => {
-      const adaptedGetCachedFullName = createAdaptedSelector(
-        getCachedFullName,
+      const fullNameAdaptedCachedSelector = createAdaptedSelector(
+        fullNameCachedSelector,
         (props: { personId: number }) => ({
           id: props.personId,
         }),
       );
 
-      const dependency: any = adaptedGetCachedFullName.dependencies![0];
+      const dependency: any = fullNameAdaptedCachedSelector.dependencies![0];
 
       let selectorInstance = dependency.getMatchingSelector(commonState, {
         personId: 1,
       });
       expect(selectorInstance).toBeUndefined();
 
-      adaptedGetCachedFullName(commonState, { personId: 1 });
+      fullNameAdaptedCachedSelector(commonState, { personId: 1 });
       selectorInstance = dependency.getMatchingSelector(commonState, {
         personId: 1,
       });
@@ -96,37 +96,37 @@ describe('createAdaptedSelector', () => {
       jest.useRealTimers();
     });
 
-    const getCachedFullName = createCachedSelector(
-      [getPerson],
+    const fullNameCachedSelector = createCachedSelector(
+      [personSelector],
       ({ firstName, secondName }) => `${firstName} ${secondName}`,
     )((state, props) => props.id, {
       cacheObject: new CounterObjectCache({ warnAboutUncontrolled: false }),
     });
 
     test('should clear cache of dependency after removing ref', () => {
-      const adaptedGetCachedFullName = createAdaptedSelector(
-        getCachedFullName,
+      const fullNameAdaptedCachedSelector = createAdaptedSelector(
+        fullNameCachedSelector,
         (props: { personId: number }) => ({
           id: props.personId,
         }),
       );
 
-      adaptedGetCachedFullName(commonState, { personId: 1 });
-      CounterObjectCache.addRefRecursively(adaptedGetCachedFullName)(
+      fullNameAdaptedCachedSelector(commonState, { personId: 1 });
+      CounterObjectCache.addRefRecursively(fullNameAdaptedCachedSelector)(
         commonState,
         { personId: 1 },
       );
       expect(
-        getCachedFullName.getMatchingSelector(commonState, { id: 1 }),
+        fullNameCachedSelector.getMatchingSelector(commonState, { id: 1 }),
       ).toBeDefined();
 
-      CounterObjectCache.removeRefRecursively(adaptedGetCachedFullName)(
+      CounterObjectCache.removeRefRecursively(fullNameAdaptedCachedSelector)(
         commonState,
         { personId: 1 },
       );
       jest.runAllTimers();
       expect(
-        getCachedFullName.getMatchingSelector(commonState, { id: 1 }),
+        fullNameCachedSelector.getMatchingSelector(commonState, { id: 1 }),
       ).toBeUndefined();
     });
   });

@@ -8,9 +8,9 @@ import SelectorGraph from './SelectorGraph';
 import { Message, Person, State } from '../__data__/state';
 import createBoundSelector from '../createBoundSelector';
 
-const getPerson = (state: State, props: { id: number }) =>
+const personSelector = (state: State, props: { id: number }) =>
   state.persons[props.id];
-const getMessage = (state: State, props: { id: number }) =>
+const messageSelector = (state: State, props: { id: number }) =>
   state.messages[props.id];
 
 type PersonAndMessage = {
@@ -19,16 +19,19 @@ type PersonAndMessage = {
 };
 
 storiesOf('createBoundSelector', module).add('example', () => {
-  const getMarryAndHello = createStructuredSelector<State, PersonAndMessage>({
-    person: createBoundSelector(getPerson, { id: 1 }),
-    message: createBoundSelector(getMessage, { id: 100 }),
+  const marryAndHelloSelector = createStructuredSelector<
+    State,
+    PersonAndMessage
+  >({
+    person: createBoundSelector(personSelector, { id: 1 }),
+    message: createBoundSelector(messageSelector, { id: 100 }),
   });
 
   reset();
   registerSelectors({
-    getPerson,
-    getMessage,
-    getMarryAndHello,
+    personSelector,
+    messageSelector,
+    marryAndHelloSelector,
   });
 
   const { nodes, edges } = selectorGraph();

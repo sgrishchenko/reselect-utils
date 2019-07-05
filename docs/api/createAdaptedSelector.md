@@ -47,17 +47,17 @@ const state = {
   },
 };
 
-const getPerson = (state, props) => state.persons[props.id];
-const getMessage = (state, props) => state.messages[props.id];
+const personSelector = (state, props) => state.persons[props.id];
+const messageSelector = (state, props) => state.messages[props.id];
 
-const getPersonAndMessage = createStructuredSelector({
-  person: createAdaptedSelector(getPerson, ({ personId }) => ({
+const personAndMessageSelector = createStructuredSelector({
+  person: createAdaptedSelector(personSelector, ({ personId }) => ({
     id: personId,
   })),
-  message: createAdaptedSelector(getMessage, ({ messageId }) => ({
+  message: createAdaptedSelector(messageSelector, ({ messageId }) => ({
     id: messageId,
   })),
 });
 
-getPersonAndMessage(state, { personId: 1, messageId: 200 }); // => {person: 'Marry Poppins', message: 'Buy'}
+personAndMessageSelector(state, { personId: 1, messageId: 200 }); // => {person: 'Marry Poppins', message: 'Buy'}
 ```

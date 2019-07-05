@@ -8,18 +8,18 @@ import SelectorGraph from './SelectorGraph';
 import { State } from '../__data__/state';
 import createPathSelector from '../createPathSelector';
 
-const getPerson = (state: State, props: { personId: number }) =>
+const personSelector = (state: State, props: { personId: number }) =>
   state.persons[props.personId];
 
-const getPersonFullName = createSelector(
-  createPathSelector(getPerson).firstName(''),
-  createPathSelector(getPerson).secondName(''),
+const personFullNameSelector = createSelector(
+  createPathSelector(personSelector).firstName(''),
+  createPathSelector(personSelector).secondName(''),
   (firstName, secondName) => `${firstName} ${secondName}`,
 );
 
-const getPersonShortName = createSelector(
-  createPathSelector(getPerson).firstName(''),
-  createPathSelector(getPerson).secondName(''),
+const personShortNameSelector = createSelector(
+  createPathSelector(personSelector).firstName(''),
+  createPathSelector(personSelector).secondName(''),
   (firstName, secondName) => {
     const [firstLetter] = Array.from(secondName);
     return `${firstName} ${firstLetter}.`;
@@ -29,9 +29,9 @@ const getPersonShortName = createSelector(
 storiesOf('createPathSelector', module).add('example', () => {
   reset();
   registerSelectors({
-    getPerson,
-    getPersonFullName,
-    getPersonShortName,
+    personSelector,
+    personFullNameSelector,
+    personShortNameSelector,
   });
 
   const { nodes, edges } = selectorGraph();

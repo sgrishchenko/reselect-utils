@@ -32,12 +32,15 @@ const state = {
   },
 };
 
-const getPerson = (state, props) => state.persons[props.id];
+const personSelector = (state, props) => state.persons[props.id];
 
-const getMarry = createBoundSelector(getPerson, { personId: 1 });
-const getHarry = createBoundSelector(getPerson, { personId: 2 });
+const exactMarrySelector = createBoundSelector(personSelector, { personId: 1 });
+const exactHarrySelector = createBoundSelector(personSelector, { personId: 2 });
 
-const getMarryAndHarry = createSequenceSelector([getMarry, getHarry]);
+const exactMarryAndHarrySelector = createSequenceSelector([
+  exactMarrySelector,
+  exactHarrySelector,
+]);
 
-getMarryAndHarry(state); // => ['Marry Poppins', 'Harry Potter']
+exactMarryAndHarrySelector(state); // => ['Marry Poppins', 'Harry Potter']
 ```

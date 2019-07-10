@@ -109,16 +109,27 @@ export default class SelectorMonad<
 
   public chain<S2, P2, R2>(
     fn: (result: R1) => ParametricSelector<S2, P2, R2>,
-  ): SelectorMonad<
-    S1 & S2,
-    P1 & P2,
-    R2,
-    ParametricSelector<S1 & S2, P1 & P2, R2>,
-    SelectorChainHierarchy<
-      (result: R1) => ParametricSelector<S2, P2, R2>,
-      SelectorChainType
-    >
-  >;
+  ): SelectorType extends Selector<S1, R1>
+    ? SelectorMonad<
+        S1 & S2,
+        P2,
+        R2,
+        ParametricSelector<S1 & S2, P2, R2>,
+        SelectorChainHierarchy<
+          (result: R1) => ParametricSelector<S2, P2, R2>,
+          SelectorChainType
+        >
+      >
+    : SelectorMonad<
+        S1 & S2,
+        P1 & P2,
+        R2,
+        ParametricSelector<S1 & S2, P1 & P2, R2>,
+        SelectorChainHierarchy<
+          (result: R1) => ParametricSelector<S2, P2, R2>,
+          SelectorChainType
+        >
+      >;
 
   public chain(fn: any) {
     const baseName = this.selector.selectorName || this.selector.name;

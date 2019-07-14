@@ -6,7 +6,7 @@
 - [createBoundSelector](/docs/api/createBoundSelector.md)
 - [createSequenceSelector](/docs/api/createSequenceSelector.md)
 - [SelectorMonad](/docs/api/SelectorMonad.md)
-- [CounterObjectCache](/docs/api/CounterObjectCache.md) (Work In Progress)
+- [CounterObjectCache](/docs/api/CounterObjectCache.md)
 - [reselectConnect](/docs/api/reselectConnect.md)
 - [useSelector](/docs/api/useSelector.md)
 - [once](/docs/api/once.md)

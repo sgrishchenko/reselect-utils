@@ -193,6 +193,10 @@ describe('SelectorMonad', () => {
       const initialProps = { id: 1, useFullName: true };
       fullNameByPropSelector(commonState, initialProps);
 
+      CounterObjectCache.confirmValidAccessRecursively(fullNameByPropSelector)(
+        commonState,
+        initialProps,
+      );
       CounterObjectCache.addRefRecursively(fullNameByPropSelector)(
         commonState,
         initialProps,

@@ -42,12 +42,33 @@ Recursively traverses the dependency chain of the selector and decrements the nu
 
 Void.
 
+### confirmValidAccessRecursively(selector)(state, props)
+
+#### Description
+
+Recursively traverses the dependency chain of the selector and confirms that access to the selector and its dependencies was valid.
+This is useful when you want to make sure that the selector counters are properly managed.
+Such utility functions as [reselectConnect](/docs/api/reselectConnect.md), [useSelector](/docs/api/useSelector.md) and [once](/docs/api/once.md) already include this confirmation. If you manage references manually, you should call this method every time immediately after calling the selector itself.
+
+#### Parameters
+
+- _selector_ - base selector for recursive traverse.
+
+- _state_ - state, which will passed to [selector.keySelector](https://github.com/toomuchdesign/re-reselect#selectorkeyselector).
+
+- _props_ - props, which will passed to [selector.keySelector](https://github.com/toomuchdesign/re-reselect#selectorkeyselector).
+
+#### Returns
+
+Void.
+
 ## Constructor
 
 #### Parameters
 
 - _options_ - Configuration properties when instantiating a cache object. Properties:
-  - _removeDelay_ - delay is before the instance of the selector is removed from the cache in milliseconds. Default value - 0.
+  - _removeDelay_ - delay is before the instance of the selector is removed from the cache in milliseconds. Default value - `0`.
+  - _warnAboutUncontrolled_ - boolean flag that activates alerts for unconfirmed selector calls. Default value - `true`.
 
 ## Instance Methods
 
@@ -123,3 +144,42 @@ Void.
 Void.
 
 ## Examples
+
+### Usage with [Re-reselect](https://github.com/toomuchdesign/re-reselect)
+
+```js
+import createCachedSelector from 're-reselect';
+import { CounterObjectCache } from 'reselect-utils';
+
+const personSelector = (state, props) => state.persons[props.id];
+
+const fullNameSelector = createCachedSelector(
+  [personSelector],
+  ({ firstName, secondName }) => `${firstName} ${secondName}`,
+)((state, props) => props.id, {
+  cacheObject: new CounterObjectCache({
+    removeDelay: 300,
+  }),
+});
+```
+
+### Manage the number of references.
+
+```js
+import { CounterObjectCache } from 'reselect-utils';
+
+// selector call
+const fullName = fullNameSelector(state, props);
+
+// confirmation that the selector call was allowed
+CounterObjectCache.confirmValidAccessRecursively(selector)(state, props);
+
+// increase the number of references to the selector
+// now the cache will store the selector instance created for this call.
+CounterObjectCache.addRefRecursively(selector)(state, props);
+
+// decrease the number of references to the selector
+// if the number of references to the selector is zero,
+// the selector instance will be removed from the cache.
+CounterObjectCache.removeRefRecursively(selector)(state, props);
+```

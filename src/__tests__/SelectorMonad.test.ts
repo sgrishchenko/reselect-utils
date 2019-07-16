@@ -4,7 +4,7 @@ import SelectorMonad from '../SelectorMonad';
 import createBoundSelector from '../createBoundSelector';
 import createSequenceSelector from '../createSequenceSelector';
 import CounterObjectCache from '../CounterObjectCache';
-import { State, commonState } from '../__data__/state';
+import { commonState, State } from '../__data__/state';
 import createPathSelector from '../createPathSelector';
 
 describe('SelectorMonad', () => {
@@ -227,6 +227,37 @@ describe('SelectorMonad', () => {
       ).toBeUndefined();
 
       jest.useRealTimers();
+    });
+
+    test('should decrease count of warning timeout pool in matching selector', () => {
+      const messageCachedSelector = createCachedSelector(
+        [messageSelector],
+        message => message,
+      )((state, props) => props.id, { cacheObject: new CounterObjectCache() });
+
+      const personCachedSelector = createCachedSelector(
+        [personSelector],
+        person => person,
+      )((state, props) => props.id, { cacheObject: new CounterObjectCache() });
+
+      const nameProxyCachedSelector = SelectorMonad.of(
+        createPathSelector(messageCachedSelector).personId(),
+      )
+        .chain(personId => {
+          return createBoundSelector(personCachedSelector, {
+            id: personId,
+          });
+        })
+        .buildSelector();
+
+      nameProxyCachedSelector(commonState, { id: 100 });
+
+      expect(
+        (messageCachedSelector.cache as any).warningTimeoutPool.length,
+      ).toBe(1);
+      expect(
+        (personCachedSelector.cache as any).warningTimeoutPool.length,
+      ).toBe(1);
     });
   });
 });

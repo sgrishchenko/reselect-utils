@@ -215,6 +215,11 @@ export default class SelectorMonad<
         state,
         props,
       );
+
+      if (cachedSelector.cache instanceof CounterObjectCache) {
+        cachedSelector.cache.confirmValidAccess();
+      }
+
       if (selectorInstance) {
         if (!selectorInstance[this.cacheContainerSymbol]) {
           selectorInstance[this.cacheContainerSymbol] = {};

@@ -42,9 +42,6 @@ Such projects as [Reselect](https://github.com/reduxjs/reselect) and [Re-reselec
   - [createBoundSelector](/docs/api/createBoundSelector.md)
   - [createSequenceSelector](/docs/api/createSequenceSelector.md)
   - [SelectorMonad](/docs/api/SelectorMonad.md)
-  - [CounterObjectCache](/docs/api/CounterObjectCache.md)
-  - [reselectConnect](/docs/api/reselectConnect.md)
-  - [once](/docs/api/once.md)
 
 # Credits
 

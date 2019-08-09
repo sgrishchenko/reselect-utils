@@ -3,7 +3,6 @@ import createCachedSelector from 're-reselect';
 import SelectorMonad from '../SelectorMonad';
 import createBoundSelector from '../createBoundSelector';
 import createSequenceSelector from '../createSequenceSelector';
-import CounterObjectCache from '../CounterObjectCache';
 import { State, commonState } from '../__data__/state';
 import createPathSelector from '../createPathSelector';
 
@@ -165,68 +164,6 @@ describe('SelectorMonad', () => {
       nameProxyCachedSelector(commonState, { id: 2 });
 
       expect(chainFn).toHaveBeenCalledTimes(2);
-    });
-  });
-
-  describe('integration with CounterObjectCache', () => {
-    const counterCachedFullNameSelector = createCachedSelector(
-      [personSelector],
-      ({ firstName, secondName }) => `${firstName} ${secondName}`,
-    )((state, props) => props.id, {
-      cacheObject: new CounterObjectCache(),
-    });
-
-    test('should remove references for unused selectors after switching dependencies', () => {
-      jest.useFakeTimers();
-
-      const useFullNameSelector = (
-        state: {},
-        props: { useFullName: boolean },
-      ) => props.useFullName;
-
-      const fullNameByPropSelector = SelectorMonad.of(useFullNameSelector)
-        .chain(useFullName =>
-          useFullName ? counterCachedFullNameSelector : () => undefined,
-        )
-        .buildSelector();
-
-      const initialProps = { id: 1, useFullName: true };
-      fullNameByPropSelector(commonState, initialProps);
-
-      CounterObjectCache.confirmValidAccessRecursively(fullNameByPropSelector)(
-        commonState,
-        initialProps,
-      );
-      CounterObjectCache.addRefRecursively(fullNameByPropSelector)(
-        commonState,
-        initialProps,
-      );
-
-      const nextProps = { id: 1, useFullName: false };
-      fullNameByPropSelector(commonState, nextProps);
-
-      CounterObjectCache.removeRefRecursively(fullNameByPropSelector)(
-        commonState,
-        nextProps,
-      );
-
-      jest.runAllTimers();
-
-      expect(
-        counterCachedFullNameSelector.getMatchingSelector(
-          commonState,
-          initialProps,
-        ),
-      ).toBeUndefined();
-
-      expect(
-        counterCachedFullNameSelector.getMatchingSelector(
-          commonState,
-          nextProps,
-        ),
-      ).toBeUndefined();
-
-      jest.useRealTimers();
     });
   });
 });

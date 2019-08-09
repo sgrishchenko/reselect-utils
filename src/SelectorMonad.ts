@@ -1,6 +1,5 @@
 import { OutputParametricCachedSelector } from 're-reselect';
 import { Selector, ParametricSelector } from './types';
-import CounterObjectCache from './CounterObjectCache';
 
 const sumString = (stringSource: object): number =>
   Array.from(stringSource.toString()).reduce(
@@ -41,11 +40,7 @@ export type SelectorChainHierarchy<
   H extends SelectorChainHierarchy<any, any>
 > = C & { parentChain?: H };
 
-export type CacheContainer<S, P, R> = {
-  prevState?: S;
-
-  prevProps?: P;
-
+export type CacheContainer<R> = {
   prevResult?: R;
 
   cachedSelector?: Selector<any, any> | ParametricSelector<any, any, any>;
@@ -70,7 +65,7 @@ export default class SelectorMonad<
     return new SelectorMonad<any, any, any, any, void>(selector);
   }
 
-  private cacheContainer: CacheContainer<S1, P1, R1> = {};
+  private cacheContainer: CacheContainer<R1> = {};
 
   private cacheContainerSymbol = Symbol('Selector Monad Cache Container');
 
@@ -137,27 +132,13 @@ export default class SelectorMonad<
     const combinedSelector = (state: any, props: any) => {
       const newResult = this.selector(state, props);
       const cacheContainer = this.resolveCacheContainer(state, props);
-      const {
-        prevState,
-        prevProps,
-        prevResult,
-        cachedSelector,
-      } = cacheContainer;
+      const { prevResult } = cacheContainer;
 
       if (prevResult === undefined || prevResult !== newResult) {
         const newSelector = fn(newResult);
 
-        if (cachedSelector !== undefined && cachedSelector !== newSelector) {
-          CounterObjectCache.removeRefRecursively(cachedSelector)(
-            prevState,
-            prevProps,
-          );
-        }
-
         cacheContainer.prevResult = newResult;
         cacheContainer.cachedSelector = newSelector;
-        cacheContainer.prevState = state;
-        cacheContainer.prevProps = props;
 
         cacheContainer.cachedSelector!.selectorName =
           cacheContainer.cachedSelector!.selectorName ||
@@ -204,10 +185,7 @@ export default class SelectorMonad<
     });
   }
 
-  private resolveCacheContainer(
-    state: S1,
-    props: P1,
-  ): CacheContainer<S1, P1, R1> {
+  private resolveCacheContainer(state: S1, props: P1): CacheContainer<R1> {
     const cachedSelector = tryExtractCachedSelector(this.selector);
 
     if (cachedSelector) {

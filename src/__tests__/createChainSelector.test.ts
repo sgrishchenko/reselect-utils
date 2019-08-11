@@ -1,12 +1,12 @@
 import { createSelector } from 'reselect';
 import createCachedSelector from 're-reselect';
-import SelectorMonad from '../SelectorMonad';
+import createChainSelector from '../createChainSelector';
 import createBoundSelector from '../createBoundSelector';
 import createSequenceSelector from '../createSequenceSelector';
 import { State, commonState } from '../__data__/state';
 import createPathSelector from '../createPathSelector';
 
-describe('SelectorMonad', () => {
+describe('createChainSelector', () => {
   const personSelector = (state: State, props: { id: number }) =>
     state.persons[props.id];
   const messageSelector = (state: State, props: { id: number }) =>
@@ -18,12 +18,12 @@ describe('SelectorMonad', () => {
   );
 
   test('should implement simple selector chain', () => {
-    const personByMessageIdSelector = SelectorMonad.of(messageSelector)
+    const personByMessageIdSelector = createChainSelector(messageSelector)
       .chain(message =>
         createBoundSelector(personSelector, { id: message.personId }),
       )
       .chain(person => createBoundSelector(fullNameSelector, { id: person.id }))
-      .buildSelector();
+      .build();
 
     expect(personByMessageIdSelector(commonState, { id: 100 })).toBe(
       'Marry Poppins',
@@ -36,7 +36,7 @@ describe('SelectorMonad', () => {
   test('should implement aggregation for collection by single item selector', () => {
     const personsSelector = (state: State) => state.persons;
 
-    const longestFullNameSelector = SelectorMonad.of(personsSelector)
+    const longestFullNameSelector = createChainSelector(personsSelector)
       .chain(persons =>
         createSequenceSelector(
           Object.values(persons).map(person =>
@@ -49,7 +49,7 @@ describe('SelectorMonad', () => {
           current.length > longest.length ? current : longest,
         ),
       )
-      .buildSelector();
+      .build();
 
     expect(longestFullNameSelector(commonState)).toBe('Marry Poppins');
   });
@@ -58,9 +58,9 @@ describe('SelectorMonad', () => {
     const selectorStub = () => '';
     const chainMock = jest.fn(() => selectorStub);
 
-    const someByMessageIdSelector = SelectorMonad.of(messageSelector)
+    const someByMessageIdSelector = createChainSelector(messageSelector)
       .chain(chainMock)
-      .buildSelector();
+      .build();
 
     someByMessageIdSelector(commonState, { id: 100 });
     someByMessageIdSelector(commonState, { id: 100 });
@@ -82,10 +82,10 @@ describe('SelectorMonad', () => {
       `${state.secondValue} ${props.prop}`;
     const secondChain = () => secondSelector;
 
-    const someByMessageIdSelector = SelectorMonad.of(messageSelector)
+    const someByMessageIdSelector = createChainSelector(messageSelector)
       .chain(firstChain)
       .chain(secondChain)
-      .buildSelector();
+      .build();
 
     expect(someByMessageIdSelector.chainHierarchy).toBeDefined();
 
@@ -106,9 +106,9 @@ describe('SelectorMonad', () => {
   test('should not mutate dependencies of chaining selectors', () => {
     const firstPersonSelector = createBoundSelector(personSelector, { id: 1 });
 
-    const firstPersonMonadicSelector = SelectorMonad.of(() => '')
+    const firstPersonMonadicSelector = createChainSelector(() => '')
       .chain(() => firstPersonSelector)
-      .buildSelector();
+      .build();
 
     const firstDependencies = firstPersonSelector.dependencies;
     firstPersonMonadicSelector(commonState);
@@ -130,11 +130,11 @@ describe('SelectorMonad', () => {
 
     test('should not invalidate cache for input parametric selector', () => {
       const chainFn = jest.fn(result => () => result);
-      const fullNameProxyCachedSelector = SelectorMonad.of(
+      const fullNameProxyCachedSelector = createChainSelector(
         fullNameCachedSelector,
       )
         .chain(chainFn)
-        .buildSelector();
+        .build();
 
       fullNameProxyCachedSelector(commonState, { id: 1 });
       fullNameProxyCachedSelector(commonState, { id: 2 });
@@ -152,11 +152,11 @@ describe('SelectorMonad', () => {
       )((state, props) => props.id);
 
       const chainFn = jest.fn(result => () => result);
-      const nameProxyCachedSelector = SelectorMonad.of(
+      const nameProxyCachedSelector = createChainSelector(
         createPathSelector(personCachedSelector).firstName(),
       )
         .chain(chainFn)
-        .buildSelector();
+        .build();
 
       nameProxyCachedSelector(commonState, { id: 1 });
       nameProxyCachedSelector(commonState, { id: 2 });

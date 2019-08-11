@@ -3,6 +3,8 @@ import {
   createPathSelector,
   createPropSelector,
   CounterObjectCache,
+  // @ts-ignore
+  // eslint-disable-next-line import/no-unresolved
 } from 'reselect-utils';
 import { todoSelector } from '../todos.selector';
 import { TodoItemOwnProps } from './todoItem.interface';

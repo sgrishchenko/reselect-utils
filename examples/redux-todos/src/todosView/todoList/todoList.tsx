@@ -8,6 +8,7 @@ const TodoList: FunctionComponent<TodoListProps> = ({ todos }) => {
   return (
     <>
       {todos.map(todo => (
+        // @ts-ignore
         <TodoItem key={todo.id} todoId={todo.id} />
       ))}
     </>

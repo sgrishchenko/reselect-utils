@@ -4,3 +4,4 @@ coverage/
 dist/
 es/
 lib/
+src/index.ts

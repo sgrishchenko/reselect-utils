@@ -8,7 +8,7 @@ import SelectorGraph from './SelectorGraph';
 import { Message, Person, commonState, State } from '../__data__/state';
 import createBoundSelector from '../createBoundSelector';
 import createSequenceSelector from '../createSequenceSelector';
-import SelectorMonad from '../SelectorMonad';
+import createChainSelector from '../createChainSelector';
 import { Selector } from '../types';
 /* tslint:disable:member-ordering */
 
@@ -65,14 +65,14 @@ class SelectorMonadGraph extends React.Component<{
 
 storiesOf('SelectorMonad', module)
   .add('entity chain example', () => {
-    const personByDocumentIdSelector = SelectorMonad.of(documentSelector)
+    const personByDocumentIdSelector = createChainSelector(documentSelector)
       .chain(document =>
         createBoundSelector(messageSelector, { id: document.messageId }),
       )
       .chain(message =>
         createBoundSelector(fullNameSelector, { id: message.personId }),
       )
-      .buildSelector();
+      .build();
 
     reset();
     registerSelectors({
@@ -95,7 +95,7 @@ storiesOf('SelectorMonad', module)
   .add('aggregation example', () => {
     const personsSelector = (state: State) => state.persons;
 
-    const longestFullNameSelector = SelectorMonad.of(personsSelector)
+    const longestFullNameSelector = createChainSelector(personsSelector)
       .chain(persons =>
         createSequenceSelector(
           Object.values(persons).map((person: Person) =>
@@ -108,7 +108,7 @@ storiesOf('SelectorMonad', module)
           current.length > longest.length ? current : longest,
         ),
       )
-      .buildSelector();
+      .build();
 
     reset();
     registerSelectors({
@@ -127,7 +127,7 @@ storiesOf('SelectorMonad', module)
   })
 
   .add('switch dependency example', () => {
-    const personOrMessageByDocumentIdSelector = SelectorMonad.of(
+    const personOrMessageByDocumentIdSelector = createChainSelector(
       documentSelector,
     )
       .chain(
@@ -138,7 +138,7 @@ storiesOf('SelectorMonad', module)
                 id: document.messageId,
               })) as Selector<State, Person | Message>,
       )
-      .buildSelector();
+      .build();
 
     reset();
     registerSelectors({

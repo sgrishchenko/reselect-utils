@@ -54,4 +54,5 @@ export default connect(
   {
     setTodoFilter: TodosViewAction.setFilter,
   },
+  // @ts-ignore
 )(TodoFilterSwitch);

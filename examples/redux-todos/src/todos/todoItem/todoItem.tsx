@@ -1,5 +1,7 @@
 import React, { ChangeEvent, FunctionComponent, useCallback } from 'react';
 import { connect } from 'react-redux';
+// @ts-ignore
+// eslint-disable-next-line import/no-unresolved
 import { reselectConnect } from 'reselect-utils';
 import { TodoItemProps } from './todoItem.interface';
 import { TodosAction } from '../todos.action';

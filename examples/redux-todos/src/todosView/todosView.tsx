@@ -8,7 +8,10 @@ const TodosView: FunctionComponent = () => {
     <div style={{ width: '300px' }}>
       <h3>Todos</h3>
       <TodoCreator />
-      <TodoList />
+      {
+        // @ts-ignore
+        <TodoList />
+      }
       <TodoFilterSwitch />
     </div>
   );

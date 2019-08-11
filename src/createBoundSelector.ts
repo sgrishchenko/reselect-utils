@@ -1,5 +1,6 @@
 import { OutputParametricCachedSelector } from 're-reselect';
 import { ParametricSelector, Selector } from './types';
+import { getSelectorName, isReReselectSelector } from './helpers';
 
 export type Diff<T, U> = Pick<T, Exclude<keyof T, keyof U>>;
 
@@ -29,26 +30,24 @@ export default <S, P1, P2 extends Partial<P1>, R>(
     | ReturnType<OutputParametricCachedSelector<S, P1, R, any, any>>,
   binding: P2,
 ) => {
-  const baseName =
-    'selectorName' in baseSelector
-      ? baseSelector.selectorName
-      : baseSelector.name;
-
   const boundSelector = innerCreateBoundSelector(baseSelector, binding);
 
-  const bindingStructure = Object.keys(binding).reduce(
-    (structure, key) => ({
-      ...structure,
-      [key]: '[*]',
-    }),
-    {},
-  );
-  const bindingName = generateMappingName(bindingStructure);
+  if (process.env.NODE_ENV !== 'production') {
+    const baseName = getSelectorName(baseSelector);
+    const bindingStructure = Object.keys(binding).reduce(
+      (structure, key) => ({
+        ...structure,
+        [key]: '[*]',
+      }),
+      {},
+    );
+    const bindingName = generateMappingName(bindingStructure);
 
-  boundSelector.selectorName = `${baseName} (${bindingName})`;
-  boundSelector.dependencies = [baseSelector];
+    boundSelector.selectorName = `${baseName} (${bindingName})`;
+    boundSelector.dependencies = [baseSelector];
+  }
 
-  if ('getMatchingSelector' in baseSelector) {
+  if (isReReselectSelector(baseSelector)) {
     const decoratedBaseSelector = Object.assign(
       (state: S, props: P1) => baseSelector(state, props),
       baseSelector,

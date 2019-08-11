@@ -2,7 +2,7 @@ import typescript from 'rollup-plugin-typescript2';
 
 export default {
   input: 'src/index.ts',
-  external: ['react', 'reselect', 'react-redux'],
+  external: ['react', 'reselect'],
   plugins: [
     typescript({
       tsconfigOverride: {
@@ -22,7 +22,6 @@ export default {
       globals: {
         react: 'React',
         reselect: 'Reselect',
-        'react-redux': 'ReactRedux',
       },
     },
   ],

@@ -4,7 +4,7 @@
   "description": "A collection of helpers and utilities for selectors",
   "main": "lib/index.js",
   "module": "es/index.js",
-  "browser": "dist/index.js",
+  "unpkg": "dist/index.js",
   "typings": "lib/index.d.ts",
   "repository": "git+https://github.com/sgrishchenko/reselect-utils.git",
   "author": "Sergei Grishchenko",

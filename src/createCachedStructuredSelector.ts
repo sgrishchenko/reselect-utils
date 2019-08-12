@@ -23,7 +23,7 @@ function createCachedStructuredSelector<M>(
         S,
         P,
         (...results: unknown[]) => { [K in keyof M]: ReturnType<M[K]> },
-        Selector<S, unknown>[]
+        ParametricSelector<S, P, unknown>[]
       >,
     ) => ParametricSelector<S, P, { [K in keyof M]: ReturnType<M[K]> }>
   : never;

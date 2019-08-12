@@ -8,7 +8,7 @@ import createCachedSelector, {
   LruObjectCache,
 } from 're-reselect';
 import { Selector, ParametricSelector, ReReselectSelector } from './types';
-import { getSelectorName, isReReselectSelector } from './helpers';
+import { getSelectorName, isDebugMode, isReReselectSelector } from './helpers';
 
 const sumString = (stringSource: object): number =>
   Array.from(stringSource.toString()).reduce(
@@ -156,47 +156,55 @@ export class SelectorMonad<
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      defineDynamicSelectorName(higherOrderSelector, () => {
-        const baseName = getSelectorName(this.selector);
+      if (isDebugMode()) {
+        defineDynamicSelectorName(higherOrderSelector, () => {
+          const baseName = getSelectorName(this.selector);
 
-        return `${baseName} (pre-chained ${sumString(fn)})`;
-      });
+          return `${baseName} (pre-chained ${sumString(fn)})`;
+        });
+      }
     }
 
     const combinedSelector = (state: any, props: any) => {
       const derivedSelector = higherOrderSelector(state, props);
 
+      combinedSelector.dependencies = [higherOrderSelector, derivedSelector];
+
       if (process.env.NODE_ENV !== 'production') {
-        const derivedSelectorName = getSelectorName(derivedSelector);
+        if (isDebugMode()) {
+          const derivedSelectorName = getSelectorName(derivedSelector);
 
-        if (!derivedSelectorName) {
-          defineDynamicSelectorName(derivedSelector, () => {
+          if (!derivedSelectorName) {
+            defineDynamicSelectorName(derivedSelector, () => {
+              const baseName = getSelectorName(this.selector);
+              const derivedSelectorKey = generateSelectorKey(derivedSelector);
+
+              return `derived from ${baseName} (${derivedSelectorKey})`;
+            });
+          }
+
+          defineDynamicSelectorName(combinedSelector, () => {
             const baseName = getSelectorName(this.selector);
-            const derivedSelectorKey = generateSelectorKey(derivedSelector);
+            const dependencyName = getSelectorName(derivedSelector);
 
-            return `derived from ${baseName} (${derivedSelectorKey})`;
+            return `${baseName} (chained by ${dependencyName})`;
           });
         }
-
-        combinedSelector.dependencies = [higherOrderSelector, derivedSelector];
-        defineDynamicSelectorName(combinedSelector, () => {
-          const baseName = getSelectorName(this.selector);
-          const dependencyName = getSelectorName(derivedSelector);
-
-          return `${baseName} (chained by ${dependencyName})`;
-        });
       }
 
       return derivedSelector(state, props);
     };
 
-    if (process.env.NODE_ENV !== 'production') {
-      combinedSelector.dependencies = [higherOrderSelector];
-      defineDynamicSelectorName(combinedSelector, () => {
-        const baseName = this.selector.selectorName || this.selector.name;
+    combinedSelector.dependencies = [higherOrderSelector];
 
-        return `${baseName} (will be chained ${sumString(fn)})`;
-      });
+    if (process.env.NODE_ENV !== 'production') {
+      if (isDebugMode()) {
+        defineDynamicSelectorName(combinedSelector, () => {
+          const baseName = this.selector.selectorName || this.selector.name;
+
+          return `${baseName} (will be chained ${sumString(fn)})`;
+        });
+      }
     }
 
     return new SelectorMonad<any, any, any, any, any>(

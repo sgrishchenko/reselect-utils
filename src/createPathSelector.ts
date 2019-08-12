@@ -1,5 +1,5 @@
 import { Selector, ParametricSelector } from './types';
-import { getSelectorName } from './helpers';
+import { getSelectorName, isDebugMode } from './helpers';
 
 export type Defined<T> = Exclude<T, undefined>;
 
@@ -93,10 +93,14 @@ const innerCreatePathSelector = (
       return isNullOrUndefined(result) ? defaultValue : result;
     };
 
+    resultSelector.dependencies = [baseSelector];
+
     if (process.env.NODE_ENV !== 'production') {
-      const baseName = getSelectorName(baseSelector);
-      resultSelector.selectorName = [baseName, ...path].join('.');
-      resultSelector.dependencies = [baseSelector];
+      if (isDebugMode()) {
+        const baseName = getSelectorName(baseSelector);
+
+        resultSelector.selectorName = [baseName, ...path].join('.');
+      }
     }
 
     return resultSelector;

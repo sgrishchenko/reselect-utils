@@ -19,4 +19,7 @@ export { default as seq } from './createSequenceSelector';
 export { default as struct } from './createStructuredSelector';
 export { default as cachedSeq } from './createCachedSequenceSelector';
 export { default as cachedStruct } from './createCachedStructuredSelector';
+
+/* Configuration */
+export { setDebugMode, isDebugMode } from './helpers';
 /* eslint-enable prettier/prettier */

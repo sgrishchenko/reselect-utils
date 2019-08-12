@@ -6,3 +6,11 @@ export const getSelectorName = (selector: any): string =>
 export const isReReselectSelector = (
   selector: any,
 ): selector is ReReselectSelector => 'getMatchingSelector' in selector;
+
+let debugMode = true;
+
+export const isDebugMode = () => debugMode;
+
+export const setDebugMode = (value: boolean) => {
+  debugMode = value;
+};

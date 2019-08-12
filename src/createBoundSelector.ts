@@ -1,6 +1,6 @@
 import { OutputParametricCachedSelector } from 're-reselect';
 import { ParametricSelector, Selector } from './types';
-import { getSelectorName, isReReselectSelector } from './helpers';
+import { getSelectorName, isDebugMode, isReReselectSelector } from './helpers';
 
 export type Diff<T, U> = Pick<T, Exclude<keyof T, keyof U>>;
 
@@ -32,19 +32,22 @@ export default <S, P1, P2 extends Partial<P1>, R>(
 ) => {
   const boundSelector = innerCreateBoundSelector(baseSelector, binding);
 
-  if (process.env.NODE_ENV !== 'production') {
-    const baseName = getSelectorName(baseSelector);
-    const bindingStructure = Object.keys(binding).reduce(
-      (structure, key) => ({
-        ...structure,
-        [key]: '[*]',
-      }),
-      {},
-    );
-    const bindingName = generateMappingName(bindingStructure);
+  boundSelector.dependencies = [baseSelector];
 
-    boundSelector.selectorName = `${baseName} (${bindingName})`;
-    boundSelector.dependencies = [baseSelector];
+  if (process.env.NODE_ENV !== 'production') {
+    if (isDebugMode()) {
+      const baseName = getSelectorName(baseSelector);
+      const bindingStructure = Object.keys(binding).reduce(
+        (structure, key) => ({
+          ...structure,
+          [key]: '[*]',
+        }),
+        {},
+      );
+      const bindingName = generateMappingName(bindingStructure);
+
+      boundSelector.selectorName = `${baseName} (${bindingName})`;
+    }
   }
 
   if (isReReselectSelector(baseSelector)) {

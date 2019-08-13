@@ -1,5 +1,6 @@
+import { ParametricSelector } from 'reselect';
 import { OutputParametricCachedSelector } from 're-reselect';
-import { ParametricSelector } from './types';
+import { NamedParametricSelector } from './types';
 import { getSelectorName, isDebugMode, isReReselectSelector } from './helpers';
 
 const generateMappingName = (mapping: {}) =>
@@ -8,7 +9,7 @@ const generateMappingName = (mapping: {}) =>
 const innerCreateAdaptedSelector = <S, P1, P2, R>(
   baseSelector: ParametricSelector<S, P1, R>,
   mapping: (props: P2) => P1,
-): ParametricSelector<S, P2, R> => {
+): NamedParametricSelector<S, P2, R> => {
   return (state: S, props: P2) => baseSelector(state, mapping(props));
 };
 

@@ -1,27 +1,37 @@
-import { Selector, ParametricSelector } from './types';
+import { Selector, ParametricSelector } from 'reselect';
+import { NamedSelector, NamedParametricSelector } from './types';
 import { getSelectorName, isDebugMode } from './helpers';
 
 export type Defined<T> = Exclude<T, undefined>;
 
 export type SelectorBuilder<S, R, D> = {
-  (noDefaultValue?: undefined): Selector<S, Defined<R> | undefined, D>;
+  (noDefaultValue?: undefined): NamedSelector<S, Defined<R> | undefined, D>;
 
-  (defaultValue: NonNullable<R>): Selector<S, NonNullable<R>, D>;
+  (defaultValue: NonNullable<R>): NamedSelector<S, NonNullable<R>, D>;
 
-  (nullDefaultValue: R extends null ? null : never): Selector<S, Defined<R>, D>;
+  (nullDefaultValue: R extends null ? null : never): NamedSelector<
+    S,
+    Defined<R>,
+    D
+  >;
 };
 
 export type ParametricSelectorBuilder<S, P, R, D> = {
-  (noDefaultValue?: undefined): ParametricSelector<
+  (noDefaultValue?: undefined): NamedParametricSelector<
     S,
     P,
     Defined<R> | undefined,
     D
   >;
 
-  (defaultValue: NonNullable<R>): ParametricSelector<S, P, NonNullable<R>, D>;
+  (defaultValue: NonNullable<R>): NamedParametricSelector<
+    S,
+    P,
+    NonNullable<R>,
+    D
+  >;
 
-  (nullDefaultValue: R extends null ? null : never): ParametricSelector<
+  (nullDefaultValue: R extends null ? null : never): NamedParametricSelector<
     S,
     P,
     Defined<R>,

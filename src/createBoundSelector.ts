@@ -1,5 +1,6 @@
+import { ParametricSelector } from 'reselect';
 import { OutputParametricCachedSelector } from 're-reselect';
-import { ParametricSelector, Selector } from './types';
+import { NamedParametricSelector, NamedSelector } from './types';
 import { getSelectorName, isDebugMode, isReReselectSelector } from './helpers';
 
 export type Diff<T, U> = Pick<T, Exclude<keyof T, keyof U>>;
@@ -18,8 +19,8 @@ const innerCreateBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
     });
 
   type BoundSelector = Exclude<keyof P1, keyof P2> extends never
-    ? Selector<S, R>
-    : ParametricSelector<S, Diff<P1, P2>, R>;
+    ? NamedSelector<S, R>
+    : NamedParametricSelector<S, Diff<P1, P2>, R>;
 
   return boundSelector as BoundSelector;
 };

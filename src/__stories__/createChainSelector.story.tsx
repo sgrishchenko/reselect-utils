@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { createSelector } from 'reselect';
+import { createSelector, Selector } from 'reselect';
 // @ts-ignore
 import { selectorGraph, registerSelectors, reset } from 'reselect-tools';
 import SelectorGraph from './SelectorGraph';
@@ -9,7 +9,6 @@ import { Message, Person, commonState, State } from '../__data__/state';
 import createBoundSelector from '../createBoundSelector';
 import createSequenceSelector from '../createSequenceSelector';
 import createChainSelector from '../createChainSelector';
-import { Selector } from '../types';
 /* tslint:disable:member-ordering */
 
 const personSelector = (state: State, props: { id: number }) =>

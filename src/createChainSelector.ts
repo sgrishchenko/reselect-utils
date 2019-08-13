@@ -1,4 +1,4 @@
-import { createSelector } from 'reselect';
+import { createSelector, ParametricSelector, Selector } from 'reselect';
 import createCachedSelector, {
   FifoMapCache,
   FifoObjectCache,
@@ -7,7 +7,11 @@ import createCachedSelector, {
   LruMapCache,
   LruObjectCache,
 } from 're-reselect';
-import { Selector, ParametricSelector, ReReselectSelector } from './types';
+import {
+  NamedSelector,
+  NamedParametricSelector,
+  ReReselectSelector,
+} from './types';
 import { getSelectorName, isDebugMode, isReReselectSelector } from './helpers';
 
 const sumString = (stringSource: object): number =>
@@ -34,7 +38,7 @@ const defineDynamicSelectorName = (
 };
 
 const tryExtractCachedSelector = (
-  selector: ParametricSelector<any, any, any> | ReReselectSelector,
+  selector: NamedParametricSelector<any, any, any> | ReReselectSelector,
 ): ReReselectSelector | undefined => {
   if (isReReselectSelector(selector)) {
     return selector;
@@ -79,7 +83,9 @@ export class SelectorMonad<
   S1,
   P1,
   R1,
-  SelectorType extends Selector<S1, R1> | ParametricSelector<S1, P1, R1>,
+  SelectorType extends
+    | NamedSelector<S1, R1>
+    | NamedParametricSelector<S1, P1, R1>,
   SelectorChainType extends SelectorChainHierarchy<any, any>
 > {
   private readonly selector: SelectorType;
@@ -140,7 +146,11 @@ export class SelectorMonad<
       >;
 
   public chain(fn: any) {
-    const cachedSelector = tryExtractCachedSelector(this.selector);
+    const baseSelector =
+      'isCombinedSelector' in this.selector
+        ? this.selector.dependencies![0]
+        : this.selector;
+    const cachedSelector = tryExtractCachedSelector(baseSelector);
 
     const selectorCreator: any = cachedSelector
       ? createCachedSelector
@@ -196,11 +206,12 @@ export class SelectorMonad<
     };
 
     combinedSelector.dependencies = [higherOrderSelector];
+    combinedSelector.isCombinedSelector = true;
 
     if (process.env.NODE_ENV !== 'production') {
       if (isDebugMode()) {
         defineDynamicSelectorName(combinedSelector, () => {
-          const baseName = this.selector.selectorName || this.selector.name;
+          const baseName = getSelectorName(this.selector);
 
           return `${baseName} (will be chained ${sumString(fn)})`;
         });

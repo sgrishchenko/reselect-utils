@@ -93,9 +93,7 @@ const innerCreatePathSelector = (
   path: PropertyKey[] = [],
 ): any => {
   const proxyTarget = (defaultValue?: any) => {
-    // eslint-disable-next-line @typescript-eslint/tslint/config
-    // tslint:disable-next-line:only-arrow-functions
-    const resultSelector = function() {
+    function resultSelector() {
       // performance optimisation
       // eslint-disable-next-line prefer-spread,prefer-rest-params
       let result = baseSelector.apply(null, arguments);
@@ -105,7 +103,7 @@ const innerCreatePathSelector = (
       }
 
       return isNullOrUndefined(result) ? defaultValue : result;
-    };
+    }
 
     resultSelector.dependencies = [baseSelector];
 

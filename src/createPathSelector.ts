@@ -93,8 +93,12 @@ const innerCreatePathSelector = (
   path: PropertyKey[] = [],
 ): any => {
   const proxyTarget = (defaultValue?: any) => {
-    const resultSelector = (...args: any[]) => {
-      let result = baseSelector(...args);
+    // eslint-disable-next-line @typescript-eslint/tslint/config
+    // tslint:disable-next-line:only-arrow-functions
+    const resultSelector = function() {
+      // performance optimisation
+      // eslint-disable-next-line prefer-spread,prefer-rest-params
+      let result = baseSelector.apply(null, arguments);
 
       for (let i = 0; i < path.length && isObject(result); i += 1) {
         result = result[path[i]];

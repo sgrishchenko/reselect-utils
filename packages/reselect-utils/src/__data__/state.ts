@@ -1,5 +1,3 @@
-import { getStateWith } from 'reselect-tools';
-
 export type Person = {
   id: number;
   firstName: string;
@@ -73,5 +71,3 @@ export const commonState: State = {
     },
   },
 };
-
-getStateWith(() => ({ ...commonState }));

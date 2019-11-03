@@ -1,5 +1,4 @@
 .git/
-.rpt2_cache/
 coverage/
 packages/*/dist/
 packages/*/es/

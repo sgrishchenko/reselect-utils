@@ -54,25 +54,11 @@ export const createCytoElements = (nodes: Nodes, edges: Edges) => {
   return [...cytoNodes, ...cytoEdges];
 };
 
-export const drawCytoscapeGraph = (
-  cyElement: HTMLElement | null,
-  nodes: Nodes,
-  edges: Edges,
-  onNodeClick: (nodeName: string) => void,
-) => {
-  const elements = createCytoElements(nodes, edges);
-
-  const cy = cytoscape({
+export const drawCytoscapeGraph = (cyElement: HTMLElement | null) => {
+  return cytoscape({
     ...cytoDefaults,
     container: cyElement,
-    elements,
   });
-
-  cy.nodes().on('click', event => {
-    onNodeClick(event.target.data().name);
-  });
-
-  return cy;
 };
 
 export const updateCytoscapeGraph = (cy: Core, nodes: Nodes, edges: Edges) => {

@@ -1,39 +1,46 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { createStructuredSelector } from 'reselect';
-import { selectorGraph, registerSelectors, reset } from 'reselect-tools';
+import {
+  selectorGraph,
+  registerSelectors,
+  reset,
+  Nodes,
+  Edges,
+} from 'reselect-tools';
 import { SelectorGraph } from './SelectorGraph';
-import { Message, Person, State } from '../__data__/state';
+import { State } from '../__data__/state';
 import { createBoundSelector } from '../createBoundSelector';
+import { createStructuredSelector } from '../createStructuredSelector';
 
 const personSelector = (state: State, props: { id: number }) =>
   state.persons[props.id];
 const messageSelector = (state: State, props: { id: number }) =>
   state.messages[props.id];
 
-type PersonAndMessage = {
-  person: Person;
-  message: Message;
-};
-
 storiesOf('createBoundSelector', module).add('example', () => {
-  const marryAndHelloSelector = createStructuredSelector<
-    State,
-    PersonAndMessage
-  >({
-    person: createBoundSelector(personSelector, { id: 1 }),
-    message: createBoundSelector(messageSelector, { id: 100 }),
-  });
+  const [nodes, setNodes] = useState<Nodes>({});
+  const [edges, setEdges] = useState<Edges>([]);
 
-  reset();
-  registerSelectors({
-    personSelector,
-    messageSelector,
-    marryAndHelloSelector,
-  });
+  useEffect(() => {
+    const marryAndHelloSelector = createStructuredSelector({
+      person: createBoundSelector(personSelector, { id: 1 }),
+      message: createBoundSelector(messageSelector, { id: 100 }),
+    });
 
-  const { nodes, edges } = selectorGraph();
+    reset();
+    registerSelectors({
+      personSelector,
+      messageSelector,
+      marryAndHelloSelector,
+    });
+
+    const graph = selectorGraph();
+
+    setNodes(graph.nodes);
+    setEdges(graph.edges);
+  }, [setNodes, setEdges]);
+
   return (
     <SelectorGraph
       nodes={nodes}

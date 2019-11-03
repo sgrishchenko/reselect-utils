@@ -1,4 +1,9 @@
-import React, { CSSProperties } from 'react';
+import React, {
+  CSSProperties,
+  FunctionComponent,
+  useEffect,
+  useRef,
+} from 'react';
 import { Core as CytoscapeCore } from 'cytoscape';
 import { Edges, Nodes, CheckResult, checkSelector } from 'reselect-tools';
 import { drawCytoscapeGraph, updateCytoscapeGraph } from './cytoscapeUtils';
@@ -7,49 +12,44 @@ export type SelectorGraphProps = {
   nodes: Nodes;
   edges: Edges;
   onNodeClick: (name: string, node: CheckResult) => void;
-  style: CSSProperties;
+  style?: CSSProperties;
 };
 
-export class SelectorGraph extends React.Component<SelectorGraphProps> {
-  private cy!: CytoscapeCore;
+export const SelectorGraph: FunctionComponent<SelectorGraphProps> = ({
+  nodes,
+  edges,
+  onNodeClick,
+  style,
+}) => {
+  const cy = useRef<CytoscapeCore>();
+  const cyElement = useRef<HTMLDivElement>(null);
 
-  private cyElement!: HTMLElement | null;
-
-  public static defaultProps = {
-    onNodeClick: () => undefined,
-    style: {},
-  };
-
-  public componentDidMount() {
-    const { nodes, edges, onNodeClick } = this.props;
-
-    this.cy = drawCytoscapeGraph(this.cyElement, nodes, edges, name => {
-      onNodeClick(name, checkSelector(name));
-    });
-  }
-
-  public componentDidUpdate(prevProps: SelectorGraphProps) {
-    const { nodes, edges } = this.props;
-
-    if (prevProps.nodes === nodes && prevProps.edges === edges) {
-      return;
+  useEffect(() => {
+    if (!cy.current) {
+      cy.current = drawCytoscapeGraph(cyElement.current);
     }
 
-    updateCytoscapeGraph(this.cy, nodes, edges);
-  }
+    updateCytoscapeGraph(cy.current, nodes, edges);
+  }, [cy, cyElement, nodes, edges]);
 
-  public componentWillUnmount() {
-    if (this.cy) {
-      this.cy.destroy();
+  useEffect(() => {
+    if (cy.current) {
+      cy.current.off('click', 'node');
+      cy.current.on('click', 'node', event => {
+        const { name } = event.target.data();
+        onNodeClick(name, checkSelector(name));
+      });
     }
-  }
+  }, [cy, onNodeClick]);
 
-  private setCyElement = (element: HTMLElement | null) => {
-    this.cyElement = element;
-  };
+  useEffect(
+    () => () => {
+      if (cy.current) {
+        cy.current.destroy();
+      }
+    },
+    [cy],
+  );
 
-  public render() {
-    const { style } = this.props;
-    return <div style={{ height: '100%', ...style }} ref={this.setCyElement} />;
-  }
-}
+  return <div style={{ height: '100%', ...style }} ref={cyElement} />;
+};

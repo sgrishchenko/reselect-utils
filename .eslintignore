@@ -63,7 +63,6 @@ typings/
 .next
 
 # build output
-.rpt2_cache
 packages/*/dist/
 packages/*/es/
 packages/*/lib/

@@ -2,12 +2,10 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { createStructuredSelector } from 'reselect';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 import { selectorGraph, registerSelectors, reset } from 'reselect-tools';
-import SelectorGraph from './SelectorGraph';
+import { SelectorGraph } from './SelectorGraph';
 import { Message, Person, State } from '../__data__/state';
-import createAdaptedSelector from '../createAdaptedSelector';
+import { createAdaptedSelector } from '../createAdaptedSelector';
 
 const personSelector = (state: State, props: { id: number }) =>
   state.persons[props.id];

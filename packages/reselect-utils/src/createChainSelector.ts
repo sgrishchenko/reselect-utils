@@ -240,16 +240,14 @@ export class SelectorMonad<
   }
 }
 
-function createChainSelector<S, R>(
+export function createChainSelector<S, R>(
   selector: Selector<S, R>,
 ): SelectorMonad<S, void, R, Selector<S, R>, void>;
 
-function createChainSelector<S, P, R>(
+export function createChainSelector<S, P, R>(
   selector: ParametricSelector<S, P, R>,
 ): SelectorMonad<S, P, R, ParametricSelector<S, P, R>, void>;
 
-function createChainSelector(selector: any) {
+export function createChainSelector(selector: any) {
   return new SelectorMonad<any, any, any, any, void>(selector);
 }
-
-export default createChainSelector;

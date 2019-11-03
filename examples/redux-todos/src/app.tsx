@@ -1,8 +1,6 @@
 import React from 'react';
-import TodosView from './todosView/todosView';
+import { TodosView } from './todosView/todosView';
 
-const App = () => {
+export const App = () => {
   return <TodosView />;
 };
-
-export default App;

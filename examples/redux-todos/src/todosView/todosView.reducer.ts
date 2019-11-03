@@ -8,7 +8,7 @@ export const todosViewInitialState: TodosViewState = {
 
 export const todosViewReducer = reducerWithInitialState(
   todosViewInitialState,
-).case(TodosViewAction.setFilter, (state, { filter }) => ({
+).case(TodosViewAction.setFilter, (state, filter) => ({
   ...state,
   filter,
 }));

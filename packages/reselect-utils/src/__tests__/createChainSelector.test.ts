@@ -1,10 +1,10 @@
 import { createSelector } from 'reselect';
 import createCachedSelector from 're-reselect';
-import createChainSelector from '../createChainSelector';
-import createBoundSelector from '../createBoundSelector';
-import createSequenceSelector from '../createSequenceSelector';
+import { createChainSelector } from '../createChainSelector';
+import { createBoundSelector } from '../createBoundSelector';
+import { createSequenceSelector } from '../createSequenceSelector';
 import { State, commonState } from '../__data__/state';
-import createPathSelector from '../createPathSelector';
+import { createPathSelector } from '../createPathSelector';
 
 describe('createChainSelector', () => {
   const personSelector = (state: State, props: { id: number }) =>

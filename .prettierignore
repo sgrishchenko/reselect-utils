@@ -1,7 +1,6 @@
 .git/
 .rpt2_cache/
 coverage/
-dist/
-es/
-lib/
-src/index.ts
+packages/*/dist/
+packages/*/es/
+packages/*/lib/

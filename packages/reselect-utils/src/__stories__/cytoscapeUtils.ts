@@ -1,10 +1,8 @@
 import cytoscape, { Core } from 'cytoscape';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-import dagre from 'cytoscape-dagre';
-import { Edges, Nodes } from './types';
+import { Edges, Nodes } from 'reselect-tools';
 
-cytoscape.use(dagre);
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+cytoscape.use(require('cytoscape-dagre'));
 
 const dagreLayout = {
   name: 'dagre',

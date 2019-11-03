@@ -1,30 +1,29 @@
 import React, { ChangeEvent, FunctionComponent, useCallback } from 'react';
-import { connect } from 'react-redux';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-// eslint-disable-next-line import/no-unresolved
-import { reselectConnect } from 'reselect-utils';
+import { useDispatch } from 'react-redux';
 import { TodoItemProps } from './todoItem.interface';
 import { TodosAction } from '../todos.action';
-import todoItemPropsSelector from './todoItem.selector';
+import { todoItemPropsSelector } from './todoItem.selector';
+import { useParametricSelector } from '../../utils/hooks';
 
-const TodoItem: FunctionComponent<TodoItemProps> = ({
-  todoId,
-  todoName,
-  todoCompleted,
-  removeTodo,
-  completeTodo,
-}) => {
+export const TodoItem: FunctionComponent<TodoItemProps> = ({ todoId }) => {
+  const { todoName, todoCompleted } = useParametricSelector(
+    todoItemPropsSelector,
+    { todoId },
+  );
+  const dispatch = useDispatch();
+
   const onCheckboxChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      completeTodo({ id: todoId, completed: event.target.checked });
+      const payload = { id: todoId, completed: event.target.checked };
+      dispatch(TodosAction.complete(payload));
     },
-    [todoId, completeTodo],
+    [dispatch, todoId],
   );
 
   const onRemoveClick = useCallback(() => {
-    removeTodo({ id: todoId });
-  }, [todoId, removeTodo]);
+    const payload = { id: todoId };
+    dispatch(TodosAction.remove(payload));
+  }, [dispatch, todoId]);
 
   return (
     <div style={{ display: 'flex' }}>
@@ -44,11 +43,3 @@ const TodoItem: FunctionComponent<TodoItemProps> = ({
     </div>
   );
 };
-
-export default connect(
-  todoItemPropsSelector,
-  {
-    removeTodo: TodosAction.remove,
-    completeTodo: TodosAction.complete,
-  },
-)(reselectConnect(todoItemPropsSelector)(TodoItem));

@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 import { getStateWith } from 'reselect-tools';
 
 export type Person = {

@@ -4,5 +4,5 @@ import { TodoFilter } from './todosView.interface';
 const actionCreator = actionCreatorFactory('Todos');
 
 export const TodosViewAction = {
-  setFilter: actionCreator<{ filter: TodoFilter }>('SET_FILTER'),
+  setFilter: actionCreator<TodoFilter>('SET_FILTER'),
 };

@@ -25,7 +25,7 @@ const innerCreateBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
   return boundSelector as BoundSelector;
 };
 
-export default <S, P1, P2 extends Partial<P1>, R>(
+export const createBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
   baseSelector:
     | ParametricSelector<S, P1, R>
     | ReturnType<OutputParametricCachedSelector<S, P1, R, any, any>>,

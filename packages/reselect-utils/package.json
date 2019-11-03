@@ -1,0 +1,37 @@
+{
+  "name": "reselect-utils",
+  "version": "2.0.0-alpha.4",
+  "description": "A collection of helpers and utilities for selectors",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "unpkg": "dist/index.js",
+  "typings": "lib/index.d.ts",
+  "repository": "git+https://github.com/sgrishchenko/reselect-utils.git",
+  "author": "Sergei Grishchenko",
+  "license": "MIT",
+  "files": [
+    "dist/",
+    "es/",
+    "lib/"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "clean": "rimraf lib es dist coverage",
+    "build:cjs": "tsc --outDir lib -d",
+    "build:es": "tsc --outDir es -m es2015",
+    "build:umd": "rollup -c ../../rollup.config.ts",
+    "build": "yarn clean && yarn build:cjs && yarn build:es && yarn build:umd"
+  },
+  "devDependencies": {
+    "@storybook/addon-actions": "^5.2.5",
+    "@storybook/react": "^5.2.5",
+    "@types/cytoscape": "^3.8.5",
+    "@types/react": "^16.9.11",
+    "cytoscape": "^3.11.0",
+    "cytoscape-dagre": "^2.2.2",
+    "re-reselect": "^3.4.0",
+    "react": "^16.11.0",
+    "reselect": "^4.0.0",
+    "reselect-tools": "^0.0.7"
+  }
+}

@@ -1,6 +1,6 @@
 import { createSelector, ParametricSelector, Selector } from 'reselect';
 
-function createStructuredSelector<M>(
+export function createStructuredSelector<M>(
   selectors: M,
   selectorCreator?: typeof createSelector,
 ): M extends { [K in keyof M]: Selector<infer S, unknown> }
@@ -9,7 +9,7 @@ function createStructuredSelector<M>(
   ? ParametricSelector<S, P, { [K in keyof M]: ReturnType<M[K]> }>
   : never;
 
-function createStructuredSelector(
+export function createStructuredSelector(
   selectors: any,
   selectorCreator = createSelector,
 ): any {
@@ -23,5 +23,3 @@ function createStructuredSelector(
     }, {});
   });
 }
-
-export default createStructuredSelector;

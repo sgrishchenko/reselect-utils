@@ -123,16 +123,14 @@ const innerCreatePathSelector = (
   });
 };
 
-function createPathSelector<S, R>(
+export function createPathSelector<S, R>(
   baseSelector: Selector<S, R>,
 ): PathSelectorType<S, R, [Selector<S, R>]>;
 
-function createPathSelector<S, P, R>(
+export function createPathSelector<S, P, R>(
   baseSelector: ParametricSelector<S, P, R>,
 ): PathParametricSelectorType<S, P, R, [ParametricSelector<S, P, R>]>;
 
-function createPathSelector(baseSelector: any) {
+export function createPathSelector(baseSelector: any) {
   return innerCreatePathSelector(baseSelector);
 }
-
-export default createPathSelector;

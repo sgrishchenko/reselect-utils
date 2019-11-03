@@ -1,19 +1,16 @@
 import React, { CSSProperties } from 'react';
 import { Core as CytoscapeCore } from 'cytoscape';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-import { checkSelector } from 'reselect-tools';
-import { Edges, Nodes, Node } from './types';
+import { Edges, Nodes, CheckResult, checkSelector } from 'reselect-tools';
 import { drawCytoscapeGraph, updateCytoscapeGraph } from './cytoscapeUtils';
 
 export type SelectorGraphProps = {
   nodes: Nodes;
   edges: Edges;
-  onNodeClick: (name: string, node: Node) => void;
+  onNodeClick: (name: string, node: CheckResult) => void;
   style: CSSProperties;
 };
 
-export default class SelectorGraph extends React.Component<SelectorGraphProps> {
+export class SelectorGraph extends React.Component<SelectorGraphProps> {
   private cy!: CytoscapeCore;
 
   private cyElement!: HTMLElement | null;

@@ -2,11 +2,14 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   snapshotSerializers: ['enzyme-to-json/serializer'],
-  setupFilesAfterEnv: ['<rootDir>src/setupTests.ts'],
+  setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
   collectCoverage: true,
-  collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx}'],
+  collectCoverageFrom: [
+    '<rootDir>/packages/*/src/**/*.{ts,tsx}',
+    '!**/node_modules/**',
+  ],
   coveragePathIgnorePatterns: [
-    '<rootDir>/src/__data__/',
-    '<rootDir>/src/__stories__/',
+    '<rootDir>/packages/[^\\/]+/src/__data__/',
+    '<rootDir>/packages/[^\\/]+/src/__stories__/',
   ],
 };

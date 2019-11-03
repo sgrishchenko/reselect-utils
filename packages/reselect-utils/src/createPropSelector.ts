@@ -1,6 +1,6 @@
-import createPathSelector from './createPathSelector';
+import { createPathSelector } from './createPathSelector';
 
-export default <P>() => {
+export const createPropSelector = <P>() => {
   const propsSelector = (state: {}, props: P) => props;
   return createPathSelector(propsSelector);
 };

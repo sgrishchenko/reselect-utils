@@ -1,6 +1,6 @@
 import { DeepPartial, Middleware } from 'redux';
 
-export default <S>(
+export const createLocalStorageMiddleware = <S>(
   stateLocalStorageKey: string,
   project: (state: S) => DeepPartial<S>,
 ) => {

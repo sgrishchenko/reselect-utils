@@ -1,14 +1,6 @@
 import { createSelector } from 'reselect';
 import createCachedSelector from 're-reselect';
-import {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
-  SelectorMonad,
-  createPathSelector,
-  createPropSelector,
-  createBoundSelector,
-  // eslint-disable-next-line import/no-unresolved
-} from 'reselect-utils';
+import { chain, path, prop, bound } from 'reselect-utils';
 import { TodoFilter } from '../todosView.interface';
 import { todosSelector } from '../../todos/todos.selector';
 import { todosViewSelector } from '../todosView.selector';
@@ -22,25 +14,21 @@ type IsCompletedProps = { completed: boolean };
 
 const filteredTodoListSelector = createCachedSelector(
   todoListSelector,
-  createPropSelector<IsCompletedProps>().completed(),
+  prop<IsCompletedProps>().completed(),
   (todos, completed) => {
     return todos.filter(todo => todo.completed === completed);
   },
 )((state, props) => String(props.completed));
 
-export default SelectorMonad.of(createPathSelector(todosViewSelector).filter())
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
+export const todoListPropsSelector = chain(path(todosViewSelector).filter())
   .chain(todoFilter => {
     return todoFilter === TodoFilter.ALL
       ? todoListSelector
-      : createBoundSelector(filteredTodoListSelector, {
+      : bound(filteredTodoListSelector, {
           completed: todoFilter === TodoFilter.COMPLETED,
         });
   })
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
   .map(todos => ({
     todos,
   }))
-  .buildSelector();
+  .build();

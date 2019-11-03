@@ -4,12 +4,13 @@ import React, {
   useCallback,
   useState,
 } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { TodoCreatorProps } from './todoCreator.interface';
 import { TodosAction } from '../todos.action';
 
-const TodoCreator: FunctionComponent<TodoCreatorProps> = ({ addTodo }) => {
+export const TodoCreator: FunctionComponent<TodoCreatorProps> = () => {
   const [todoName, setTodoName] = useState('');
+  const dispatch = useDispatch();
 
   const onInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -19,9 +20,10 @@ const TodoCreator: FunctionComponent<TodoCreatorProps> = ({ addTodo }) => {
   );
 
   const onAddClick = useCallback(() => {
-    addTodo({ name: todoName.trim() });
+    const payload = { name: todoName.trim() };
+    dispatch(TodosAction.add(payload));
     setTodoName('');
-  }, [todoName, addTodo, setTodoName]);
+  }, [dispatch, todoName, setTodoName]);
 
   return (
     <div style={{ display: 'flex' }}>
@@ -38,10 +40,3 @@ const TodoCreator: FunctionComponent<TodoCreatorProps> = ({ addTodo }) => {
     </div>
   );
 };
-
-export default connect(
-  null,
-  {
-    addTodo: TodosAction.add,
-  },
-)(TodoCreator);

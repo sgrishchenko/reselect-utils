@@ -1,4 +1,4 @@
-import createPathSelector from '../createPathSelector';
+import { createPathSelector } from '../createPathSelector';
 import { commonState, State } from '../__data__/state';
 
 describe('createPathSelector', () => {

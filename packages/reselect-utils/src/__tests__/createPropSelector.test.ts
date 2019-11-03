@@ -1,4 +1,4 @@
-import createPropSelector from '../createPropSelector';
+import { createPropSelector } from '../createPropSelector';
 
 describe('createPropSelector', () => {
   test('should implement basic access to properties', () => {

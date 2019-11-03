@@ -13,7 +13,7 @@ const innerCreateAdaptedSelector = <S, P1, P2, R>(
   return (state: S, props: P2) => baseSelector(state, mapping(props));
 };
 
-export default <S, P1, P2, R>(
+export const createAdaptedSelector = <S, P1, P2, R>(
   baseSelector:
     | ParametricSelector<S, P1, R>
     | ReturnType<OutputParametricCachedSelector<S, P1, R, any, any>>,

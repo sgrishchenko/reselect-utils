@@ -64,7 +64,7 @@ typings/
 
 # build output
 .rpt2_cache
-lib
-es
-dist
+packages/*/dist/
+packages/*/es/
+packages/*/lib/
 

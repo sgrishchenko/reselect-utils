@@ -1,5 +1,6 @@
 import React, { ChangeEvent, FunctionComponent, useCallback } from 'react';
 import { connect } from 'react-redux';
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 // eslint-disable-next-line import/no-unresolved
 import { reselectConnect } from 'reselect-utils';

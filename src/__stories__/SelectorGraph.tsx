@@ -1,10 +1,10 @@
 import React, { CSSProperties } from 'react';
 import { Core as CytoscapeCore } from 'cytoscape';
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import { checkSelector } from 'reselect-tools';
 import { Edges, Nodes, Node } from './types';
 import { drawCytoscapeGraph, updateCytoscapeGraph } from './cytoscapeUtils';
-/* tslint:disable:member-ordering */
 
 export type SelectorGraphProps = {
   nodes: Nodes;
@@ -14,14 +14,14 @@ export type SelectorGraphProps = {
 };
 
 export default class SelectorGraph extends React.Component<SelectorGraphProps> {
+  private cy!: CytoscapeCore;
+
+  private cyElement!: HTMLElement | null;
+
   public static defaultProps = {
     onNodeClick: () => undefined,
     style: {},
   };
-
-  private cy!: CytoscapeCore;
-
-  private cyElement!: HTMLElement | null;
 
   public componentDidMount() {
     const { nodes, edges, onNodeClick } = this.props;

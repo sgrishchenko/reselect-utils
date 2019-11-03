@@ -21,7 +21,7 @@ const TodoCreator: FunctionComponent<TodoCreatorProps> = ({ addTodo }) => {
   const onAddClick = useCallback(() => {
     addTodo({ name: todoName.trim() });
     setTodoName('');
-  }, [todoName, setTodoName]);
+  }, [todoName, addTodo, setTodoName]);
 
   return (
     <div style={{ display: 'flex' }}>

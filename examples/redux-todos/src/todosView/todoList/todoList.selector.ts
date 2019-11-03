@@ -1,11 +1,12 @@
 import { createSelector } from 'reselect';
 import createCachedSelector from 're-reselect';
 import {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
   SelectorMonad,
   createPathSelector,
   createPropSelector,
   createBoundSelector,
-  // @ts-ignore
   // eslint-disable-next-line import/no-unresolved
 } from 'reselect-utils';
 import { TodoFilter } from '../todosView.interface';
@@ -28,6 +29,7 @@ const filteredTodoListSelector = createCachedSelector(
 )((state, props) => String(props.completed));
 
 export default SelectorMonad.of(createPathSelector(todosViewSelector).filter())
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
   .chain(todoFilter => {
     return todoFilter === TodoFilter.ALL
@@ -36,6 +38,7 @@ export default SelectorMonad.of(createPathSelector(todosViewSelector).filter())
           completed: todoFilter === TodoFilter.COMPLETED,
         });
   })
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
   .map(todos => ({
     todos,

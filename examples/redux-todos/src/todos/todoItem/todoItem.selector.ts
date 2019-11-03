@@ -2,8 +2,9 @@ import createCachedSelector from 're-reselect';
 import {
   createPathSelector,
   createPropSelector,
-  CounterObjectCache,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
+  CounterObjectCache,
   // eslint-disable-next-line import/no-unresolved
 } from 'reselect-utils';
 import { todoSelector } from '../todos.selector';

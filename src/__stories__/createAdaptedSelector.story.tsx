@@ -2,6 +2,7 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { createStructuredSelector } from 'reselect';
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import { selectorGraph, registerSelectors, reset } from 'reselect-tools';
 import SelectorGraph from './SelectorGraph';

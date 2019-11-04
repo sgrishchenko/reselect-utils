@@ -1,7 +1,7 @@
 {
   "name": "redux-todos",
   "version": "1.0.0",
-  "license": "MIT",
+  "private": true,
   "scripts": {
     "start": "webpack-dev-server --open",
     "build": "webpack -p"

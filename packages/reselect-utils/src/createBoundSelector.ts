@@ -35,7 +35,9 @@ export const createBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
 
   boundSelector.dependencies = [baseSelector];
 
+  /* istanbul ignore else  */
   if (process.env.NODE_ENV !== 'production') {
+    /* istanbul ignore else  */
     if (isDebugMode()) {
       const baseName = getSelectorName(baseSelector);
       const bindingStructure = Object.keys(binding).reduce(

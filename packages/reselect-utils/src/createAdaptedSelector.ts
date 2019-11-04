@@ -23,7 +23,9 @@ export const createAdaptedSelector = <S, P1, P2, R>(
 
   adaptedSelector.dependencies = [baseSelector];
 
+  /* istanbul ignore else  */
   if (process.env.NODE_ENV !== 'production') {
+    /* istanbul ignore else  */
     if (isDebugMode()) {
       const baseName = getSelectorName(baseSelector);
       const mappingResult = mapping(new Proxy(

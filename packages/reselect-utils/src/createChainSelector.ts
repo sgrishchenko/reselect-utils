@@ -165,7 +165,9 @@ export class SelectorMonad<
       });
     }
 
+    /* istanbul ignore else  */
     if (process.env.NODE_ENV !== 'production') {
+      /* istanbul ignore else  */
       if (isDebugMode()) {
         defineDynamicSelectorName(higherOrderSelector, () => {
           const baseName = getSelectorName(this.selector);
@@ -180,7 +182,9 @@ export class SelectorMonad<
 
       combinedSelector.dependencies = [higherOrderSelector, derivedSelector];
 
+      /* istanbul ignore else  */
       if (process.env.NODE_ENV !== 'production') {
+        /* istanbul ignore else  */
         if (isDebugMode()) {
           const derivedSelectorName = getSelectorName(derivedSelector);
 
@@ -208,7 +212,9 @@ export class SelectorMonad<
     combinedSelector.dependencies = [higherOrderSelector];
     combinedSelector.isCombinedSelector = true;
 
+    /* istanbul ignore else  */
     if (process.env.NODE_ENV !== 'production') {
+      /* istanbul ignore else  */
       if (isDebugMode()) {
         defineDynamicSelectorName(combinedSelector, () => {
           const baseName = getSelectorName(this.selector);

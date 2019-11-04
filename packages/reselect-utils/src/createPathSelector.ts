@@ -107,7 +107,9 @@ const innerCreatePathSelector = (
 
     resultSelector.dependencies = [baseSelector];
 
+    /* istanbul ignore else  */
     if (process.env.NODE_ENV !== 'production') {
+      /* istanbul ignore else  */
       if (isDebugMode()) {
         const baseName = getSelectorName(baseSelector);
 

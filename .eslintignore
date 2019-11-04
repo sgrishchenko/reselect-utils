@@ -63,6 +63,7 @@ typings/
 .next
 
 # build output
+examples/*/dist/
 packages/*/dist/
 packages/*/es/
 packages/*/lib/

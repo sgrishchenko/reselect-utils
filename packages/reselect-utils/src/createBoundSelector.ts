@@ -1,7 +1,11 @@
 import { ParametricSelector } from 'reselect';
 import { OutputParametricCachedSelector } from 're-reselect';
 import { NamedParametricSelector, NamedSelector } from './types';
-import { getSelectorName, isDebugMode, isReReselectSelector } from './helpers';
+import {
+  getSelectorName,
+  isDebugMode,
+  isCachedSelectorSelector,
+} from './helpers';
 
 export type Diff<T, U> = Pick<T, Exclude<keyof T, keyof U>>;
 
@@ -53,21 +57,25 @@ export const createBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
     }
   }
 
-  if (isReReselectSelector(baseSelector)) {
+  if (isCachedSelectorSelector(baseSelector)) {
     const decoratedBaseSelector = Object.assign(
       (state: S, props: P1) => baseSelector(state, props),
       baseSelector,
     );
 
-    decoratedBaseSelector.getMatchingSelector = innerCreateBoundSelector(
-      baseSelector.getMatchingSelector,
-      binding,
-    );
+    if (baseSelector.getMatchingSelector) {
+      decoratedBaseSelector.getMatchingSelector = innerCreateBoundSelector(
+        baseSelector.getMatchingSelector,
+        binding,
+      );
+    }
 
-    decoratedBaseSelector.removeMatchingSelector = innerCreateBoundSelector(
-      baseSelector.removeMatchingSelector,
-      binding,
-    );
+    if (baseSelector.removeMatchingSelector) {
+      decoratedBaseSelector.removeMatchingSelector = innerCreateBoundSelector(
+        baseSelector.removeMatchingSelector,
+        binding,
+      );
+    }
 
     decoratedBaseSelector.keySelector = innerCreateBoundSelector(
       baseSelector.keySelector,

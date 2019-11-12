@@ -7,12 +7,13 @@ import createCachedSelector, {
   LruMapCache,
   LruObjectCache,
 } from 're-reselect';
+import { NamedSelector, NamedParametricSelector } from './types';
 import {
-  NamedSelector,
-  NamedParametricSelector,
-  ReReselectSelector,
-} from './types';
-import { getSelectorName, isDebugMode, isReReselectSelector } from './helpers';
+  getSelectorName,
+  isDebugMode,
+  tryExtractCachedSelector,
+} from './helpers';
+import { composingKeySelectorCreator } from './composingKeySelectorCreator';
 
 const sumString = (stringSource: object): number =>
   Array.from(stringSource.toString()).reduce(
@@ -35,20 +36,6 @@ const defineDynamicSelectorName = (
     get: selectorNameGetter,
     set: () => undefined,
   });
-};
-
-const tryExtractCachedSelector = (
-  selector: NamedParametricSelector<any, any, any> | ReReselectSelector,
-): ReReselectSelector | undefined => {
-  if (isReReselectSelector(selector)) {
-    return selector;
-  }
-  if (selector.dependencies && selector.dependencies.length === 1) {
-    // adaptedSelector, boundSelector and pathSelector cases
-    const [dependency] = selector.dependencies;
-    return tryExtractCachedSelector(dependency);
-  }
-  return undefined;
 };
 
 const cloneCacheObject = (cacheObject: any) => {
@@ -146,11 +133,7 @@ export class SelectorMonad<
       >;
 
   public chain(fn: any) {
-    const baseSelector =
-      'isCombinedSelector' in this.selector
-        ? this.selector.dependencies![0]
-        : this.selector;
-    const cachedSelector = tryExtractCachedSelector(baseSelector);
+    const cachedSelector = tryExtractCachedSelector(this.selector);
 
     const selectorCreator: any = cachedSelector
       ? createCachedSelector
@@ -181,6 +164,11 @@ export class SelectorMonad<
       const derivedSelector = higherOrderSelector(state, props);
 
       combinedSelector.dependencies = [higherOrderSelector, derivedSelector];
+      if (cachedSelector) {
+        combinedSelector.currentKeySelector = composingKeySelectorCreator({
+          inputSelectors: combinedSelector.dependencies,
+        });
+      }
 
       /* istanbul ignore else  */
       if (process.env.NODE_ENV !== 'production') {
@@ -210,7 +198,13 @@ export class SelectorMonad<
     };
 
     combinedSelector.dependencies = [higherOrderSelector];
-    combinedSelector.isCombinedSelector = true;
+    if (cachedSelector) {
+      combinedSelector.cache = higherOrderSelector.cache;
+      combinedSelector.currentKeySelector = cachedSelector.keySelector;
+      combinedSelector.keySelector = (state: any, props: any) => {
+        return combinedSelector.currentKeySelector(state, props);
+      };
+    }
 
     /* istanbul ignore else  */
     if (process.env.NODE_ENV !== 'production') {

@@ -1,7 +1,11 @@
 import { ParametricSelector } from 'reselect';
 import { OutputParametricCachedSelector } from 're-reselect';
 import { NamedParametricSelector } from './types';
-import { getSelectorName, isDebugMode, isReReselectSelector } from './helpers';
+import {
+  getSelectorName,
+  isDebugMode,
+  isCachedSelectorSelector,
+} from './helpers';
 
 const generateMappingName = (mapping: {}) =>
   `${Object.keys(mapping).join()} -> ${Object.values(mapping).join()}`;
@@ -41,21 +45,25 @@ export const createAdaptedSelector = <S, P1, P2, R>(
     }
   }
 
-  if (isReReselectSelector(baseSelector)) {
+  if (isCachedSelectorSelector(baseSelector)) {
     const decoratedBaseSelector = Object.assign(
       (state: S, props: P1) => baseSelector(state, props),
       baseSelector,
     );
 
-    decoratedBaseSelector.getMatchingSelector = innerCreateAdaptedSelector(
-      baseSelector.getMatchingSelector,
-      mapping,
-    );
+    if (baseSelector.getMatchingSelector) {
+      decoratedBaseSelector.getMatchingSelector = innerCreateAdaptedSelector(
+        baseSelector.getMatchingSelector,
+        mapping,
+      );
+    }
 
-    decoratedBaseSelector.removeMatchingSelector = innerCreateAdaptedSelector(
-      baseSelector.removeMatchingSelector,
-      mapping,
-    );
+    if (baseSelector.removeMatchingSelector) {
+      decoratedBaseSelector.removeMatchingSelector = innerCreateAdaptedSelector(
+        baseSelector.removeMatchingSelector,
+        mapping,
+      );
+    }
 
     decoratedBaseSelector.keySelector = innerCreateAdaptedSelector(
       baseSelector.keySelector,

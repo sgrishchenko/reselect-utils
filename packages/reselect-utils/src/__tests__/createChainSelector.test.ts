@@ -5,6 +5,7 @@ import { createBoundSelector } from '../createBoundSelector';
 import { createSequenceSelector } from '../createSequenceSelector';
 import { State, commonState } from '../__data__/state';
 import { createPathSelector } from '../createPathSelector';
+import { createPropSelector } from '../createPropSelector';
 
 describe('createChainSelector', () => {
   const personSelector = (state: State, props: { id: number }) =>
@@ -164,6 +165,88 @@ describe('createChainSelector', () => {
       nameProxyCachedSelector(commonState, { id: 2 });
 
       expect(chainFn).toHaveBeenCalledTimes(2);
+    });
+
+    test('should build cached selector with few levels of chaining', () => {
+      const firstKeySelector = createPropSelector<{
+        firstProp: string;
+      }>().firstProp();
+
+      const secondKeySelector = createPropSelector<{
+        secondProp: string;
+      }>().secondProp();
+
+      const firstSelector = createCachedSelector(
+        firstKeySelector,
+        firstProp => firstProp,
+      )({
+        keySelector: firstKeySelector,
+      });
+
+      const secondSelector = createCachedSelector(
+        secondKeySelector,
+        secondProp => secondProp,
+      )({
+        keySelector: secondKeySelector,
+      });
+
+      const chainFn = jest.fn(result => () => result);
+
+      const chainSelector = createChainSelector(firstSelector)
+        .chain(() => secondSelector)
+        .chain(chainFn)
+        .build();
+
+      // first call to define all selector dependencies
+      chainSelector(expect.anything(), {
+        firstProp: 'firstValue',
+        secondProp: 'firstValue',
+      });
+      chainFn.mockClear();
+
+      chainSelector(expect.anything(), {
+        firstProp: 'firstValue',
+        secondProp: 'firstValue',
+      });
+
+      chainSelector(expect.anything(), {
+        firstProp: 'firstValue',
+        secondProp: 'secondValue',
+      });
+
+      chainSelector(expect.anything(), {
+        firstProp: 'secondValue',
+        secondProp: 'firstValue',
+      });
+
+      chainSelector(expect.anything(), {
+        firstProp: 'secondValue',
+        secondProp: 'secondValue',
+      });
+
+      chainSelector(expect.anything(), {
+        firstProp: 'firstValue',
+        secondProp: 'firstValue',
+      });
+
+      chainSelector(expect.anything(), {
+        firstProp: 'firstValue',
+        secondProp: 'secondValue',
+      });
+
+      chainSelector(expect.anything(), {
+        firstProp: 'secondValue',
+        secondProp: 'firstValue',
+      });
+
+      chainSelector(expect.anything(), {
+        firstProp: 'secondValue',
+        secondProp: 'secondValue',
+      });
+
+      expect(chainFn).toHaveBeenCalledTimes(4);
+      expect(firstSelector.recomputations()).toBe(2);
+      expect(secondSelector.recomputations()).toBe(2);
     });
   });
 });

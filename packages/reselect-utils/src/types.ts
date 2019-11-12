@@ -42,3 +42,6 @@ export type ParametricOptions<S, P, C, D> = {
 export type ReReselectSelector =
   | ReturnType<OutputCachedSelector<any, any, any, any>>
   | ReturnType<OutputParametricCachedSelector<any, any, any, any, any>>;
+
+export type CachedSelector = Pick<ReReselectSelector, 'cache' | 'keySelector'> &
+  Partial<ReReselectSelector>;

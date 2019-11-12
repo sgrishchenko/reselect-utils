@@ -1,6 +1,6 @@
 {
   "name": "reselect-utils",
-  "version": "2.0.0-alpha.10",
+  "version": "2.0.0-alpha.6",
   "description": "A collection of helpers and utilities for selectors",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -20,8 +20,7 @@
     "build:cjs": "tsc --outDir lib -d",
     "build:es": "tsc --outDir es -m es2015",
     "build:umd": "rollup -c ../../rollup.config.ts",
-    "build": "yarn clean && yarn build:cjs && yarn build:es && yarn build:umd",
-    "deploy": "yarn publish --tag alpha"
+    "build": "yarn clean && yarn build:cjs && yarn build:es && yarn build:umd"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^5.2.5",

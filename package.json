@@ -10,7 +10,7 @@
     "format": "prettier --write **/*.{js,ts,tsx,json,md}",
     "compile": "tsc --noEmit",
     "storybook": "start-storybook -p 9001",
-    "postversion": "git push --tags"
+    "distribute": "yarn workspace reselect-utils version && git push --tags"
   },
   "husky": {
     "hooks": {

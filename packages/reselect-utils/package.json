@@ -23,8 +23,8 @@
     "build": "yarn clean && yarn build:cjs && yarn build:es && yarn build:umd"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^5.2.5",
-    "@storybook/react": "^5.2.5",
+    "@storybook/addon-actions": "^5.2.8",
+    "@storybook/react": "^5.2.8",
     "@types/cytoscape": "^3.8.5",
     "@types/react": "^16.9.11",
     "cytoscape": "^3.11.0",

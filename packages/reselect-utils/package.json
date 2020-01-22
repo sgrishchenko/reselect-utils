@@ -16,7 +16,7 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "clean": "rimraf lib es dist coverage",
+    "clean": "rimraf lib es dist",
     "build:cjs": "tsc --outDir lib -d",
     "build:es": "tsc --outDir es -m es2015",
     "build:umd": "rollup -c ../../rollup.config.ts",

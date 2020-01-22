@@ -37,5 +37,9 @@ export {
   createCachedStructuredSelector as cachedStruct,
 } from './createCachedStructuredSelector';
 
+/* Key Selector Composition */
+export { composeKeySelectors } from './composeKeySelectors';
+export { composingKeySelectorCreator } from './composingKeySelectorCreator';
+
 /* Configuration */
 export { setDebugMode, isDebugMode } from './helpers';

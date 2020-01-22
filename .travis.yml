@@ -19,6 +19,5 @@ deploy:
   script: >
     yarn config set _authToken $NPM_AUTH_TOKEN &&
     yarn workspace reselect-utils publish --non-interactive --tag alpha
-  skip_cleanup: true
   on:
     tags: true

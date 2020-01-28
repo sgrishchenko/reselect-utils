@@ -165,11 +165,9 @@ export class SelectorMonad<
       const derivedSelector = higherOrderSelector(state, props);
 
       combinedSelector.dependencies = [higherOrderSelector, derivedSelector];
-      if (cachedSelector) {
-        combinedSelector.currentKeySelector = composingKeySelectorCreator({
-          inputSelectors: combinedSelector.dependencies,
-        });
-      }
+      combinedSelector.currentKeySelector = composingKeySelectorCreator({
+        inputSelectors: combinedSelector.dependencies,
+      });
 
       /* istanbul ignore else  */
       if (process.env.NODE_ENV !== 'production') {

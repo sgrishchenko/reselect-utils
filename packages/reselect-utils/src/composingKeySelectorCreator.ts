@@ -32,11 +32,7 @@ export function composingKeySelectorCreator({
   const keySelectors = [...keySelectorSet];
 
   if (keySelectors.length === 0) {
-    throw Error(
-      'Cached Selector with Composing Key Selector Creator ' +
-        'should have at least one Cached Selector in dependency ' +
-        'or own Key Selector',
-    );
+    return () => '<DefaultKey>';
   }
 
   if (keySelectors.length === 1) {

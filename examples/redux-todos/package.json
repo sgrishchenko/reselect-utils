@@ -17,7 +17,7 @@
     "react-redux": "^7.1.1",
     "redux": "^4.0.4",
     "reselect": "^4.0.0",
-    "reselect-utils": "^2.0.0-alpha.4",
+    "reselect-utils": "^2.0.0-alpha.29",
     "typescript-fsa": "^3.0.0",
     "typescript-fsa-reducers": "^1.2.1",
     "uuid": "^3.3.3"

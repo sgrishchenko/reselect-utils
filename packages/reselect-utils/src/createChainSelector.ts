@@ -1,5 +1,6 @@
 import { createSelector, ParametricSelector, Selector } from 'reselect';
 import createCachedSelector, {
+  ParametricKeySelector,
   FifoMapCache,
   FifoObjectCache,
   FlatMapCache,
@@ -197,14 +198,20 @@ export class SelectorMonad<
       return derivedSelector(state, props);
     };
 
+    const defaultKeySelector: ParametricKeySelector<any, any> = () =>
+      '<DefaultKey>';
+
     combinedSelector.dependencies = [higherOrderSelector];
+    combinedSelector.currentKeySelector = defaultKeySelector;
+
     if (cachedSelector) {
       combinedSelector.cache = higherOrderSelector.cache;
       combinedSelector.currentKeySelector = cachedSelector.keySelector;
-      combinedSelector.keySelector = (state: any, props: any) => {
-        return combinedSelector.currentKeySelector(state, props);
-      };
     }
+
+    combinedSelector.keySelector = (state: any, props: any) => {
+      return combinedSelector.currentKeySelector(state, props);
+    };
 
     /* istanbul ignore else  */
     if (process.env.NODE_ENV !== 'production') {

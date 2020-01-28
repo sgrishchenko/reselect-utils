@@ -25,8 +25,8 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
 
-    'no-dupe-class-members': 'off', // overloads is dupe members
-    'react/prop-types': 'off', // typescript fully cover typing
+    'no-dupe-class-members': 'off', // overloads are dupe members
+    'react/prop-types': 'off', // typescript covers typing fully
     'react/static-property-placement': ['error', 'static public field'],
     'react/jsx-filename-extension': ['error', { extensions: ['.tsx'] }],
     'jsx-a11y/label-has-associated-control': [

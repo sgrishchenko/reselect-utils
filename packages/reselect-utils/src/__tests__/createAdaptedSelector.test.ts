@@ -1,7 +1,7 @@
-import { createStructuredSelector } from 'reselect';
 import createCachedSelector from 're-reselect';
-import { Message, Person, commonState, State } from '../__data__/state';
+import { commonState, State } from '../__data__/state';
 import { createAdaptedSelector } from '../createAdaptedSelector';
+import { createStructuredSelector } from '../createStructuredSelector';
 
 describe('createAdaptedSelector', () => {
   const personSelector = (state: State, props: { id: number }) =>
@@ -22,21 +22,7 @@ describe('createAdaptedSelector', () => {
     }),
   );
 
-  type PersonAndMessageProps = {
-    personId: number;
-    messageId: number;
-  };
-
-  type PersonAndMessage = {
-    person: Person;
-    message: Message;
-  };
-
-  const personAndMessageSelector = createStructuredSelector<
-    State,
-    PersonAndMessageProps,
-    PersonAndMessage
-  >({
+  const personAndMessageSelector = createStructuredSelector({
     person: personAdaptedSelector,
     message: messageAdaptedSelector,
   });

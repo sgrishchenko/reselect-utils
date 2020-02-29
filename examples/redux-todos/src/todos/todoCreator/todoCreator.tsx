@@ -20,7 +20,7 @@ export const TodoCreator: FunctionComponent<TodoCreatorProps> = () => {
   );
 
   const onAddClick = useCallback(() => {
-    const payload = { name: todoName.trim() };
+    const payload = { name: todoName.trim() ? todoName.trim() : undefined };
     dispatch(TodosAction.add(payload));
     setTodoName('');
   }, [dispatch, todoName, setTodoName]);

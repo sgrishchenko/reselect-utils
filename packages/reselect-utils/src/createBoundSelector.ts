@@ -16,11 +16,11 @@ const innerCreateBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
   baseSelector: ParametricSelector<S, P1, R>,
   binding: P2,
 ) => {
-  const boundSelector = (state: S, props: any) =>
+  const boundSelector = (state: S, props: unknown) =>
     baseSelector(state, {
       ...(props || {}),
       ...(binding || {}),
-    });
+    } as P1);
 
   type BoundSelector = Exclude<keyof P1, keyof P2> extends never
     ? NamedSelector<S, R>

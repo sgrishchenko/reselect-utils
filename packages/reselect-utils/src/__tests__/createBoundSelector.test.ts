@@ -84,7 +84,7 @@ describe('createAdaptedSelector', () => {
         personId: 1,
       });
 
-      const dependency: any = marrySelector.dependencies![0];
+      const dependency = marrySelector.dependencies![0];
 
       let selectorInstance = dependency.getMatchingSelector(commonState);
       expect(selectorInstance).toBeUndefined();

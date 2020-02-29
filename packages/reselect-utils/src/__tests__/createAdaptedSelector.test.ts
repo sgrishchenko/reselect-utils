@@ -65,7 +65,7 @@ describe('createAdaptedSelector', () => {
         }),
       );
 
-      const dependency: any = fullNameAdaptedCachedSelector.dependencies![0];
+      const dependency = fullNameAdaptedCachedSelector.dependencies![0];
 
       let selectorInstance = dependency.getMatchingSelector(commonState, {
         personId: 1,

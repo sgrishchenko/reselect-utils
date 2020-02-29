@@ -37,7 +37,7 @@ export const createAdaptedSelector = <S, P1, P2, R>(
         {
           get: (target, key) => key,
         },
-      ) as any);
+      ) as P2);
 
       const mappingName = mapping.name || generateMappingName(mappingResult);
 

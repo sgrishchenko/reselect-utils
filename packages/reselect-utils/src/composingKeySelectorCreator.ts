@@ -2,12 +2,12 @@ import { KeySelector, ParametricKeySelector } from 're-reselect';
 import { tryExtractCachedSelector } from './helpers';
 import { composeKeySelectors } from './composeKeySelectors';
 
-export function composingKeySelectorCreator<S, C, D>(selectorInputs: {
+export function composingKeySelectorCreator<S, D>(selectorInputs: {
   inputSelectors: D;
   keySelector?: KeySelector<S>;
 }): KeySelector<S>;
 
-export function composingKeySelectorCreator<S, P, C, D>(selectorInputs: {
+export function composingKeySelectorCreator<S, P, D>(selectorInputs: {
   inputSelectors: D;
   keySelector?: ParametricKeySelector<S, P>;
 }): ParametricKeySelector<S, P>;

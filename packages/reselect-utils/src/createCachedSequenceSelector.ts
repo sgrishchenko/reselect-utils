@@ -1,4 +1,4 @@
-import { ParametricSelector, Selector } from 'reselect';
+import { createSelector, ParametricSelector, Selector } from 'reselect';
 import createCachedSelector from 're-reselect';
 import { Options, ParametricOptions } from './types';
 import { createSequenceSelector } from './createSequenceSelector';
@@ -21,5 +21,8 @@ export function createCachedSequenceSelector<S, P, R>(
 ) => ParametricSelector<S, P, R[]>;
 
 export function createCachedSequenceSelector(selectors: any): any {
-  return createSequenceSelector(selectors, createCachedSelector as any);
+  return createSequenceSelector(
+    selectors,
+    (createCachedSelector as unknown) as typeof createSelector,
+  );
 }

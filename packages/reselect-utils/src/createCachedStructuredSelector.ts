@@ -1,4 +1,4 @@
-import { ParametricSelector, Selector } from 'reselect';
+import { createSelector, ParametricSelector, Selector } from 'reselect';
 import createCachedSelector from 're-reselect';
 import { Options, ParametricOptions } from './types';
 import { createStructuredSelector } from './createStructuredSelector';
@@ -25,5 +25,8 @@ export function createCachedStructuredSelector<M>(
   : never;
 
 export function createCachedStructuredSelector(selectors: any): any {
-  return createStructuredSelector(selectors, createCachedSelector as any);
+  return createStructuredSelector(
+    selectors,
+    (createCachedSelector as unknown) as typeof createSelector,
+  );
 }

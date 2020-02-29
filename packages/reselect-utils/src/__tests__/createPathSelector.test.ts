@@ -30,15 +30,5 @@ describe('createPathSelector', () => {
     expect(
       pathParametricSelector.messageId(100500)(commonState, { id: 333 }),
     ).toBe(100500);
-
-    expect(
-      (pathSelector as any).y.z.a.b.c.d.e.f.g.h.i.j.k()(commonState),
-    ).toBeUndefined();
-    expect(
-      (pathParametricSelector as any).y.z.a.b.c.d.e.f.g.h.i.j.k()(
-        commonState,
-        {},
-      ),
-    ).toBeUndefined();
   });
 });

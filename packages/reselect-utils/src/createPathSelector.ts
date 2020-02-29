@@ -4,7 +4,9 @@ import { getSelectorName, isDebugMode } from './helpers';
 
 export type Defined<T> = Exclude<T, undefined>;
 
-export type SelectorBuilder<S, R, D> = {
+export type RequiredSelectorBuilder<S, R, D> = () => NamedSelector<S, R, D>;
+
+export type OptionalSelectorBuilder<S, R, D> = {
   (noDefaultValue?: undefined): NamedSelector<S, Defined<R> | undefined, D>;
 
   (defaultValue: NonNullable<R>): NamedSelector<S, NonNullable<R>, D>;
@@ -16,7 +18,14 @@ export type SelectorBuilder<S, R, D> = {
   >;
 };
 
-export type ParametricSelectorBuilder<S, P, R, D> = {
+export type RequiredParametricSelectorBuilder<
+  S,
+  P,
+  R,
+  D
+> = () => NamedParametricSelector<S, P, R, D>;
+
+export type OptionalParametricSelectorBuilder<S, P, R, D> = {
   (noDefaultValue?: undefined): NamedParametricSelector<
     S,
     P,
@@ -39,48 +48,105 @@ export type ParametricSelectorBuilder<S, P, R, D> = {
   >;
 };
 
-export type ObjectSelectorWrapper<S, R, D> = {
-  [K in keyof R]-?: PathSelectorType<S, R[K], D>;
+export type RequiredObjectSelectorWrapper<S, R, D> = {
+  [K in keyof R]-?: undefined extends R[K]
+    ? OptionalPathSelectorType<S, R[K], D>
+    : null extends R[K]
+    ? OptionalPathSelectorType<S, R[K], D>
+    : RequiredPathSelectorType<S, R[K], D>;
 };
 
-export type ObjectParametricSelectorWrapper<S, P, R, D> = {
-  [K in keyof R]-?: PathParametricSelectorType<S, P, R[K], D>;
+export type OptionalObjectSelectorWrapper<S, R, D> = {
+  [K in keyof R]-?: OptionalPathSelectorType<S, R[K], D>;
+};
+
+export type RequiredObjectParametricSelectorWrapper<S, P, R, D> = {
+  [K in keyof R]-?: undefined extends R[K]
+    ? OptionalPathParametricSelectorType<S, P, R[K], D>
+    : null extends R[K]
+    ? OptionalPathParametricSelectorType<S, P, R[K], D>
+    : RequiredPathParametricSelectorType<S, P, R[K], D>;
+};
+
+export type OptionalObjectParametricSelectorWrapper<S, P, R, D> = {
+  [K in keyof R]-?: OptionalPathParametricSelectorType<S, P, R[K], D>;
 };
 
 export type ArraySelectorWrapper<S, R, D> = {
-  length: PathSelectorType<S, number, D>;
+  length: RequiredPathSelectorType<S, number, D>;
 
-  [K: number]: PathSelectorType<S, R, D>;
+  [K: number]: OptionalPathSelectorType<S, R, D>;
 };
 
 export type ArrayParametricSelectorWrapper<S, P, R, D> = {
-  length: PathParametricSelectorType<S, P, number, D>;
+  length: RequiredPathParametricSelectorType<S, P, number, D>;
 
-  [K: number]: PathParametricSelectorType<S, P, R, D>;
+  [K: number]: OptionalPathParametricSelectorType<S, P, R, D>;
 };
 
-export type DataSelectorWrapper<S, R, D> = R extends any[]
+export type RequiredDataSelectorWrapper<S, R, D> = R extends unknown[]
   ? ArraySelectorWrapper<S, R[number], D>
   : R extends object
-  ? ObjectSelectorWrapper<S, R, D>
-  : SelectorBuilder<S, R, D>;
+  ? RequiredObjectSelectorWrapper<S, R, D>
+  : RequiredSelectorBuilder<S, R, D>;
 
-export type DataParametricSelectorWrapper<S, P, R, D> = R extends any[]
-  ? ArrayParametricSelectorWrapper<S, P, R[number], D>
+export type OptionalDataSelectorWrapper<S, R, D> = R extends unknown[]
+  ? ArraySelectorWrapper<S, R[number], D>
   : R extends object
-  ? ObjectParametricSelectorWrapper<S, P, R, D>
-  : ParametricSelectorBuilder<S, P, R, D>;
+  ? OptionalObjectSelectorWrapper<S, R, D>
+  : OptionalSelectorBuilder<S, R, D>;
 
-export type PathSelectorType<S, R, D> = SelectorBuilder<S, R, D> &
-  DataSelectorWrapper<S, NonNullable<R>, D>;
-
-export type PathParametricSelectorType<S, P, R, D> = ParametricSelectorBuilder<
+export type RequiredDataParametricSelectorWrapper<
   S,
   P,
   R,
   D
+> = R extends unknown[]
+  ? ArrayParametricSelectorWrapper<S, P, R[number], D>
+  : R extends object
+  ? RequiredObjectParametricSelectorWrapper<S, P, R, D>
+  : RequiredParametricSelectorBuilder<S, P, R, D>;
+
+export type OptionalDataParametricSelectorWrapper<
+  S,
+  P,
+  R,
+  D
+> = R extends unknown[]
+  ? ArrayParametricSelectorWrapper<S, P, R[number], D>
+  : R extends object
+  ? OptionalObjectParametricSelectorWrapper<S, P, R, D>
+  : OptionalParametricSelectorBuilder<S, P, R, D>;
+
+export type RequiredPathSelectorType<S, R, D> = RequiredSelectorBuilder<
+  S,
+  R,
+  D
 > &
-  DataParametricSelectorWrapper<S, P, NonNullable<R>, D>;
+  RequiredDataSelectorWrapper<S, NonNullable<R>, D>;
+
+export type OptionalPathSelectorType<S, R, D> = OptionalSelectorBuilder<
+  S,
+  R,
+  D
+> &
+  OptionalDataSelectorWrapper<S, NonNullable<R>, D>;
+
+export type RequiredPathParametricSelectorType<
+  S,
+  P,
+  R,
+  D
+> = RequiredParametricSelectorBuilder<S, P, R, D> &
+  RequiredDataParametricSelectorWrapper<S, P, NonNullable<R>, D>;
+
+export type OptionalPathParametricSelectorType<
+  S,
+  P,
+  R,
+  D
+> = OptionalParametricSelectorBuilder<S, P, R, D> &
+  OptionalDataParametricSelectorWrapper<S, P, NonNullable<R>, D>;
 
 const isObject = (value: unknown) =>
   value !== null && typeof value === 'object';
@@ -88,11 +154,11 @@ const isObject = (value: unknown) =>
 const isNullOrUndefined = (value: unknown) =>
   value === null || value === undefined;
 
-const innerCreatePathSelector = (
-  baseSelector: any,
+const innerCreatePathSelector = <S, P, R>(
+  baseSelector: Function,
   path: PropertyKey[] = [],
-): any => {
-  const proxyTarget = (defaultValue?: any) => {
+): unknown => {
+  const proxyTarget = (defaultValue?: unknown) => {
     function resultSelector() {
       // performance optimisation
       // eslint-disable-next-line prefer-spread,prefer-rest-params
@@ -127,12 +193,20 @@ const innerCreatePathSelector = (
 
 export function createPathSelector<S, R>(
   baseSelector: Selector<S, R>,
-): PathSelectorType<S, R, [Selector<S, R>]>;
+): undefined extends R
+  ? OptionalPathSelectorType<S, R, [Selector<S, R>]>
+  : null extends R
+  ? OptionalPathSelectorType<S, R, [Selector<S, R>]>
+  : RequiredPathSelectorType<S, R, [Selector<S, R>]>;
 
 export function createPathSelector<S, P, R>(
   baseSelector: ParametricSelector<S, P, R>,
-): PathParametricSelectorType<S, P, R, [ParametricSelector<S, P, R>]>;
+): undefined extends R
+  ? OptionalPathParametricSelectorType<S, P, R, [ParametricSelector<S, P, R>]>
+  : null extends R
+  ? OptionalPathParametricSelectorType<S, P, R, [ParametricSelector<S, P, R>]>
+  : RequiredPathParametricSelectorType<S, P, R, [ParametricSelector<S, P, R>]>;
 
-export function createPathSelector(baseSelector: any) {
+export function createPathSelector<S, P, R>(baseSelector: Function) {
   return innerCreatePathSelector(baseSelector);
 }

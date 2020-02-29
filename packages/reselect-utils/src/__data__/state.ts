@@ -1,7 +1,7 @@
 export type Person = {
   id: number;
-  firstName: string;
-  secondName: string;
+  firstName?: string;
+  secondName?: string;
 };
 
 export type Message = {

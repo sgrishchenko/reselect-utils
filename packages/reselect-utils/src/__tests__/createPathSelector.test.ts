@@ -1,13 +1,15 @@
 import { createPathSelector } from '../createPathSelector';
-import { commonState, State } from '../__data__/state';
+import { commonState, State, Document } from '../__data__/state';
 
 describe('createPathSelector', () => {
   test('should implement basic access to state properties', () => {
-    const baseSelector = (state: State) => state;
+    const baseSelector = (state: Partial<State>) => state;
     const pathSelector = createPathSelector(baseSelector);
 
-    const baseParametricSelector = (state: State, props: { id: number }) =>
-      state.documents[props.id];
+    const baseParametricSelector = (
+      state: State,
+      props: { id: number },
+    ): Document | undefined => state.documents[props.id];
     const pathParametricSelector = createPathSelector(baseParametricSelector);
 
     expect(pathSelector.messages[100].text()(commonState)).toEqual('Hello');

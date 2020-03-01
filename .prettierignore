@@ -1,4 +1,5 @@
 .git/
+.docz/
 coverage/
 examples/*/dist/
 packages/*/dist/

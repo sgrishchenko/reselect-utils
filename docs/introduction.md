@@ -1,26 +1,32 @@
+---
+name: Introduction
+route: '/reference/introduction'
+---
+
 # Introduction
 
 ## Motivation
 
-Such projects as [Reselect](https://github.com/reduxjs/reselect) and [Re-reselect](https://github.com/toomuchdesign/re-reselect) try to solve the task of memoization. But for some applied problems there is no standard solution published. This library was created to try to systematically solve the following problems:
+Such projects as [Reselect](https://github.com/reduxjs/reselect) and [Re-reselect](https://github.com/toomuchdesign/re-reselect) try to solve the task of memoization. But there is no standard solutions for some applied problems. This library was created to try to systematically solve the following problems:
 
 - Work with optional objects as a source for selection.
 - Binding parametric selectors to specific property values.
-- Adaptation of parametric selectors to the new parameter interface (useful when creating parametric [structured selectors](https://github.com/reduxjs/reselect#createstructuredselectorinputselectors-selectorcreator--createselector)).
+- Adaptation of parametric selectors to the new parameter interface (useful for creating parametric [structured selectors](https://github.com/reduxjs/reselect#createstructuredselectorinputselectors-selectorcreator--createselector)).
 - Using selection results as parameters for a new selection.
-- Calculating the aggregate value from a collection of selector results.
-- Dynamic memory management strategy when using [cached selectors](https://github.com/toomuchdesign/re-reselect#api).
+- Calculating an aggregate value from a collection of selector results.
+- Structuring of selection results (more proper typed version of [structured selector](https://github.com/reduxjs/reselect#createstructuredselectorinputselectors-selectorcreator--createselector) and [cached structured selector](https://github.com/toomuchdesign/re-reselect#createStructuredCachedSelector)).
+- Implementation of key selectors composition implementation (useful for [key selector creator](https://github.com/toomuchdesign/re-reselect#keyselectorcreator) usages).
 
 ## Principles
 
 ### Dev Tool Integration
 
-All utility selectors should be adequately displayed in [dev tools](https://github.com/skortchmark9/reselect-tools). This is necessary to understand how the selector is related.
+All utility selectors should be displayed in [dev tools](https://github.com/skortchmark9/reselect-tools) adequately. This is necessary to understand how the selector is related.
 
 ### Dependency Support
 
-In order to be able to automatically control the allocated memory for caching, all selectors must correctly describe their dependencies. Otherwise, the dependency chain may break and a memory leak will occur.
+All selectors must describe their dependencies correctly.
 
 ### TypeScript Support
 
-This library is written in a [TypeScript](https://www.typescriptlang.org/) and initially focused on static type checking. All utility selectors are typed and tested at compile time with the help of tests.
+This library is written in [TypeScript](https://www.typescriptlang.org/) and initially focused on static type checking. All utility selectors are typed and tested at compile time.

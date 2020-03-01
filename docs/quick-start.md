@@ -1,3 +1,8 @@
+---
+name: Quick Start
+route: '/reference/quick-start'
+---
+
 # Quick Start
 
 ## Path Selector
@@ -57,21 +62,33 @@ const personFullNameSelector = createSelector(
 );
 ```
 
+There are short aliases for many helpers in this library, so you can re-write your code like this:
+
+```js
+import { path } from 'reselect-utils';
+
+const personFullNameSelector = createSelector(
+  path(personSelector).firstName('John'),
+  path(personSelector).secondName('Doe'),
+  (firstName, secondName) => `${firstName} ${secondName}`,
+);
+```
+
 You can also work with objects of unlimited nesting:
 
 ```js
-import { createPathSelector } from 'reselect-utils';
+import { path } from 'reselect-utils';
 
 const personSelectorInfo = createSelector(
-  createPathSelector(personSelector).address.street('-'),
-  createPathSelector(personSelector).some.very.deep.field(123),
+  path(personSelector).address.street('-'),
+  path(personSelector).some.very.deep.field(123),
   (street, field) => ({ street, field }),
 );
 ```
 
-A more detailed description can be found [here](/docs/api/createPathSelector.md).
+A more detailed description can be found [here](/reference/guides/path-and-prop-selectors).
 
-## Selector Monad
+## Chain Selector
 
 Suppose you have such a normalized state:
 
@@ -115,23 +132,17 @@ const personSelectorByMessageId = (state, props) => {
 };
 ```
 
-This is an acceptable solution, but what if the chain is longer? `SelectorMonad` will help to solve such problems:
+This is an acceptable solution, but what if the chain is longer? `Chain Selector` will help to solve such problems:
 
 ```js
-import { SelectorMonad, createBoundSelector } from 'reselect-utils';
+import { chain, bound } from 'reselect-utils';
 
 const messageSelector = (state, props) => state.messages[props.messageId];
 const personSelector = (state, props) => state.persons[props.personId];
 
-const personSelectorByMessageId = SelectorMonad.of(messageSelector)
-  .chain(message =>
-    createBoundSelector(personSelector, { personId: message.personId }),
-  )
-  .buildSelector();
+const personByMessageIdSelector = chain(messageSelector)
+  .chain(message => bound(personSelector, { personId: message.personId }))
+  .build();
 ```
 
-`SelectorMonad` allows you to create dynamic selectors that depend on the current state. Moreover, the callback that is passed to the `chain` method is cached by input parameters. `createBoundSelector` binds the selector to specific parameter values and turns a parametric selector into an non parametric. And at the end you must call the `buildSelector` method to get the normal selector. It’s like a chain of [Promises](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise). [SelectorMonad](/docs/quickstart.md#selector-monad) and [createBoundSelector](/docs/api/createBoundSelector.md) are described in detail in their [API](/docs/api.md).
-
-## Counter Cache
-
-[Re-reselect](https://github.com/toomuchdesign/re-reselect) library has a good approach to solving the problem of caching parametric selectors. But solving a caching problem you gain a memory management problem. [Re-reselect](https://github.com/toomuchdesign/re-reselect) offers several strategies for [limiting memory](https://github.com/toomuchdesign/re-reselect/tree/master/src/cache#readme), but they are all designed for a fixed cache size. How about trying to allocate and clear memory automatically? `CounterObjectCache` is trying to solve this problem. To use this strategy, you need to specify the `CounterObjectCache` instance as `createCachedSelector` parameter:
+`Chain Selector` allows you to create dynamic selectors that depend on the current state. Moreover, the callback that is passed to the `chain` method is cached by input parameters. `bound` binds the selector to specific parameter values and turns a parametric selector into an non parametric. And at the end you must call the `build` method to get the normal selector. It’s like a chain of [Promises](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise). [Chain Selector](/reference/guides/chain-selector) and [Bound Selector](/reference/guides/bound-and-adapted-selectors) are described in detail in Guides section.

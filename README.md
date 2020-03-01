@@ -19,30 +19,17 @@ npm install reselect-utils
 
 ## Motivation
 
-Such projects as [Reselect](https://github.com/reduxjs/reselect) and [Re-reselect](https://github.com/toomuchdesign/re-reselect) try to solve the task of memoization. But for some applied problems there is no standard solution published. This library was created to try to systematically solve the following problems:
+Such projects as [Reselect](https://github.com/reduxjs/reselect) and [Re-reselect](https://github.com/toomuchdesign/re-reselect) try to solve the task of memoization. But there is no standard solutions for some applied problems. This library was created to try to systematically solve the following problems:
 
 - Work with optional objects as a source for selection.
 - Binding parametric selectors to specific property values.
-- Adaptation of parametric selectors to the new parameter interface (useful when creating parametric [structured selectors](https://github.com/reduxjs/reselect#createstructuredselectorinputselectors-selectorcreator--createselector)).
+- Adaptation of parametric selectors to the new parameter interface (useful for creating parametric [structured selectors](https://github.com/reduxjs/reselect#createstructuredselectorinputselectors-selectorcreator--createselector)).
 - Using selection results as parameters for a new selection.
 - Calculating the aggregate value from a collection of selector results.
-- Dynamic memory management strategy when using [cached selectors](https://github.com/toomuchdesign/re-reselect#api).
+- Structuring of selection results (more proper typed version of [structured selector](https://github.com/reduxjs/reselect#createstructuredselectorinputselectors-selectorcreator--createselector) and [cached structured selector](https://github.com/toomuchdesign/re-reselect#createStructuredCachedSelector)).
+- Implementation of key selectors composition implementation (useful for [key selector creator](https://github.com/toomuchdesign/re-reselect#keyselectorcreator) usages).
 
-## Documentation
+## Credits
 
-- [Introduction](/docs/introduction.md)
-- [Quick Start](/docs/quickstart.md)
-  - [Path Selector](/docs/quickstart.md#path-selector)
-  - [Selector Monad](/docs/quickstart.md#selector-monad)
-  - [Counter Cache](/docs/quickstart.md#counter-cache)
-- [API](/docs/api.md)
-  - [createPathSelector](/docs/api/createPathSelector.md)
-  - [createPropSelector](/docs/api/createPropSelector.md)
-  - [createAdaptedSelector](/docs/api/createAdaptedSelector.md)
-  - [createBoundSelector](/docs/api/createBoundSelector.md)
-  - [createSequenceSelector](/docs/api/createSequenceSelector.md)
-  - [SelectorMonad](/docs/api/SelectorMonad.md)
-
-# Credits
-
-Reselect-Utils was originally created by Sergei Grishchenko and inspired by projects such as [Reselect](https://github.com/reduxjs/reselect), [Re-reselect](https://github.com/toomuchdesign/re-reselect), [ts-optchain](https://github.com/rimeto/ts-optchain) and [Promises](https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+Reselect-Utils inspired by projects such as [Reselect](https://github.com/reduxjs/reselect), [Re-reselect](https://github.com/toomuchdesign/re-reselect) and [ts-optchain](https://github.com/rimeto/ts-optchain).
+Also functional programming principles are used for design of this library. For example, [Chain Selector]() was inspired by Monad Pattern.

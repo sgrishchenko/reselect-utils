@@ -1,6 +1,7 @@
 export default {
   title: 'Reselect Utils',
   src: 'docs',
+  dest: 'docz-static',
   ignore: ['docs/api/*'],
   themeConfig: {
     mode: 'light',

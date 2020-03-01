@@ -64,6 +64,7 @@ typings/
 
 # build output
 .docz/
+docz-static/
 storybook-static/
 examples/*/dist/
 packages/*/dist/

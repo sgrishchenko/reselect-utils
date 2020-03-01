@@ -1,5 +1,6 @@
 .git/
 .docz/
+docz-static/
 storybook-static/
 coverage/
 examples/*/dist/

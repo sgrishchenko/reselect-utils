@@ -31,5 +31,5 @@ Such projects as [Reselect](https://github.com/reduxjs/reselect) and [Re-reselec
 
 ## Credits
 
-Reselect-Utils inspired by projects such as [Reselect](https://github.com/reduxjs/reselect), [Re-reselect](https://github.com/toomuchdesign/re-reselect) and [ts-optchain](https://github.com/rimeto/ts-optchain).
+Reselect-Utils is inspired by projects such as [Reselect](https://github.com/reduxjs/reselect), [Re-reselect](https://github.com/toomuchdesign/re-reselect) and [ts-optchain](https://github.com/rimeto/ts-optchain).
 Also functional programming principles are used for design of this library. For example, [Chain Selector]() was inspired by Monad Pattern.

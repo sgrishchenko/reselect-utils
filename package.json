@@ -9,8 +9,10 @@
     "lint": "eslint --ext .js,.ts,.tsx .",
     "format": "prettier --write **/*.{js,ts,tsx,json,md}",
     "compile": "tsc --noEmit",
-    "docz": "docz dev",
-    "storybook": "start-storybook -p 9001",
+    "docz:dev": "docz dev",
+    "docz:build": "docz build",
+    "storybook:dev": "start-storybook",
+    "storybook:build": "build-storybook",
     "distribute": "yarn workspace reselect-utils version && git push --tags"
   },
   "husky": {

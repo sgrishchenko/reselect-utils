@@ -19,7 +19,7 @@
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
-      "yarn lint --fix",
+      "yarn lint --cache --fix",
       "yarn test --bail --findRelatedTests"
     ],
     "**/*.{json,md}": [

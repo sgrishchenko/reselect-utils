@@ -19,12 +19,11 @@
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
-      "yarn lint",
+      "yarn lint --fix",
       "yarn test --bail --findRelatedTests"
     ],
-    "**/*.{js,ts,tsx,json,md}": [
-      "yarn format",
-      "git add"
+    "**/*.{json,md}": [
+      "yarn format"
     ]
   },
   "devDependencies": {

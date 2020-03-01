@@ -12,4 +12,5 @@ module.exports = {
     '<rootDir>/packages/[^\\/]+/src/__data__/',
     '<rootDir>/packages/[^\\/]+/src/__stories__/',
   ],
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.docz/'],
 };

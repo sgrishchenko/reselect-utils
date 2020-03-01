@@ -1,4 +1,4 @@
-# Reselect-Utils
+# Reselect Utils
 
 [![build status](https://img.shields.io/travis/com/sgrishchenko/reselect-utils/master.svg?style=flat-square)](https://travis-ci.com/sgrishchenko/reselect-utils)
 [![coverage status](https://img.shields.io/coveralls/sgrishchenko/reselect-utils/master.svg?style=flat-square)](https://coveralls.io/github/sgrishchenko/reselect-utils?branch=master)
@@ -31,5 +31,5 @@ Such projects as [Reselect](https://github.com/reduxjs/reselect) and [Re-reselec
 
 ## Credits
 
-Reselect-Utils is inspired by projects such as [Reselect](https://github.com/reduxjs/reselect), [Re-reselect](https://github.com/toomuchdesign/re-reselect) and [ts-optchain](https://github.com/rimeto/ts-optchain).
+Reselect Utils is inspired by projects such as [Reselect](https://github.com/reduxjs/reselect), [Re-reselect](https://github.com/toomuchdesign/re-reselect) and [ts-optchain](https://github.com/rimeto/ts-optchain).
 Also functional programming principles are used for design of this library. For example, [Chain Selector]() was inspired by Monad Pattern.

@@ -1,8 +1,8 @@
-import { DeepPartial, Middleware } from 'redux';
+import { PreloadedState, Middleware } from 'redux';
 
 export const createLocalStorageMiddleware = <S>(
   stateLocalStorageKey: string,
-  project: (state: S) => DeepPartial<S>,
+  project: (state: S) => PreloadedState<S>,
 ) => {
   let prevState: S;
 
@@ -24,7 +24,7 @@ export const createLocalStorageMiddleware = <S>(
   };
 
   return Object.assign(middleware, {
-    getSavedState: (): DeepPartial<S> | undefined => {
+    getSavedState: (): PreloadedState<S> | undefined => {
       const savedState = window.localStorage.getItem(stateLocalStorageKey);
       return savedState ? JSON.parse(savedState) : undefined;
     },

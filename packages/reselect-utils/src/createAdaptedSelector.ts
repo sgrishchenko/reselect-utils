@@ -32,12 +32,14 @@ export const createAdaptedSelector = <S, P1, P2, R>(
     /* istanbul ignore else  */
     if (isDebugMode()) {
       const baseName = getSelectorName(baseSelector);
-      const mappingResult = mapping(new Proxy(
-        {},
-        {
-          get: (target, key) => key,
-        },
-      ) as P2);
+      const mappingResult = mapping(
+        new Proxy(
+          {},
+          {
+            get: (target, key) => key,
+          },
+        ) as P2,
+      );
 
       const mappingName = mapping.name || generateMappingName(mappingResult);
 

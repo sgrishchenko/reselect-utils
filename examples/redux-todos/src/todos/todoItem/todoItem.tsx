@@ -6,10 +6,10 @@ import { todoItemPropsSelector } from './todoItem.selector';
 import { useParametricSelector } from '../../utils/hooks';
 
 export const TodoItem: FunctionComponent<TodoItemProps> = ({ todoId }) => {
-  const { todoName, todoCompleted } = useParametricSelector(
-    todoItemPropsSelector,
-    { todoId },
-  );
+  const {
+    todoName,
+    todoCompleted,
+  } = useParametricSelector(todoItemPropsSelector, { todoId });
   const dispatch = useDispatch();
 
   const onCheckboxChange = useCallback(

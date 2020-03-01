@@ -5,9 +5,8 @@ import { TodoFilter } from '../todosView.interface';
 import { todosSelector } from '../../todos/todos.selector';
 import { todosViewSelector } from '../todosView.selector';
 
-const todoListSelector = createSelector(
-  todosSelector,
-  todos => Object.values(todos),
+const todoListSelector = createSelector(todosSelector, todos =>
+  Object.values(todos),
 );
 
 type IsCompletedProps = { completed: boolean };

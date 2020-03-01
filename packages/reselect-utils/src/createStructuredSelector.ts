@@ -10,16 +10,22 @@ export function createStructuredSelector<M>(
   : never;
 
 export function createStructuredSelector(
-  selectors: any,
+  selectors: Record<
+    PropertyKey,
+    Selector<any, any> | ParametricSelector<any, any, any>
+  >,
   selectorCreator = createSelector,
 ): any {
   const objectKeys = Object.keys(selectors);
-  return selectorCreator(objectKeys.map(key => selectors[key]), (...values) => {
-    return values.reduce((composition, value, index) => {
-      return {
-        ...composition,
-        [objectKeys[index]]: value,
-      };
-    }, {});
-  });
+  return selectorCreator(
+    objectKeys.map(key => selectors[key]),
+    (...values) => {
+      return values.reduce((composition, value, index) => {
+        return {
+          ...composition,
+          [objectKeys[index]]: value,
+        };
+      }, {});
+    },
+  );
 }

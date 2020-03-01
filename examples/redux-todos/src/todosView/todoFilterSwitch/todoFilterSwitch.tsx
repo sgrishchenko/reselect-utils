@@ -5,9 +5,7 @@ import { TodoFilter } from '../todosView.interface';
 import { TodosViewAction } from '../todosView.action';
 import { todoFilterSwitchPropsSelector } from './todoFilterSwitch.selector';
 
-export const TodoFilterSwitch: FunctionComponent<
-  TodoFilterSwitchProps
-> = () => {
+export const TodoFilterSwitch: FunctionComponent<TodoFilterSwitchProps> = () => {
   const { todoFilter } = useSelector(todoFilterSwitchPropsSelector);
   const dispatch = useDispatch();
 

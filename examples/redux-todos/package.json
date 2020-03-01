@@ -7,32 +7,32 @@
     "build": "webpack -p"
   },
   "dependencies": {
-    "@types/react": "^16.9.11",
-    "@types/react-dom": "^16.9.3",
-    "@types/react-redux": "^7.1.5",
-    "@types/uuid": "^3.4.6",
+    "@types/react": "^16.9.23",
+    "@types/react-dom": "^16.9.5",
+    "@types/react-redux": "^7.1.7",
+    "@types/uuid": "^7.0.0",
     "re-reselect": "^3.4.0",
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0",
-    "react-redux": "^7.1.1",
-    "redux": "^4.0.4",
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0",
+    "react-redux": "^7.2.0",
+    "redux": "^4.0.5",
     "reselect": "^4.0.0",
     "reselect-utils": "^2.0.0-alpha.29",
     "typescript-fsa": "^3.0.0",
     "typescript-fsa-reducers": "^1.2.1",
-    "uuid": "^3.3.3"
+    "uuid": "^7.0.1"
   },
   "devDependencies": {
-    "@types/html-webpack-plugin": "^3.2.1",
-    "@types/node": "^12.12.5",
-    "@types/webpack": "^4.39.8",
+    "@types/html-webpack-plugin": "^3.2.2",
+    "@types/node": "^13.7.7",
+    "@types/webpack": "^4.41.7",
     "html-webpack-plugin": "^3.2.0",
     "html-webpack-template": "^6.2.0",
     "ts-loader": "^6.2.1",
-    "ts-node": "^8.4.1",
-    "typescript": "^3.6.4",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.9.0"
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
   }
 }

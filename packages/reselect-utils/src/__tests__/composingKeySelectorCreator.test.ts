@@ -18,11 +18,12 @@ describe('composingKeySelectorCreator', () => {
     thirdProp: string;
   }>().thirdProp();
 
-  const firstSelector = createCachedSelector(firstKeySelector, () => undefined)(
-    {
-      keySelector: firstKeySelector,
-    },
-  );
+  const firstSelector = createCachedSelector(
+    firstKeySelector,
+    () => undefined,
+  )({
+    keySelector: firstKeySelector,
+  });
 
   const secondSelector = createCachedSelector(secondKeySelector, () => ({
     someValue: 'someValue',

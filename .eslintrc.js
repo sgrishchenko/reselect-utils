@@ -37,6 +37,7 @@ module.exports = {
       },
     ],
     'import/prefer-default-export': 'off',
+    'import/extensions': ['error', 'never'],
     'import/no-extraneous-dependencies': [
       'error',
       {

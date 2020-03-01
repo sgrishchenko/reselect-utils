@@ -16,7 +16,6 @@ export function composingKeySelectorCreator({
   inputSelectors,
   keySelector,
 }: any) {
-  // some comment
   const keySelectorSet = new Set<any>();
 
   if (keySelector) {

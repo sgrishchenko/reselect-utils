@@ -29,7 +29,7 @@ const generateSelectorKey = (selector: any): string =>
   );
 
 const defineDynamicSelectorName = (
-  selector: any,
+  selector: Function,
   selectorNameGetter: () => string,
 ) => {
   Object.defineProperty(selector, 'selectorName', {
@@ -133,7 +133,7 @@ export class SelectorMonad<
         >
       >;
 
-  public chain(fn: any) {
+  public chain(fn: Function) {
     const cachedSelector = tryExtractCachedSelector(this.selector);
 
     const selectorCreator: any = cachedSelector
@@ -161,7 +161,7 @@ export class SelectorMonad<
       }
     }
 
-    const combinedSelector = (state: any, props: any) => {
+    const combinedSelector = (state: unknown, props: unknown) => {
       const derivedSelector = higherOrderSelector(state, props);
 
       combinedSelector.dependencies = [higherOrderSelector, derivedSelector];
@@ -207,7 +207,7 @@ export class SelectorMonad<
       combinedSelector.currentKeySelector = cachedSelector.keySelector;
     }
 
-    combinedSelector.keySelector = (state: any, props: any) => {
+    combinedSelector.keySelector = (state: unknown, props: unknown) => {
       return combinedSelector.currentKeySelector(state, props);
     };
 
@@ -223,12 +223,12 @@ export class SelectorMonad<
       }
     }
 
-    return new SelectorMonad<any, any, any, any, any>(
+    return new SelectorMonad(
       combinedSelector,
       Object.assign(fn, {
         parentChain: this.prevChain,
       }),
-    );
+    ) as unknown;
   }
 
   public map<R2>(fn: (result: R1) => R2) {
@@ -254,5 +254,5 @@ export function createChainSelector<S, P, R>(
 ): SelectorMonad<S, P, R, ParametricSelector<S, P, R>, void>;
 
 export function createChainSelector(selector: any) {
-  return new SelectorMonad<any, any, any, any, void>(selector);
+  return new SelectorMonad(selector);
 }

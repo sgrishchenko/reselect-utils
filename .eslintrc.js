@@ -23,7 +23,6 @@ module.exports = {
     '@typescript-eslint/prefer-interface': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-    '@typescript-eslint/no-non-null-assertion': 'off',
 
     'no-dupe-class-members': 'off', // overloads are dupe members
     'react/prop-types': 'off', // typescript covers typing fully

@@ -90,17 +90,16 @@ describe('createChainSelector', () => {
 
     expect(someByMessageIdSelector.chainHierarchy).toBeDefined();
 
-    const lastChain = someByMessageIdSelector.chainHierarchy!;
-    expect(lastChain('firstValue')).toBe(secondSelector);
-    expect(lastChain('firstValue')({ secondValue: 2 }, { prop: true })).toBe(
+    const lastChain = someByMessageIdSelector.chainHierarchy;
+    expect(lastChain?.('firstValue')).toBe(secondSelector);
+    expect(lastChain?.('firstValue')({ secondValue: 2 }, { prop: true })).toBe(
       '2 true',
     );
 
-    const lastButOneChain = someByMessageIdSelector.chainHierarchy!
-      .parentChain!;
-    expect(lastButOneChain(expect.anything())).toBe(firstSelector);
+    const lastButOneChain = someByMessageIdSelector.chainHierarchy?.parentChain;
+    expect(lastButOneChain?.(expect.anything())).toBe(firstSelector);
     expect(
-      lastButOneChain(expect.anything())({ firstValue: 'firstValue' }),
+      lastButOneChain?.(expect.anything())({ firstValue: 'firstValue' }),
     ).toBe('firstValue');
   });
 
@@ -115,7 +114,8 @@ describe('createChainSelector', () => {
     firstPersonMonadicSelector(commonState);
     const secondDependencies = firstPersonSelector.dependencies;
 
-    expect(firstDependencies!.length).toBe(secondDependencies!.length);
+    expect(firstDependencies?.length).toBeDefined();
+    expect(firstDependencies?.length).toBe(secondDependencies?.length);
   });
 
   describe('integration with re-reselect', () => {

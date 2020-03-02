@@ -21,6 +21,22 @@ export const tryExtractCachedSelector = (
   return undefined;
 };
 
+export const defineDynamicSelectorName = (
+  selector: Function,
+  selectorNameGetter: () => string,
+) => {
+  let overriddenSelectorName: string;
+  Object.defineProperty(selector, 'selectorName', {
+    configurable: true,
+    get: () => {
+      return overriddenSelectorName ?? selectorNameGetter();
+    },
+    set: (value: string) => {
+      overriddenSelectorName = value;
+    },
+  });
+};
+
 let debugMode = true;
 
 export const isDebugMode = () => debugMode;

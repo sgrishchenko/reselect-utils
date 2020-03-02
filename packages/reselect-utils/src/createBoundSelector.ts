@@ -5,12 +5,24 @@ import {
   getSelectorName,
   isDebugMode,
   isCachedSelectorSelector,
+  defineDynamicSelectorName,
 } from './helpers';
 
 export type Diff<T, U> = Pick<T, Exclude<keyof T, keyof U>>;
 
-const generateMappingName = (mapping: {}) =>
-  `${Object.keys(mapping).join()} -> ${Object.values(mapping).join()}`;
+const generateBindingName = (binding: {}) => {
+  const structure: {} = Object.keys(binding).reduce(
+    (result, key) => ({
+      ...result,
+      [key]: '[*]',
+    }),
+    {},
+  );
+  const structureKeys = Object.keys(structure).join();
+  const structureValues = Object.values(structure).join();
+
+  return `${structureKeys} -> ${structureValues}`;
+};
 
 const innerCreateBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
   baseSelector: ParametricSelector<S, P1, R>,
@@ -43,17 +55,12 @@ export const createBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
   if (process.env.NODE_ENV !== 'production') {
     /* istanbul ignore else  */
     if (isDebugMode()) {
-      const baseName = getSelectorName(baseSelector);
-      const bindingStructure = Object.keys(binding).reduce(
-        (structure, key) => ({
-          ...structure,
-          [key]: '[*]',
-        }),
-        {},
-      );
-      const bindingName = generateMappingName(bindingStructure);
+      defineDynamicSelectorName(boundSelector, () => {
+        const baseName = getSelectorName(baseSelector);
+        const bindingName = generateBindingName(binding);
 
-      boundSelector.selectorName = `${baseName} (${bindingName})`;
+        return `${baseName} (${bindingName})`;
+      });
     }
   }
 

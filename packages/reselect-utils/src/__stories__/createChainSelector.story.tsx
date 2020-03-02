@@ -78,7 +78,7 @@ storiesOf('createChainSelector', module)
       const longestFullNameSelector = createChainSelector(personsSelector)
         .chain(persons =>
           createSequenceSelector(
-            Object.values(persons).map((person: Person) =>
+            Object.values(persons).map(person =>
               createBoundSelector(fullNameSelector, { id: person.id }),
             ),
           ),

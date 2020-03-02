@@ -5,10 +5,27 @@ import {
   getSelectorName,
   isDebugMode,
   isCachedSelectorSelector,
+  defineDynamicSelectorName,
 } from './helpers';
 
-const generateMappingName = (mapping: {}) =>
-  `${Object.keys(mapping).join()} -> ${Object.values(mapping).join()}`;
+const generateMappingName = (mapping: Function) => {
+  if (mapping.name) {
+    return mapping.name;
+  }
+
+  const structure = mapping(
+    new Proxy(
+      {},
+      {
+        get: (target, key) => key,
+      },
+    ),
+  );
+  const structureKeys = Object.keys(structure).join();
+  const structureValues = Object.values(structure).join();
+
+  return `${structureKeys} -> ${structureValues}`;
+};
 
 const innerCreateAdaptedSelector = <S, P1, P2, R>(
   baseSelector: ParametricSelector<S, P1, R>,
@@ -31,19 +48,12 @@ export const createAdaptedSelector = <S, P1, P2, R>(
   if (process.env.NODE_ENV !== 'production') {
     /* istanbul ignore else  */
     if (isDebugMode()) {
-      const baseName = getSelectorName(baseSelector);
-      const mappingResult = mapping(
-        new Proxy(
-          {},
-          {
-            get: (target, key) => key,
-          },
-        ) as P2,
-      );
+      defineDynamicSelectorName(adaptedSelector, () => {
+        const baseName = getSelectorName(baseSelector);
+        const mappingName = generateMappingName(mapping);
 
-      const mappingName = mapping.name || generateMappingName(mappingResult);
-
-      adaptedSelector.selectorName = `${baseName} (${mappingName})`;
+        return `${baseName} (${mappingName})`;
+      });
     }
   }
 

@@ -1,6 +1,10 @@
 import { Selector, ParametricSelector } from 'reselect';
 import { NamedSelector, NamedParametricSelector } from './types';
-import { getSelectorName, isDebugMode } from './helpers';
+import {
+  defineDynamicSelectorName,
+  getSelectorName,
+  isDebugMode,
+} from './helpers';
 
 export type Defined<T> = Exclude<T, undefined>;
 
@@ -177,9 +181,11 @@ const innerCreatePathSelector = <S, P, R>(
     if (process.env.NODE_ENV !== 'production') {
       /* istanbul ignore else  */
       if (isDebugMode()) {
-        const baseName = getSelectorName(baseSelector);
+        defineDynamicSelectorName(resultSelector, () => {
+          const baseName = getSelectorName(baseSelector);
 
-        resultSelector.selectorName = [baseName, ...path].join('.');
+          return [baseName, ...path].join('.');
+        });
       }
     }
 

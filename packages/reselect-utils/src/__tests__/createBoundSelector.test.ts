@@ -2,6 +2,7 @@ import createCachedSelector from 're-reselect';
 import { commonState, State } from '../__data__/state';
 import { createBoundSelector } from '../createBoundSelector';
 import { createStructuredSelector } from '../createStructuredSelector';
+import { NamedParametricSelector } from '../types';
 
 describe('createAdaptedSelector', () => {
   const personSelector = (state: State, props: { personId: number }) =>
@@ -57,6 +58,44 @@ describe('createAdaptedSelector', () => {
 
     expect(marryAndHello.person.firstName).toBe('Marry');
     expect(marryAndHello.message.text).toBe('Hello');
+  });
+
+  test('should generate selector name', () => {
+    const marrySelector = createBoundSelector(personSelector, {
+      personId: 1,
+    });
+    expect(marrySelector.selectorName).toMatchInlineSnapshot(
+      `"personSelector (personId -> [*])"`,
+    );
+
+    const helloSelector = createBoundSelector(messageSelector, {
+      messageId: 100,
+    });
+    expect(helloSelector.selectorName).toMatchInlineSnapshot(
+      `"messageSelector (messageId -> [*])"`,
+    );
+
+    const personAndMessageNamedSelector = createStructuredSelector({
+      person: personSelector,
+      message: messageSelector,
+    });
+    (personAndMessageNamedSelector as NamedParametricSelector<
+      unknown,
+      unknown,
+      unknown
+    >).selectorName = 'personAndMessageNamedSelector';
+
+    const marryAndHelloSelector = createBoundSelector(
+      personAndMessageNamedSelector,
+      {
+        personId: 1,
+        messageId: 100,
+      },
+    );
+
+    expect(marryAndHelloSelector.selectorName).toMatchInlineSnapshot(
+      `"personAndMessageNamedSelector (personId,messageId -> [*],[*])"`,
+    );
   });
 
   describe('integration with re-reselect', () => {

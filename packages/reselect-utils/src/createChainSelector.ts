@@ -10,6 +10,7 @@ import createCachedSelector, {
 } from 're-reselect';
 import { NamedSelector, NamedParametricSelector } from './types';
 import {
+  defineDynamicSelectorName,
   getSelectorName,
   isDebugMode,
   tryExtractCachedSelector,
@@ -27,22 +28,6 @@ const generateSelectorKey = (selector: any): string =>
     (base: number, dependency: any) => base + sumString(dependency),
     sumString(selector),
   );
-
-const defineDynamicSelectorName = (
-  selector: Function,
-  selectorNameGetter: () => string,
-) => {
-  let overriddenSelectorName: string;
-  Object.defineProperty(selector, 'selectorName', {
-    configurable: true,
-    get: () => {
-      return overriddenSelectorName ?? selectorNameGetter();
-    },
-    set: (value: string) => {
-      overriddenSelectorName = value;
-    },
-  });
-};
 
 const cloneCacheObject = (cacheObject: any) => {
   // TODO: find more elegant solution for cloning
@@ -239,7 +224,21 @@ export class SelectorMonad<
   public map<R2>(fn: (result: R1) => R2) {
     return this.chain(result => {
       const output = fn(result);
-      return () => output;
+      const selector = () => output;
+
+      /* istanbul ignore else  */
+      if (process.env.NODE_ENV !== 'production') {
+        /* istanbul ignore else  */
+        if (isDebugMode()) {
+          defineDynamicSelectorName(selector, () => {
+            const baseName = getSelectorName(this.selector);
+
+            return `${baseName} (mapped ${sumString(fn)})`;
+          });
+        }
+      }
+
+      return selector;
     });
   }
 

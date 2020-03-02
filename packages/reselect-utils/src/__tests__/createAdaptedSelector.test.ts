@@ -2,6 +2,7 @@ import createCachedSelector from 're-reselect';
 import { commonState, State } from '../__data__/state';
 import { createAdaptedSelector } from '../createAdaptedSelector';
 import { createStructuredSelector } from '../createStructuredSelector';
+import { NamedParametricSelector } from '../types';
 
 describe('createAdaptedSelector', () => {
   const personSelector = (state: State, props: { id: number }) =>
@@ -35,6 +36,56 @@ describe('createAdaptedSelector', () => {
 
     expect(actual.person.firstName).toBe('Marry');
     expect(actual.message.text).toBe('Hello');
+  });
+
+  test('should generate selector name', () => {
+    expect(personAdaptedSelector.selectorName).toMatchInlineSnapshot(
+      `"personSelector (id -> personId)"`,
+    );
+    expect(messageAdaptedSelector.selectorName).toMatchInlineSnapshot(
+      `"messageSelector (id -> messageId)"`,
+    );
+
+    const personAndMessageNamedSelector = createStructuredSelector({
+      person: personAdaptedSelector,
+      message: messageAdaptedSelector,
+    });
+    (personAndMessageNamedSelector as NamedParametricSelector<
+      unknown,
+      unknown,
+      unknown
+    >).selectorName = 'personAndMessageNamedSelector';
+
+    const personAndMessageAdaptedSelector = createAdaptedSelector(
+      personAndMessageNamedSelector,
+      (props: { inputPersonId: number; inputMessageId: number }) => ({
+        personId: props.inputPersonId,
+        messageId: props.inputMessageId,
+      }),
+    );
+
+    expect(personAndMessageAdaptedSelector.selectorName).toMatchInlineSnapshot(
+      `"personAndMessageNamedSelector (personId,messageId -> inputPersonId,inputMessageId)"`,
+    );
+
+    const personAndMessageAdaptedWithNamedMapperSelector = createAdaptedSelector(
+      personAndMessageNamedSelector,
+      function mapPersonAndMessageProps(props: {
+        inputPersonId: number;
+        inputMessageId: number;
+      }) {
+        return {
+          personId: props.inputPersonId,
+          messageId: props.inputMessageId,
+        };
+      },
+    );
+
+    expect(
+      personAndMessageAdaptedWithNamedMapperSelector.selectorName,
+    ).toMatchInlineSnapshot(
+      `"personAndMessageNamedSelector (mapPersonAndMessageProps)"`,
+    );
   });
 
   describe('integration with re-reselect', () => {

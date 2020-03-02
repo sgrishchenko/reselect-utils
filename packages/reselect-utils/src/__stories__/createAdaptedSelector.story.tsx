@@ -1,28 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import {
-  selectorGraph,
-  registerSelectors,
-  reset,
-  Nodes,
-  Edges,
-} from 'reselect-tools';
 import { SelectorGraph } from './SelectorGraph';
 import { State } from '../__data__/state';
 import { createAdaptedSelector } from '../createAdaptedSelector';
 import { createStructuredSelector } from '../createStructuredSelector';
 
-const personSelector = (state: State, props: { id: number }) =>
-  state.persons[props.id];
-const messageSelector = (state: State, props: { id: number }) =>
-  state.messages[props.id];
-
 storiesOf('createAdaptedSelector', module).add('example', () => {
-  const [nodes, setNodes] = useState<Nodes>({});
-  const [edges, setEdges] = useState<Edges>([]);
+  const selectors = useMemo(() => {
+    /* SELECTORS DEFINITION START */
+    const personSelector = (state: State, props: { id: number }) =>
+      state.persons[props.id];
+    const messageSelector = (state: State, props: { id: number }) =>
+      state.messages[props.id];
 
-  useEffect(() => {
     const personAndMessageSelector = createStructuredSelector({
       person: createAdaptedSelector(
         personSelector,
@@ -37,24 +28,18 @@ storiesOf('createAdaptedSelector', module).add('example', () => {
         }),
       ),
     });
+    /* SELECTORS DEFINITION END */
 
-    reset();
-    registerSelectors({
+    return {
       personSelector,
       messageSelector,
       personAndMessageSelector,
-    });
-
-    const graph = selectorGraph();
-
-    setNodes(graph.nodes);
-    setEdges(graph.edges);
-  }, [setNodes, setEdges]);
+    };
+  }, []);
 
   return (
     <SelectorGraph
-      nodes={nodes}
-      edges={edges}
+      selectors={selectors}
       onNodeClick={(name, node) => action(name)(node)}
     />
   );

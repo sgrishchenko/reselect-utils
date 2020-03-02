@@ -19,5 +19,14 @@ export default {
         { name: 'Composing Key Selector Creator' },
       ],
     },
+    {
+      name: 'Graphs',
+      menu: [
+        { name: 'Path Selector' },
+        { name: 'Bound Selector' },
+        { name: 'Adapted Selector' },
+        { name: 'Chain Selector' },
+      ],
+    },
   ],
 };

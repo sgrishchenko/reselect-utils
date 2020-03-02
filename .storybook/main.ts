@@ -1,8 +1,18 @@
-import { Configuration, DefinePlugin  } from 'webpack';
+import { Configuration, DefinePlugin } from 'webpack';
 
 export default {
   stories: ['../packages/**/*.story.tsx'],
-  addons: ['@storybook/addon-actions/register'],
+  addons: [
+    '@storybook/addon-actions',
+    {
+      name: '@storybook/addon-storysource',
+      options: {
+        rule: {
+          test: [/\.story\.tsx?$/],
+        },
+      },
+    },
+  ],
   webpackFinal: async (config: Configuration) => {
     config.module?.rules.push({
       test: /\.tsx?$/,

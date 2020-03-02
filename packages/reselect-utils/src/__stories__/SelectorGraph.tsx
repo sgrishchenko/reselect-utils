@@ -3,26 +3,47 @@ import React, {
   FunctionComponent,
   useEffect,
   useRef,
+  useState,
 } from 'react';
 import { Core as CytoscapeCore } from 'cytoscape';
-import { Edges, Nodes, CheckResult, checkSelector } from 'reselect-tools';
+import {
+  Edges,
+  Nodes,
+  CheckResult,
+  checkSelector,
+  reset,
+  registerSelectors,
+  selectorGraph,
+  AnySelector,
+} from 'reselect-tools';
 import { drawCytoscapeGraph, updateCytoscapeGraph } from './cytoscapeUtils';
 
 export type SelectorGraphProps = {
-  nodes: Nodes;
-  edges: Edges;
+  selectors: Record<string, AnySelector>;
   onNodeClick: (name: string, node: CheckResult) => void;
   style?: CSSProperties;
 };
 
 export const SelectorGraph: FunctionComponent<SelectorGraphProps> = ({
-  nodes,
-  edges,
+  selectors,
   onNodeClick,
   style,
 }) => {
+  const [nodes, setNodes] = useState<Nodes>({});
+  const [edges, setEdges] = useState<Edges>([]);
+
   const cy = useRef<CytoscapeCore>();
   const cyElement = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    reset();
+    registerSelectors(selectors);
+
+    const graph = selectorGraph();
+
+    setNodes(graph.nodes);
+    setEdges(graph.edges);
+  }, [selectors, setNodes, setEdges]);
 
   useEffect(() => {
     if (!cy.current) {
@@ -51,5 +72,14 @@ export const SelectorGraph: FunctionComponent<SelectorGraphProps> = ({
     [cy],
   );
 
-  return <div style={{ height: '100%', ...style }} ref={cyElement} />;
+  return (
+    <div
+      style={{ height: '100%', ...style }}
+      ref={cyElement}
+      title="Double Click to Reset"
+      onDoubleClick={() =>
+        cy.current && updateCytoscapeGraph(cy.current, nodes, edges)
+      }
+    />
+  );
 };

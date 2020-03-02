@@ -1,10 +1,9 @@
 export default {
   title: 'Reselect Utils',
   description: 'A collection of helpers and utilities for selectors',
-  src: 'docs',
   dest: 'docz',
   base: '/reselect-utils/docz/',
-  ignore: ['docs/api/*'],
+  ignore: ['README.md', 'packages/**', 'docs/api/*'],
   themeConfig: {
     mode: 'light',
   },

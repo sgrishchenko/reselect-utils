@@ -32,10 +32,15 @@ const defineDynamicSelectorName = (
   selector: Function,
   selectorNameGetter: () => string,
 ) => {
+  let overriddenSelectorName: string;
   Object.defineProperty(selector, 'selectorName', {
     configurable: true,
-    get: selectorNameGetter,
-    set: () => undefined,
+    get: () => {
+      return overriddenSelectorName ?? selectorNameGetter();
+    },
+    set: (value: string) => {
+      overriddenSelectorName = value;
+    },
   });
 };
 

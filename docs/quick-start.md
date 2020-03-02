@@ -1,6 +1,6 @@
 ---
 name: Quick Start
-route: '/reference/quick-start'
+route: '/quick-start'
 ---
 
 # Quick Start

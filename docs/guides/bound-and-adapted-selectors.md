@@ -1,7 +1,7 @@
 ---
 name: Bound & Adapted Selectors
 menu: Guides
-route: '/reference/guides/bound-and-adapted-selectors'
+route: '/guides/bound-and-adapted-selectors'
 ---
 
 # Bound & Adapted Selectors

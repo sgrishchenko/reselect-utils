@@ -1,7 +1,7 @@
 ---
 name: Path & Prop Selectors
 menu: Guides
-route: '/reference/guides/path-and-prop-selectors'
+route: '/guides/path-and-prop-selectors'
 ---
 
 # Path & Prop Selectors

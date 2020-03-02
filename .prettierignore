@@ -1,7 +1,7 @@
 .git/
 .docz/
-docz-static/
-storybook-static/
+docz/
+storybook/
 coverage/
 examples/*/dist/
 packages/*/dist/

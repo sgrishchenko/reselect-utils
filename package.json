@@ -1,5 +1,8 @@
 {
   "private": true,
+  "repository": "git+https://github.com/sgrishchenko/reselect-utils.git",
+  "author": "Sergei Grishchenko",
+  "license": "MIT",
   "workspaces": [
     "packages/*",
     "examples/*"
@@ -12,7 +15,7 @@
     "docz:dev": "docz dev",
     "docz:build": "docz build",
     "storybook:dev": "start-storybook",
-    "storybook:build": "build-storybook",
+    "storybook:build": "build-storybook --output-dir storybook",
     "distribute": "yarn workspace reselect-utils version && git push --tags"
   },
   "husky": {

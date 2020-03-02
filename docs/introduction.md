@@ -1,6 +1,6 @@
 ---
 name: Introduction
-route: '/reference/introduction'
+route: '/introduction'
 ---
 
 # Introduction

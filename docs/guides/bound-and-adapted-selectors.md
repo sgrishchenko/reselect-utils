@@ -62,11 +62,11 @@ const inputMessageSelector = createBoundSelector(messageSelector, {
   messageType: 'input',
 });
 
-inputMessageSelector(state, { messageId: 100 }); // => { text: 'Hello' }
+inputMessageSelector(state, { messageId: 100 }); // => { text: 'Hello', ... }
 
 const outputMessageSelector = bound(messageSelector, { messageType: 'output' });
 
-outputMessageSelector(state, { messageId: 100 }); // => { text: 'How are you?' }
+outputMessageSelector(state, { messageId: 100 }); // => { text: 'How are you?', ... }
 ```
 
 There is another problem with parametric selectors. Sometimes you have one interface of props but interface of selector you need is different. With `Adapted Selector` helper you can switch shape of selector properties. Imagine, that you need to write next selector:

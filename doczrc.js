@@ -4,6 +4,7 @@ export default {
   dest: 'docz',
   base: '/reselect-utils/docz/',
   ignore: ['README.md', 'packages/**', 'docs/api/*'],
+  typescript: true,
   themeConfig: {
     mode: 'light',
   },
@@ -15,7 +16,7 @@ export default {
       menu: [
         { name: 'Path & Prop Selectors' },
         { name: 'Bound & Adapted Selectors' },
-        // { name: 'Sequence & Structured Selectors' },
+        { name: 'Structured & Sequence Selectors' },
         // { name: 'Chain Selector' },
         // { name: 'Composing Key Selector Creator' },
       ],

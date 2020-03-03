@@ -4,6 +4,8 @@ menu: Graphs
 route: '/graphs/path-selector'
 ---
 
+import { storybookIframeStyle } from './styles'
+
 # Path Selector
 
-<iframe style="resize: both; width: 640px; height: 350px; border-style: solid" src="https://sgrishchenko.github.io/reselect-utils/storybook/iframe.html?id=createpathselector--example"></iframe>
+<iframe style={storybookIframeStyle} src="https://sgrishchenko.github.io/reselect-utils/storybook/iframe.html?id=createpathselector--example"></iframe>

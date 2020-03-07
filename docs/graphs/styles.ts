@@ -7,4 +7,6 @@ export const storybookIframeStyle: CSSProperties = {
   height: '350px',
   maxWidth: '100%',
   borderStyle: 'solid',
+  padding: '10px',
+  boxSizing: 'border-box',
 };

@@ -27,7 +27,7 @@ Such projects as [Reselect](https://github.com/reduxjs/reselect) and [Re-reselec
 - Using selection results as parameters for a new selection.
 - Calculating the aggregate value from a collection of selector results.
 - Structuring of selection results (more proper typed version of [structured selector](https://github.com/reduxjs/reselect#createstructuredselectorinputselectors-selectorcreator--createselector) and [cached structured selector](https://github.com/toomuchdesign/re-reselect#createStructuredCachedSelector)).
-- Implementation of key selectors composition implementation (useful for [key selector creator](https://github.com/toomuchdesign/re-reselect#keyselectorcreator) usages).
+- Implementation of key selectors composition (useful for [key selector creator](https://github.com/toomuchdesign/re-reselect#keyselectorcreator) usages).
 
 ## Credits
 

@@ -258,5 +258,5 @@ export function createChainSelector<S, P, R>(
 ): SelectorMonad<S, P, R, ParametricSelector<S, P, R>, void>;
 
 export function createChainSelector(selector: any) {
-  return new SelectorMonad(selector);
+  return new SelectorMonad(selector) as unknown;
 }

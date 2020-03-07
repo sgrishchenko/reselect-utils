@@ -8,8 +8,6 @@ import {
   defineDynamicSelectorName,
 } from './helpers';
 
-export type Diff<T, U> = Pick<T, Exclude<keyof T, keyof U>>;
-
 const generateBindingName = (binding: {}) => {
   const structure: {} = Object.keys(binding).reduce(
     (result, key) => ({
@@ -28,7 +26,7 @@ const innerCreateBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
   baseSelector: ParametricSelector<S, P1, R>,
   binding: P2,
 ) => {
-  const boundSelector = (state: S, props: Diff<P1, P2> | void) =>
+  const boundSelector = (state: S, props: Omit<P1, keyof P2> | void) =>
     baseSelector(state, ({
       ...(props || {}),
       ...(binding || {}),
@@ -36,7 +34,7 @@ const innerCreateBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
 
   type BoundSelector = Exclude<keyof P1, keyof P2> extends never
     ? NamedSelector<S, R>
-    : NamedParametricSelector<S, Diff<P1, P2>, R>;
+    : NamedParametricSelector<S, Omit<P1, keyof P2>, R>;
 
   return boundSelector as BoundSelector;
 };

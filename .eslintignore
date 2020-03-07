@@ -66,6 +66,7 @@ typings/
 .docz/
 docz/
 storybook/
+typedoc/
 examples/*/dist/
 packages/*/dist/
 packages/*/es/

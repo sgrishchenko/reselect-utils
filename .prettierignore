@@ -2,6 +2,7 @@
 .docz/
 docz/
 storybook/
+typedoc/
 coverage/
 examples/*/dist/
 packages/*/dist/

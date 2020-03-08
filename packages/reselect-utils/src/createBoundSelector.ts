@@ -1,5 +1,4 @@
 import { ParametricSelector } from 'reselect';
-import { OutputParametricCachedSelector } from 're-reselect';
 import { NamedParametricSelector, NamedSelector } from './types';
 import {
   getSelectorName,
@@ -40,9 +39,7 @@ const innerCreateBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
 };
 
 export const createBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
-  baseSelector:
-    | ParametricSelector<S, P1, R>
-    | ReturnType<OutputParametricCachedSelector<S, P1, R, any, any>>,
+  baseSelector: ParametricSelector<S, P1, R>,
   binding: P2,
 ) => {
   const boundSelector = innerCreateBoundSelector(baseSelector, binding);

@@ -1,11 +1,20 @@
 import { NamedParametricSelector, CachedSelector } from './types';
 
-export const getSelectorName = (selector: any): string =>
-  selector.selectorName || selector.name;
+export const getSelectorName = (
+  selector: Function & { selectorName?: string },
+): string => {
+  if ('selectorName' in selector && selector.selectorName) {
+    return selector.selectorName;
+  }
+
+  return selector.name;
+};
 
 export const isCachedSelectorSelector = (
-  selector: any,
-): selector is CachedSelector => 'keySelector' in selector;
+  selector: unknown,
+): selector is CachedSelector => {
+  return selector instanceof Object && 'keySelector' in selector;
+};
 
 export const tryExtractCachedSelector = (
   selector: NamedParametricSelector<any, any, any> | CachedSelector,

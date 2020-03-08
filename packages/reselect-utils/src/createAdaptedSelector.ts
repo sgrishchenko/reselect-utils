@@ -1,5 +1,4 @@
 import { ParametricSelector } from 'reselect';
-import { OutputParametricCachedSelector } from 're-reselect';
 import { NamedParametricSelector } from './types';
 import {
   getSelectorName,
@@ -35,9 +34,7 @@ const innerCreateAdaptedSelector = <S, P1, P2, R>(
 };
 
 export const createAdaptedSelector = <S, P1, P2, R>(
-  baseSelector:
-    | ParametricSelector<S, P1, R>
-    | ReturnType<OutputParametricCachedSelector<S, P1, R, any, any>>,
+  baseSelector: ParametricSelector<S, P1, R>,
   mapping: (props: P2) => P1,
 ) => {
   const adaptedSelector = innerCreateAdaptedSelector(baseSelector, mapping);

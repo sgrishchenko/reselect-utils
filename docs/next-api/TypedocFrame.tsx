@@ -29,8 +29,6 @@ export const TypedocFrame: FunctionComponent<TypedocFrameProps> = ({
   }, [iframe, setHeight]);
 
   useEffect(() => {
-    onContentWindowResize();
-
     const contentWindow = iframe.current?.contentWindow;
 
     if (contentWindow) {
@@ -50,6 +48,7 @@ export const TypedocFrame: FunctionComponent<TypedocFrameProps> = ({
       title={title}
       style={style}
       src={`https://sgrishchenko.github.io/reselect-utils/typedoc/${route}`}
+      onLoad={() => onContentWindowResize()}
     />
   );
 };

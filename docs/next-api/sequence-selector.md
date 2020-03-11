@@ -4,9 +4,12 @@ menu: API
 route: '/api/sequence-selector'
 ---
 
+import { ThemeProvider } from './ThemeProvider'
 import { TypedocFrame } from './TypedocFrame'
 
-<TypedocFrame
-  title="Sequence Selector"
-  route="modules/_createsequenceselector_"
-/>
+<ThemeProvider>
+  <TypedocFrame
+    title="Sequence Selector"
+    route="modules/_createsequenceselector_"
+  />
+</ThemeProvider>

@@ -4,9 +4,12 @@ menu: API
 route: '/api/chain-selector'
 ---
 
+import { ThemeProvider } from './ThemeProvider'
 import { TypedocFrame } from './TypedocFrame'
 
-<TypedocFrame
-  title="Chain Selector"
-  route="modules/_createchainselector_"
-/>
+<ThemeProvider>
+  <TypedocFrame
+    title="Chain Selector"
+    route="modules/_createchainselector_"
+  />
+</ThemeProvider>

@@ -17,8 +17,8 @@
     "docz:build": "docz build",
     "storybook:dev": "start-storybook",
     "storybook:build": "build-storybook --output-dir storybook",
-    "typedoc:light": "typedoc --out typedoc/light",
-    "typedoc:dark": "typedoc --out typedoc/dark --options typedoc.dark.json",
+    "typedoc:light": "typedoc --out typedoc/light packages/reselect-utils",
+    "typedoc:dark": "typedoc --out typedoc/dark --options typedoc.dark.json packages/reselect-utils",
     "distribute": "yarn workspace reselect-utils version && git push --tags"
   },
   "husky": {

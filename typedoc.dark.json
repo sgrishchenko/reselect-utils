@@ -1,5 +1,4 @@
 {
-  "inputFiles": ["packages/reselect-utils"],
   "excludeNotExported": true,
   "exclude": [
     "packages/*/src/__data__/**",

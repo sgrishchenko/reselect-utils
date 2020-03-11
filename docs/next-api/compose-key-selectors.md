@@ -4,9 +4,12 @@ menu: API
 route: '/api/compose-key-selectors'
 ---
 
+import { ThemeProvider } from './ThemeProvider'
 import { TypedocFrame } from './TypedocFrame'
 
-<TypedocFrame
-  title="Compose Key Selectors"
-  route="modules/_composekeyselectors_"
-/>
+<ThemeProvider>
+  <TypedocFrame
+    title="Compose Key Selectors"
+    route="modules/_composekeyselectors_"
+  />
+</ThemeProvider>

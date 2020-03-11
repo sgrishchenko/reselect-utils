@@ -4,9 +4,12 @@ menu: API
 route: '/api/cached-structured-selector'
 ---
 
+import { ThemeProvider } from './ThemeProvider'
 import { TypedocFrame } from './TypedocFrame'
 
-<TypedocFrame
-  title="Cached Structured Selector"
-  route="modules/_createcachedstructuredselector_"
-/>
+<ThemeProvider>
+  <TypedocFrame
+    title="Cached Structured Selector"
+    route="modules/_createcachedstructuredselector_"
+  />
+</ThemeProvider>

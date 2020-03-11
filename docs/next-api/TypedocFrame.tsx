@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { useColorMode } from 'theme-ui';
 
 export type TypedocFrameProps = {
   title: string;
@@ -17,6 +18,7 @@ export const TypedocFrame: FunctionComponent<TypedocFrameProps> = ({
 }) => {
   const iframe = useRef<HTMLIFrameElement>(null);
   const [height, setHeight] = useState();
+  const [colorMode] = useColorMode();
 
   const style = {
     border: 'none',
@@ -47,7 +49,7 @@ export const TypedocFrame: FunctionComponent<TypedocFrameProps> = ({
       ref={iframe}
       title={title}
       style={style}
-      src={`https://sgrishchenko.github.io/reselect-utils/typedoc/${route}`}
+      src={`https://sgrishchenko.github.io/reselect-utils/typedoc/${colorMode}/${route}`}
       onLoad={() => onContentWindowResize()}
     />
   );

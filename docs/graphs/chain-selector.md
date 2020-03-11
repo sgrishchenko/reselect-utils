@@ -4,18 +4,27 @@ menu: Graphs
 route: '/graphs/chain-selector'
 ---
 
-import { storybookIframeStyle } from './styles'
+import { StorybookFrame } from './StorybookFrame'
 
 # Chain Selector
 
 ## Entity Chain
 
-<iframe style={storybookIframeStyle} src="https://sgrishchenko.github.io/reselect-utils/storybook/iframe.html?id=createchainselector--entity-chain-example"></iframe>
+<StorybookFrame 
+  title="Entity Chain"
+  route="createchainselector--entity-chain-example"
+/>
 
 ## Aggregation
 
-<iframe style={storybookIframeStyle} src="https://sgrishchenko.github.io/reselect-utils/storybook/iframe.html?id=createchainselector--aggregation-example"></iframe>
+<StorybookFrame 
+  title="Aggregation"
+  route="createchainselector--aggregation-example"
+/>
 
 ## Switch Dependency
 
-<iframe style={storybookIframeStyle} src="https://sgrishchenko.github.io/reselect-utils/storybook/iframe.html?id=createchainselector--switch-dependency-example"></iframe>
+<StorybookFrame 
+  title="Switch Dependency"
+  route="createchainselector--switch-dependency-example"
+/>

@@ -30,5 +30,21 @@ export default {
         { name: 'Chain Selector' },
       ],
     },
+    {
+      name: 'API',
+      menu: [
+        { name: 'Path Selector' },
+        { name: 'Prop Selector' },
+        { name: 'Bound Selector' },
+        { name: 'Adapted Selector' },
+        { name: 'Structured Selector' },
+        { name: 'Cached Structured Selector' },
+        { name: 'Sequence Selector' },
+        { name: 'Cached Sequence Selector' },
+        { name: 'Chain Selector' },
+        { name: 'Composing Key Selector Creator' },
+        { name: 'Compose Key Selectors' },
+      ],
+    },
   ],
 };

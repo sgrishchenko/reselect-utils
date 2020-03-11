@@ -4,8 +4,11 @@ menu: Graphs
 route: '/graphs/bound-selector'
 ---
 
-import { storybookIframeStyle } from './styles'
+import { StorybookFrame } from './StorybookFrame'
 
 # Bound Selector
 
-<iframe style={storybookIframeStyle} src="https://sgrishchenko.github.io/reselect-utils/storybook/iframe.html?id=createboundselector--example"></iframe>
+<StorybookFrame 
+  title="Bound Selector"
+  route="createboundselector--example"
+/>

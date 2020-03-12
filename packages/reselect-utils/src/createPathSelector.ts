@@ -76,26 +76,46 @@ export type OptionalObjectParametricSelectorWrapper<S, P, R, D> = {
   [K in keyof R]-?: OptionalPathParametricSelectorType<S, P, R[K], D>;
 };
 
-export type ArraySelectorWrapper<S, R, D> = {
+export type RequiredArraySelectorWrapper<S, R, D> = {
+  length: RequiredPathSelectorType<S, number, D>;
+
+  [K: number]: undefined extends R
+    ? OptionalPathSelectorType<S, R, D>
+    : null extends R
+    ? OptionalPathSelectorType<S, R, D>
+    : RequiredPathSelectorType<S, R, D>;
+};
+
+export type OptionalArraySelectorWrapper<S, R, D> = {
   length: RequiredPathSelectorType<S, number, D>;
 
   [K: number]: OptionalPathSelectorType<S, R, D>;
 };
 
-export type ArrayParametricSelectorWrapper<S, P, R, D> = {
+export type RequiredArrayParametricSelectorWrapper<S, P, R, D> = {
+  length: RequiredPathParametricSelectorType<S, P, number, D>;
+
+  [K: number]: undefined extends R
+    ? OptionalPathParametricSelectorType<S, P, R, D>
+    : null extends R
+    ? OptionalPathParametricSelectorType<S, P, R, D>
+    : RequiredPathParametricSelectorType<S, P, R, D>;
+};
+
+export type OptionalArrayParametricSelectorWrapper<S, P, R, D> = {
   length: RequiredPathParametricSelectorType<S, P, number, D>;
 
   [K: number]: OptionalPathParametricSelectorType<S, P, R, D>;
 };
 
 export type RequiredDataSelectorWrapper<S, R, D> = R extends unknown[]
-  ? ArraySelectorWrapper<S, R[number], D>
+  ? RequiredArraySelectorWrapper<S, R[number], D>
   : R extends object
   ? RequiredObjectSelectorWrapper<S, R, D>
   : RequiredSelectorBuilder<S, R, D>;
 
 export type OptionalDataSelectorWrapper<S, R, D> = R extends unknown[]
-  ? ArraySelectorWrapper<S, R[number], D>
+  ? OptionalArraySelectorWrapper<S, R[number], D>
   : R extends object
   ? OptionalObjectSelectorWrapper<S, R, D>
   : OptionalSelectorBuilder<S, R, D>;
@@ -106,7 +126,7 @@ export type RequiredDataParametricSelectorWrapper<
   R,
   D
 > = R extends unknown[]
-  ? ArrayParametricSelectorWrapper<S, P, R[number], D>
+  ? RequiredArrayParametricSelectorWrapper<S, P, R[number], D>
   : R extends object
   ? RequiredObjectParametricSelectorWrapper<S, P, R, D>
   : RequiredParametricSelectorBuilder<S, P, R, D>;
@@ -117,7 +137,7 @@ export type OptionalDataParametricSelectorWrapper<
   R,
   D
 > = R extends unknown[]
-  ? ArrayParametricSelectorWrapper<S, P, R[number], D>
+  ? OptionalArrayParametricSelectorWrapper<S, P, R[number], D>
   : R extends object
   ? OptionalObjectParametricSelectorWrapper<S, P, R, D>
   : OptionalParametricSelectorBuilder<S, P, R, D>;

@@ -78,6 +78,7 @@ export const TypedocFrame: FunctionComponent<TypedocFrameProps> = ({
     const globalCSS = `
       [data-testid = main-container] {
         padding: 0;
+        max-width: 100%;
       }
     `;
 

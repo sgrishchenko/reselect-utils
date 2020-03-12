@@ -2,6 +2,7 @@
 name: Cached Structured Selector
 menu: API
 route: '/api/cached-structured-selector'
+edit: false
 ---
 
 import { TypedocFrame } from './TypedocFrame'

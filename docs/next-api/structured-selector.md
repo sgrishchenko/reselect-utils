@@ -2,6 +2,7 @@
 name: Structured Selector
 menu: API
 route: '/api/structured-selector'
+edit: false
 ---
 
 import { TypedocFrame } from './TypedocFrame'

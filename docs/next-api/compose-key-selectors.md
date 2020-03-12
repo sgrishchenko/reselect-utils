@@ -2,6 +2,7 @@
 name: Compose Key Selectors
 menu: API
 route: '/api/compose-key-selectors'
+edit: false
 ---
 
 import { TypedocFrame } from './TypedocFrame'

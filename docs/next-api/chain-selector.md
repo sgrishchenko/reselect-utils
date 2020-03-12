@@ -2,6 +2,7 @@
 name: Chain Selector
 menu: API
 route: '/api/chain-selector'
+edit: false
 ---
 
 import { TypedocFrame } from './TypedocFrame'

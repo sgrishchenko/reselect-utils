@@ -1696,9 +1696,9 @@ dl.tsd-comment-tags {
     margin: 0 10px 0 0;
     border-radius: 4px;
     /*$COLOR_COMMENT_TAG*/
-    border: 1px solid #808080;
+    border: 1px solid #2d3747;
     /*$COLOR_COMMENT_TAG*/
-    color: #808080;
+    color: #2d3747;
     font-size: 0.8em;
     font-weight: normal; }
   dl.tsd-comment-tags dd {
@@ -1888,7 +1888,7 @@ footer {
   /*$COLOR_COMMENT_TAG_TEXT*/
   color: #fff;
   /*$COLOR_COMMENT_TAG*/
-  background-color: #1FB6FF;
+  background-color: #2d3747;
   text-indent: 0;
   font-size: 14px;
   font-weight: normal; }

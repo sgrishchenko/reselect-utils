@@ -1847,35 +1847,35 @@ footer {
 .tsd-index-panel a,
 .tsd-index-panel .tsd-parent-kind-module a {
   /*$COLOR_TS*/
-  color: #9600ff; }
+  color: #f5f6f7; }
 
 .tsd-index-panel .tsd-parent-kind-interface a {
   /*$COLOR_TS_INTERFACE*/
-  color: #7da01f; }
+  color: #f5f6f7; }
 
 .tsd-index-panel .tsd-parent-kind-enum a {
   /*$COLOR_TS_ENUM*/
-  color: #cc9900; }
+  color: #f5f6f7; }
 
 .tsd-index-panel .tsd-parent-kind-class a {
   /*$COLOR_TS_CLASS*/
-  color: #4da6ff; }
+  color: #f5f6f7; }
 
 .tsd-index-panel .tsd-kind-module a {
   /*$COLOR_TS*/
-  color: #9600ff; }
+  color: #f5f6f7; }
 
 .tsd-index-panel .tsd-kind-interface a {
   /*$COLOR_TS_INTERFACE*/
-  color: #7da01f; }
+  color: #f5f6f7; }
 
 .tsd-index-panel .tsd-kind-enum a {
   /*$COLOR_TS_ENUM*/
-  color: #cc9900; }
+  color: #f5f6f7; }
 
 .tsd-index-panel .tsd-kind-class a {
   /*$COLOR_TS_CLASS*/
-  color: #4da6ff; }
+  color: #f5f6f7; }
 
 .tsd-index-panel .tsd-is-private a {
   /*$COLOR_TS_PRIVATE*/

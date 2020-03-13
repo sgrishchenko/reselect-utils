@@ -17,8 +17,8 @@
     "docz:build": "docz build",
     "storybook:dev": "start-storybook",
     "storybook:build": "build-storybook --output-dir storybook",
-    "typedoc:light": "typedoc --out typedoc/light packages/reselect-utils",
-    "typedoc:dark": "typedoc --out typedoc/dark --options typedoc.dark.json packages/reselect-utils",
+    "typedoc:light": "typedoc --out typedoc/light --theme typedoc-theme/light packages/reselect-utils",
+    "typedoc:dark": "typedoc --out typedoc/dark --theme typedoc-theme/dark packages/reselect-utils",
     "distribute": "yarn workspace reselect-utils version && git push --tags"
   },
   "husky": {
@@ -75,7 +75,6 @@
     "ts-loader": "^6.2.1",
     "ts-node": "^8.6.2",
     "typedoc": "^0.16.11",
-    "typedoc-dark-theme": "^0.0.11",
     "typescript": "^3.7.5"
   }
 }

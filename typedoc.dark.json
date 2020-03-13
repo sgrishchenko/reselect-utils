@@ -1,9 +1,0 @@
-{
-  "excludeNotExported": true,
-  "exclude": [
-    "packages/*/src/__data__/**",
-    "packages/*/src/__tests__/**",
-    "packages/*/src/__stories__/**"
-  ],
-  "theme": "./node_modules/typedoc-dark-theme/bin/default"
-}

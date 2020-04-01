@@ -1,17 +1,9 @@
-import typescript from 'rollup-plugin-typescript2';
+import typescript from '@rollup/plugin-typescript';
 
 export default {
   input: 'src/index.ts',
   external: ['reselect', 're-reselect'],
-  plugins: [
-    typescript({
-      tsconfigOverride: {
-        compilerOptions: {
-          module: 'es2015',
-        },
-      },
-    }),
-  ],
+  plugins: [typescript()],
   output: [
     {
       file: 'dist/index.js',

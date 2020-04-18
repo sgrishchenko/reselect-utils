@@ -1,6 +1,5 @@
 import { createSelector, ParametricSelector, Selector } from 'reselect';
 import createCachedSelector, {
-  ParametricKeySelector,
   FifoMapCache,
   FifoObjectCache,
   FlatMapCache,
@@ -155,9 +154,6 @@ export class SelectorMonad<
       const derivedSelector = higherOrderSelector(state, props);
 
       combinedSelector.dependencies = [higherOrderSelector, derivedSelector];
-      combinedSelector.currentKeySelector = composingKeySelectorCreator({
-        inputSelectors: combinedSelector.dependencies,
-      });
 
       /* istanbul ignore else  */
       if (process.env.NODE_ENV !== 'production') {
@@ -186,19 +182,31 @@ export class SelectorMonad<
       return derivedSelector(state, props);
     };
 
-    const defaultKeySelector: ParametricKeySelector<any, any> = () =>
-      '<DefaultKey>';
-
     combinedSelector.dependencies = [higherOrderSelector];
-    combinedSelector.currentKeySelector = defaultKeySelector;
 
     if (cachedSelector) {
       combinedSelector.cache = higherOrderSelector.cache;
-      combinedSelector.currentKeySelector = cachedSelector.keySelector;
+    }
+
+    let higherOrderKeySelector = selectorCreator(
+      higherOrderSelector,
+      (derivedSelector: unknown) => {
+        return composingKeySelectorCreator({
+          inputSelectors: [higherOrderSelector, derivedSelector],
+        });
+      },
+    );
+
+    if (cachedSelector) {
+      higherOrderKeySelector = higherOrderKeySelector({
+        keySelector: cachedSelector.keySelector,
+        cacheObject: cloneCacheObject(cachedSelector.cache),
+      });
     }
 
     combinedSelector.keySelector = (state: unknown, props: unknown) => {
-      return combinedSelector.currentKeySelector(state, props);
+      const derivedKeySelector = higherOrderKeySelector(state, props);
+      return derivedKeySelector(state, props);
     };
 
     /* istanbul ignore else  */

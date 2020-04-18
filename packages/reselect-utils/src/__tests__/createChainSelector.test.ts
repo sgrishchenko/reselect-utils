@@ -6,6 +6,7 @@ import { createSequenceSelector } from '../createSequenceSelector';
 import { State, commonState } from '../__data__/state';
 import { createPathSelector } from '../createPathSelector';
 import { createPropSelector } from '../createPropSelector';
+import { composingKeySelectorCreator } from '../composingKeySelectorCreator';
 
 describe('createChainSelector', () => {
   const personSelector = (state: State, props: { id: number }) =>
@@ -197,13 +198,6 @@ describe('createChainSelector', () => {
         .chain(chainFn)
         .build();
 
-      // first call to define all selector dependencies
-      chainSelector(expect.anything(), {
-        firstProp: 'firstValue',
-        secondProp: 'firstValue',
-      });
-      chainFn.mockClear();
-
       chainSelector(expect.anything(), {
         firstProp: 'firstValue',
         secondProp: 'firstValue',
@@ -247,6 +241,63 @@ describe('createChainSelector', () => {
       expect(chainFn).toHaveBeenCalledTimes(4);
       expect(firstSelector.recomputations()).toBe(2);
       expect(secondSelector.recomputations()).toBe(2);
+    });
+
+    test('should not invalidate cached selector with composingKeySelectorCreator', () => {
+      const cachedPersonSelector = createCachedSelector(
+        [
+          (state: State) => state.persons,
+          (state: State, props: { personId: number }) => props.personId,
+        ],
+        (persons, personId) => persons[personId],
+      )({
+        keySelector: (state: State, props: { personId: number }) =>
+          props.personId,
+      });
+
+      const cachedMessageSelector = createCachedSelector(
+        [
+          (state: State) => state.messages,
+          (state: State, props: { messageId: number }) => props.messageId,
+        ],
+        (messages, messageId) => messages[messageId],
+      )({
+        keySelector: (state: State, props: { messageId: number }) =>
+          props.messageId,
+      });
+
+      const personByMessageIdSelector = createChainSelector(
+        cachedMessageSelector,
+      )
+        .chain(message =>
+          createBoundSelector(cachedPersonSelector, {
+            personId: message.personId,
+          }),
+        )
+        .build();
+
+      const fullNameByMessageSelector = createCachedSelector(
+        [personByMessageIdSelector],
+        ({ firstName, secondName }) => `${firstName} ${secondName}`,
+      )({
+        keySelectorCreator: composingKeySelectorCreator,
+      });
+
+      expect(fullNameByMessageSelector(commonState, { messageId: 100 })).toBe(
+        'Marry Poppins',
+      );
+      expect(fullNameByMessageSelector(commonState, { messageId: 200 })).toBe(
+        'Harry Potter',
+      );
+
+      expect(fullNameByMessageSelector(commonState, { messageId: 100 })).toBe(
+        'Marry Poppins',
+      );
+      expect(fullNameByMessageSelector(commonState, { messageId: 200 })).toBe(
+        'Harry Potter',
+      );
+
+      expect(fullNameByMessageSelector.recomputations()).toBe(2);
     });
   });
 });

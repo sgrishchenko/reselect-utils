@@ -3,7 +3,7 @@ import { NamedParametricSelector } from './types';
 import {
   getSelectorName,
   isDebugMode,
-  isCachedSelectorSelector,
+  isCachedSelector,
   defineDynamicSelectorName,
 } from './helpers';
 
@@ -54,7 +54,7 @@ export const createAdaptedSelector = <S, P1, P2, R>(
     }
   }
 
-  if (isCachedSelectorSelector(baseSelector)) {
+  if (isCachedSelector(baseSelector)) {
     const decoratedAdaptedSelector = Object.assign(
       adaptedSelector,
       baseSelector,

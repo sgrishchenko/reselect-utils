@@ -12,7 +12,7 @@ import {
   defineDynamicSelectorName,
   getSelectorName,
   isDebugMode,
-  tryExtractCachedSelector,
+  isCachedSelector,
 } from './helpers';
 import { composingKeySelectorCreator } from './composingKeySelectorCreator';
 
@@ -123,18 +123,16 @@ export class SelectorMonad<
       >;
 
   public chain(fn: Function) {
-    const cachedSelector = tryExtractCachedSelector(this.selector);
-
-    const selectorCreator: any = cachedSelector
+    const selectorCreator: any = isCachedSelector(this.selector)
       ? createCachedSelector
       : createSelector;
 
     let higherOrderSelector = selectorCreator(this.selector, fn);
 
-    if (cachedSelector) {
+    if (isCachedSelector(this.selector)) {
       higherOrderSelector = higherOrderSelector({
-        keySelector: cachedSelector.keySelector,
-        cacheObject: cloneCacheObject(cachedSelector.cache),
+        keySelector: this.selector.keySelector,
+        cacheObject: cloneCacheObject(this.selector.cache),
       });
     }
 
@@ -184,7 +182,7 @@ export class SelectorMonad<
 
     combinedSelector.dependencies = [higherOrderSelector];
 
-    if (cachedSelector) {
+    if (isCachedSelector(this.selector)) {
       combinedSelector.cache = higherOrderSelector.cache;
     }
 
@@ -197,10 +195,10 @@ export class SelectorMonad<
       },
     );
 
-    if (cachedSelector) {
+    if (isCachedSelector(this.selector)) {
       higherOrderKeySelector = higherOrderKeySelector({
-        keySelector: cachedSelector.keySelector,
-        cacheObject: cloneCacheObject(cachedSelector.cache),
+        keySelector: this.selector.keySelector,
+        cacheObject: cloneCacheObject(this.selector.cache),
       });
     }
 

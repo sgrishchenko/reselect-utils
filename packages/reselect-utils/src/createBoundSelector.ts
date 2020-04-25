@@ -3,7 +3,7 @@ import { NamedParametricSelector, NamedSelector } from './types';
 import {
   getSelectorName,
   isDebugMode,
-  isCachedSelectorSelector,
+  isCachedSelector,
   defineDynamicSelectorName,
 } from './helpers';
 
@@ -59,7 +59,7 @@ export const createBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
     }
   }
 
-  if (isCachedSelectorSelector(baseSelector)) {
+  if (isCachedSelector(baseSelector)) {
     const decoratedBoundSelector = Object.assign(boundSelector, baseSelector);
 
     if (baseSelector.getMatchingSelector) {

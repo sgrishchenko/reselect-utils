@@ -3,7 +3,7 @@ import { commonState, State } from '../__data__/state';
 import { createBoundSelector } from '../createBoundSelector';
 import { createStructuredSelector } from '../createStructuredSelector';
 import { NamedParametricSelector } from '../types';
-import { isCachedSelectorSelector } from '../helpers';
+import { isCachedSelector } from '../helpers';
 
 describe('createAdaptedSelector', () => {
   const personSelector = (state: State, props: { personId: number }) =>
@@ -110,7 +110,7 @@ describe('createAdaptedSelector', () => {
         personId: 1,
       });
 
-      if (!isCachedSelectorSelector(marrySelector)) {
+      if (!isCachedSelector(marrySelector)) {
         throw new Error('marrySelector should be cached');
       }
 

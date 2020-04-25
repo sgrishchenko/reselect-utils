@@ -1,7 +1,7 @@
 import createCachedSelector from 're-reselect';
 import { createPathSelector } from '../createPathSelector';
 import { commonState, State, Document } from '../__data__/state';
-import { isCachedSelectorSelector } from '../helpers';
+import { isCachedSelector } from '../helpers';
 
 describe('createPathSelector', () => {
   test('should implement basic access to state properties', () => {
@@ -49,7 +49,7 @@ describe('createPathSelector', () => {
 
       const firstNameSelector = createPathSelector(personSelector).firstName();
 
-      if (!isCachedSelectorSelector(firstNameSelector)) {
+      if (!isCachedSelector(firstNameSelector)) {
         throw new Error('firstNameSelector should be cached');
       }
 

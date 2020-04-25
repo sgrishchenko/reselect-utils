@@ -60,31 +60,28 @@ export const createBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
   }
 
   if (isCachedSelectorSelector(baseSelector)) {
-    const decoratedBaseSelector = Object.assign(
-      (state: S, props: P1) => baseSelector(state, props),
-      baseSelector,
-    );
+    const decoratedBoundSelector = Object.assign(boundSelector, baseSelector);
 
     if (baseSelector.getMatchingSelector) {
-      decoratedBaseSelector.getMatchingSelector = innerCreateBoundSelector(
+      decoratedBoundSelector.getMatchingSelector = innerCreateBoundSelector(
         baseSelector.getMatchingSelector,
         binding,
       );
     }
 
     if (baseSelector.removeMatchingSelector) {
-      decoratedBaseSelector.removeMatchingSelector = innerCreateBoundSelector(
+      decoratedBoundSelector.removeMatchingSelector = innerCreateBoundSelector(
         baseSelector.removeMatchingSelector,
         binding,
       );
     }
 
-    decoratedBaseSelector.keySelector = innerCreateBoundSelector(
+    decoratedBoundSelector.keySelector = innerCreateBoundSelector(
       baseSelector.keySelector,
       binding,
     );
 
-    boundSelector.dependencies = [decoratedBaseSelector];
+    return decoratedBoundSelector;
   }
 
   return boundSelector;

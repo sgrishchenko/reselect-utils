@@ -55,31 +55,31 @@ export const createAdaptedSelector = <S, P1, P2, R>(
   }
 
   if (isCachedSelectorSelector(baseSelector)) {
-    const decoratedBaseSelector = Object.assign(
-      (state: S, props: P1) => baseSelector(state, props),
+    const decoratedAdaptedSelector = Object.assign(
+      adaptedSelector,
       baseSelector,
     );
 
     if (baseSelector.getMatchingSelector) {
-      decoratedBaseSelector.getMatchingSelector = innerCreateAdaptedSelector(
+      decoratedAdaptedSelector.getMatchingSelector = innerCreateAdaptedSelector(
         baseSelector.getMatchingSelector,
         mapping,
       );
     }
 
     if (baseSelector.removeMatchingSelector) {
-      decoratedBaseSelector.removeMatchingSelector = innerCreateAdaptedSelector(
+      decoratedAdaptedSelector.removeMatchingSelector = innerCreateAdaptedSelector(
         baseSelector.removeMatchingSelector,
         mapping,
       );
     }
 
-    decoratedBaseSelector.keySelector = innerCreateAdaptedSelector(
+    decoratedAdaptedSelector.keySelector = innerCreateAdaptedSelector(
       baseSelector.keySelector,
       mapping,
     );
 
-    adaptedSelector.dependencies = [decoratedBaseSelector];
+    return decoratedAdaptedSelector;
   }
 
   return adaptedSelector;

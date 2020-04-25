@@ -3,6 +3,7 @@ import { commonState, State } from '../__data__/state';
 import { createAdaptedSelector } from '../createAdaptedSelector';
 import { createStructuredSelector } from '../createStructuredSelector';
 import { NamedParametricSelector } from '../types';
+import { isCachedSelectorSelector } from '../helpers';
 
 describe('createAdaptedSelector', () => {
   const personSelector = (state: State, props: { id: number }) =>
@@ -102,26 +103,43 @@ describe('createAdaptedSelector', () => {
         }),
       );
 
-      const dependency = fullNameAdaptedCachedSelector.dependencies?.[0];
+      if (!isCachedSelectorSelector(fullNameAdaptedCachedSelector)) {
+        throw new Error('fullNameAdaptedCachedSelector should be cached');
+      }
 
-      let selectorInstance = dependency.getMatchingSelector(commonState, {
-        personId: 1,
-      });
+      let selectorInstance = fullNameAdaptedCachedSelector.getMatchingSelector?.(
+        commonState,
+        {
+          personId: 1,
+        },
+      );
       expect(selectorInstance).toBeUndefined();
 
       fullNameAdaptedCachedSelector(commonState, { personId: 1 });
-      selectorInstance = dependency.getMatchingSelector(commonState, {
-        personId: 1,
-      });
+      selectorInstance = fullNameAdaptedCachedSelector.getMatchingSelector?.(
+        commonState,
+        {
+          personId: 1,
+        },
+      );
       expect(selectorInstance).toBeInstanceOf(Function);
 
-      dependency.removeMatchingSelector(commonState, {
+      // eslint-disable-next-line no-unused-expressions
+      fullNameAdaptedCachedSelector.removeMatchingSelector?.(commonState, {
         personId: 1,
       });
-      selectorInstance = dependency.getMatchingSelector(commonState, {
-        personId: 1,
-      });
+      selectorInstance = fullNameAdaptedCachedSelector.getMatchingSelector?.(
+        commonState,
+        {
+          personId: 1,
+        },
+      );
       expect(selectorInstance).toBeUndefined();
+
+      const key = fullNameAdaptedCachedSelector.keySelector(commonState, {
+        personId: 1,
+      });
+      expect(key).toBe(1);
     });
   });
 });

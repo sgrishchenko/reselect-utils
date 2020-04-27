@@ -192,6 +192,7 @@ const innerCreatePathSelector = <S, P, R>(
       return result ?? defaultValue;
     }
 
+    Object.assign(resultSelector, baseSelector);
     resultSelector.dependencies = [baseSelector];
 
     /* istanbul ignore else  */
@@ -206,7 +207,7 @@ const innerCreatePathSelector = <S, P, R>(
       }
     }
 
-    return Object.assign(resultSelector, baseSelector);
+    return resultSelector;
   };
 
   return new Proxy(proxyTarget, {

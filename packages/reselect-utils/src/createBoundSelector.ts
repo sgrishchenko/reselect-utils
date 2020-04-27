@@ -1,5 +1,9 @@
 import { ParametricSelector } from 'reselect';
-import { NamedParametricSelector, NamedSelector } from './types';
+import {
+  CachedSelector,
+  NamedParametricSelector,
+  NamedSelector,
+} from './types';
 import {
   getSelectorName,
   isDebugMode,
@@ -44,6 +48,7 @@ export const createBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
 ) => {
   const boundSelector = innerCreateBoundSelector(baseSelector, binding);
 
+  Object.assign(boundSelector, baseSelector);
   boundSelector.dependencies = [baseSelector];
 
   /* istanbul ignore else  */
@@ -60,28 +65,26 @@ export const createBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
   }
 
   if (isCachedSelector(baseSelector)) {
-    const decoratedBoundSelector = Object.assign(boundSelector, baseSelector);
+    const cachedBoundSelector = (boundSelector as unknown) as CachedSelector;
 
     if (baseSelector.getMatchingSelector) {
-      decoratedBoundSelector.getMatchingSelector = innerCreateBoundSelector(
+      cachedBoundSelector.getMatchingSelector = innerCreateBoundSelector(
         baseSelector.getMatchingSelector,
         binding,
       );
     }
 
     if (baseSelector.removeMatchingSelector) {
-      decoratedBoundSelector.removeMatchingSelector = innerCreateBoundSelector(
+      cachedBoundSelector.removeMatchingSelector = innerCreateBoundSelector(
         baseSelector.removeMatchingSelector,
         binding,
       );
     }
 
-    decoratedBoundSelector.keySelector = innerCreateBoundSelector(
+    cachedBoundSelector.keySelector = innerCreateBoundSelector(
       baseSelector.keySelector,
       binding,
     );
-
-    return decoratedBoundSelector;
   }
 
   return boundSelector;

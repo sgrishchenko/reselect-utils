@@ -1,5 +1,5 @@
 import { ParametricSelector } from 'reselect';
-import { NamedParametricSelector } from './types';
+import { CachedSelector, NamedParametricSelector } from './types';
 import {
   getSelectorName,
   isDebugMode,
@@ -39,6 +39,7 @@ export const createAdaptedSelector = <S, P1, P2, R>(
 ) => {
   const adaptedSelector = innerCreateAdaptedSelector(baseSelector, mapping);
 
+  Object.assign(adaptedSelector, baseSelector);
   adaptedSelector.dependencies = [baseSelector];
 
   /* istanbul ignore else  */
@@ -55,31 +56,26 @@ export const createAdaptedSelector = <S, P1, P2, R>(
   }
 
   if (isCachedSelector(baseSelector)) {
-    const decoratedAdaptedSelector = Object.assign(
-      adaptedSelector,
-      baseSelector,
-    );
+    const cachedAdaptedSelector = (adaptedSelector as unknown) as CachedSelector;
 
     if (baseSelector.getMatchingSelector) {
-      decoratedAdaptedSelector.getMatchingSelector = innerCreateAdaptedSelector(
+      cachedAdaptedSelector.getMatchingSelector = innerCreateAdaptedSelector(
         baseSelector.getMatchingSelector,
         mapping,
       );
     }
 
     if (baseSelector.removeMatchingSelector) {
-      decoratedAdaptedSelector.removeMatchingSelector = innerCreateAdaptedSelector(
+      cachedAdaptedSelector.removeMatchingSelector = innerCreateAdaptedSelector(
         baseSelector.removeMatchingSelector,
         mapping,
       );
     }
 
-    decoratedAdaptedSelector.keySelector = innerCreateAdaptedSelector(
+    cachedAdaptedSelector.keySelector = innerCreateAdaptedSelector(
       baseSelector.keySelector,
       mapping,
     );
-
-    return decoratedAdaptedSelector;
   }
 
   return adaptedSelector;

@@ -32,7 +32,7 @@ export const defineDynamicSelectorName = (
   });
 };
 
-let debugMode = true;
+let debugMode = false;
 
 export const isDebugMode = () => debugMode;
 

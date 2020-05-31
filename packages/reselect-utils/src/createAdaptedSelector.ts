@@ -1,9 +1,9 @@
 import { ParametricSelector } from 'reselect';
-import { NamedParametricSelector } from './types';
+import { CachedSelector, NamedParametricSelector } from './types';
 import {
   getSelectorName,
   isDebugMode,
-  isCachedSelectorSelector,
+  isCachedSelector,
   defineDynamicSelectorName,
 } from './helpers';
 
@@ -39,6 +39,7 @@ export const createAdaptedSelector = <S, P1, P2, R>(
 ) => {
   const adaptedSelector = innerCreateAdaptedSelector(baseSelector, mapping);
 
+  Object.assign(adaptedSelector, baseSelector);
   adaptedSelector.dependencies = [baseSelector];
 
   /* istanbul ignore else  */
@@ -54,32 +55,27 @@ export const createAdaptedSelector = <S, P1, P2, R>(
     }
   }
 
-  if (isCachedSelectorSelector(baseSelector)) {
-    const decoratedBaseSelector = Object.assign(
-      (state: S, props: P1) => baseSelector(state, props),
-      baseSelector,
-    );
+  if (isCachedSelector(baseSelector)) {
+    const cachedAdaptedSelector = (adaptedSelector as unknown) as CachedSelector;
 
     if (baseSelector.getMatchingSelector) {
-      decoratedBaseSelector.getMatchingSelector = innerCreateAdaptedSelector(
+      cachedAdaptedSelector.getMatchingSelector = innerCreateAdaptedSelector(
         baseSelector.getMatchingSelector,
         mapping,
       );
     }
 
     if (baseSelector.removeMatchingSelector) {
-      decoratedBaseSelector.removeMatchingSelector = innerCreateAdaptedSelector(
+      cachedAdaptedSelector.removeMatchingSelector = innerCreateAdaptedSelector(
         baseSelector.removeMatchingSelector,
         mapping,
       );
     }
 
-    decoratedBaseSelector.keySelector = innerCreateAdaptedSelector(
+    cachedAdaptedSelector.keySelector = innerCreateAdaptedSelector(
       baseSelector.keySelector,
       mapping,
     );
-
-    adaptedSelector.dependencies = [decoratedBaseSelector];
   }
 
   return adaptedSelector;

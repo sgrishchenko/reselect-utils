@@ -1,4 +1,4 @@
-import { NamedParametricSelector, CachedSelector } from './types';
+import { CachedSelector } from './types';
 
 export const getSelectorName = (
   selector: Function & { selectorName?: string },
@@ -10,24 +10,10 @@ export const getSelectorName = (
   return selector.name;
 };
 
-export const isCachedSelectorSelector = (
+export const isCachedSelector = (
   selector: unknown,
 ): selector is CachedSelector => {
   return selector instanceof Object && 'keySelector' in selector;
-};
-
-export const tryExtractCachedSelector = (
-  selector: NamedParametricSelector<any, any, any> | CachedSelector,
-): CachedSelector | undefined => {
-  if (isCachedSelectorSelector(selector)) {
-    return selector;
-  }
-  if (selector.dependencies && selector.dependencies.length === 1) {
-    // adaptedSelector, boundSelector and pathSelector cases
-    const [dependency] = selector.dependencies;
-    return tryExtractCachedSelector(dependency);
-  }
-  return undefined;
 };
 
 export const defineDynamicSelectorName = (

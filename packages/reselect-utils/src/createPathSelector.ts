@@ -175,9 +175,6 @@ export type OptionalPathParametricSelectorType<
 const isObject = (value: unknown) =>
   value !== null && typeof value === 'object';
 
-const isNullOrUndefined = (value: unknown) =>
-  value === null || value === undefined;
-
 const innerCreatePathSelector = <S, P, R>(
   baseSelector: Function,
   path: PropertyKey[] = [],
@@ -192,9 +189,10 @@ const innerCreatePathSelector = <S, P, R>(
         result = result[path[i]];
       }
 
-      return isNullOrUndefined(result) ? defaultValue : result;
+      return result ?? defaultValue;
     }
 
+    Object.assign(resultSelector, baseSelector);
     resultSelector.dependencies = [baseSelector];
 
     /* istanbul ignore else  */

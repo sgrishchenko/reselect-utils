@@ -143,23 +143,7 @@ describe('composingKeySelectorCreator', () => {
     const secondProp = 'secondProp';
     const thirdProp = 'thirdProp';
 
-    // before chain selector call
-    let key = keySelector(expect.anything(), {
-      firstProp,
-      secondProp,
-      thirdProp,
-    } as { thirdProp: string });
-
-    expect(key).toBe(`${thirdProp}:${firstProp}`);
-
-    // chain selector call
-    inputSelector(expect.anything(), {
-      firstProp,
-      secondProp,
-    });
-
-    // after chain selector call
-    key = keySelector(expect.anything(), {
+    const key = keySelector(expect.anything(), {
       firstProp,
       secondProp,
       thirdProp,

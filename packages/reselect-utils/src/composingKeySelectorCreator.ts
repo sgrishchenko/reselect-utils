@@ -1,5 +1,5 @@
 import { KeySelector, ParametricKeySelector } from 're-reselect';
-import { tryExtractCachedSelector } from './helpers';
+import { isCachedSelector } from './helpers';
 import { composeKeySelectors } from './composeKeySelectors';
 
 export function composingKeySelectorCreator<S, D>(selectorInputs: {
@@ -23,9 +23,8 @@ export function composingKeySelectorCreator({
   }
 
   inputSelectors.forEach((selector: any) => {
-    const cachedSelector = tryExtractCachedSelector(selector);
-    if (cachedSelector) {
-      keySelectorSet.add(cachedSelector.keySelector);
+    if (isCachedSelector(selector)) {
+      keySelectorSet.add(selector.keySelector);
     }
   });
 

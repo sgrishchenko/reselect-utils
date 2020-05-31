@@ -3,6 +3,7 @@ import { commonState, State } from '../__data__/state';
 import { createBoundSelector } from '../createBoundSelector';
 import { createStructuredSelector } from '../createStructuredSelector';
 import { NamedParametricSelector } from '../types';
+import { isCachedSelector } from '../helpers';
 
 describe('createAdaptedSelector', () => {
   const personSelector = (state: State, props: { personId: number }) =>
@@ -109,18 +110,33 @@ describe('createAdaptedSelector', () => {
         personId: 1,
       });
 
-      const dependency = marrySelector.dependencies?.[0];
+      if (!isCachedSelector(marrySelector)) {
+        throw new Error('marrySelector should be cached');
+      }
 
-      let selectorInstance = dependency.getMatchingSelector(commonState);
+      let selectorInstance = marrySelector.getMatchingSelector?.(
+        commonState,
+        expect.anything(),
+      );
       expect(selectorInstance).toBeUndefined();
 
       marrySelector(commonState);
-      selectorInstance = dependency.getMatchingSelector(commonState);
+      selectorInstance = marrySelector.getMatchingSelector?.(
+        commonState,
+        expect.anything(),
+      );
       expect(selectorInstance).toBeInstanceOf(Function);
 
-      dependency.removeMatchingSelector(commonState);
-      selectorInstance = dependency.getMatchingSelector(commonState);
+      // eslint-disable-next-line no-unused-expressions
+      marrySelector.removeMatchingSelector?.(commonState, expect.anything());
+      selectorInstance = marrySelector.getMatchingSelector?.(
+        commonState,
+        expect.anything(),
+      );
       expect(selectorInstance).toBeUndefined();
+
+      const key = marrySelector.keySelector(commonState, expect.anything());
+      expect(key).toBe(1);
     });
   });
 });

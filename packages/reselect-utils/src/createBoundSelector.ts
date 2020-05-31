@@ -1,9 +1,13 @@
 import { ParametricSelector } from 'reselect';
-import { NamedParametricSelector, NamedSelector } from './types';
+import {
+  CachedSelector,
+  NamedParametricSelector,
+  NamedSelector,
+} from './types';
 import {
   getSelectorName,
   isDebugMode,
-  isCachedSelectorSelector,
+  isCachedSelector,
   defineDynamicSelectorName,
 } from './helpers';
 
@@ -44,6 +48,7 @@ export const createBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
 ) => {
   const boundSelector = innerCreateBoundSelector(baseSelector, binding);
 
+  Object.assign(boundSelector, baseSelector);
   boundSelector.dependencies = [baseSelector];
 
   /* istanbul ignore else  */
@@ -59,32 +64,27 @@ export const createBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
     }
   }
 
-  if (isCachedSelectorSelector(baseSelector)) {
-    const decoratedBaseSelector = Object.assign(
-      (state: S, props: P1) => baseSelector(state, props),
-      baseSelector,
-    );
+  if (isCachedSelector(baseSelector)) {
+    const cachedBoundSelector = (boundSelector as unknown) as CachedSelector;
 
     if (baseSelector.getMatchingSelector) {
-      decoratedBaseSelector.getMatchingSelector = innerCreateBoundSelector(
+      cachedBoundSelector.getMatchingSelector = innerCreateBoundSelector(
         baseSelector.getMatchingSelector,
         binding,
       );
     }
 
     if (baseSelector.removeMatchingSelector) {
-      decoratedBaseSelector.removeMatchingSelector = innerCreateBoundSelector(
+      cachedBoundSelector.removeMatchingSelector = innerCreateBoundSelector(
         baseSelector.removeMatchingSelector,
         binding,
       );
     }
 
-    decoratedBaseSelector.keySelector = innerCreateBoundSelector(
+    cachedBoundSelector.keySelector = innerCreateBoundSelector(
       baseSelector.keySelector,
       binding,
     );
-
-    boundSelector.dependencies = [decoratedBaseSelector];
   }
 
   return boundSelector;

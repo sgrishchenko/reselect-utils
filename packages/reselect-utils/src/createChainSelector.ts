@@ -17,17 +17,31 @@ import {
 } from './helpers';
 import { composingKeySelectorCreator } from './composingKeySelectorCreator';
 
-const sumString = (stringSource: object): number =>
-  Array.from(stringSource.toString()).reduce(
-    (sum, char) => char.charCodeAt(0) + sum,
-    0,
-  );
+const sumString = (source: unknown) => {
+  const stringSource = String(source);
+  let result = 0;
 
-const generateSelectorKey = (selector: any): string =>
-  (selector.dependencies || []).reduce(
-    (base: number, dependency: any) => base + sumString(dependency),
-    sumString(selector),
-  );
+  for (let i = stringSource.length - 1; i >= 0; i -= 1) {
+    const char = stringSource[i];
+
+    result += char.charCodeAt(0);
+  }
+
+  return result;
+};
+
+const generateSelectorKey = (selector: { dependencies?: unknown[] }) => {
+  const dependencies = selector.dependencies ?? [];
+  let result = sumString(selector);
+
+  for (let i = dependencies.length - 1; i >= 0; i -= 1) {
+    const dependency = dependencies[i];
+
+    result += sumString(dependency);
+  }
+
+  return result;
+};
 
 const cloneCacheObject = (cacheObject: any) => {
   // TODO: find more elegant solution for cloning

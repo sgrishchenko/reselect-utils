@@ -13,6 +13,10 @@ export {
   createBoundSelector as bound,
 } from './createBoundSelector';
 export {
+  createEmptySelector,
+  createEmptySelector as empty,
+} from './createEmptySelector';
+export {
   createAdaptedSelector,
   createAdaptedSelector as adapt,
 } from './createAdaptedSelector';

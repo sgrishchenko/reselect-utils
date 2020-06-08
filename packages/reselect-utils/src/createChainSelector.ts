@@ -74,9 +74,7 @@ export class SelectorMonad<
   S1,
   P1,
   R1,
-  SelectorType extends
-    | NamedSelector<S1, R1>
-    | NamedParametricSelector<S1, P1, R1>,
+  SelectorType extends Selector<S1, R1> | ParametricSelector<S1, P1, R1>,
   SelectorChainType extends SelectorChainHierarchy<any, any>
 > {
   private readonly selector: SelectorType;
@@ -95,7 +93,7 @@ export class SelectorMonad<
         S1 & S2,
         void,
         R2,
-        Selector<S1 & S2, R2>,
+        NamedSelector<S1 & S2, R2>,
         SelectorChainHierarchy<
           (result: R1) => Selector<S2, R2>,
           SelectorChainType
@@ -105,7 +103,7 @@ export class SelectorMonad<
         S1 & S2,
         P1,
         R2,
-        ParametricSelector<S1 & S2, P1, R2>,
+        NamedParametricSelector<S1 & S2, P1, R2>,
         SelectorChainHierarchy<
           (result: R1) => Selector<S2, R2>,
           SelectorChainType
@@ -119,7 +117,7 @@ export class SelectorMonad<
         S1 & S2,
         P2,
         R2,
-        ParametricSelector<S1 & S2, P2, R2>,
+        NamedParametricSelector<S1 & S2, P2, R2>,
         SelectorChainHierarchy<
           (result: R1) => ParametricSelector<S2, P2, R2>,
           SelectorChainType
@@ -129,7 +127,7 @@ export class SelectorMonad<
         S1 & S2,
         P1 & P2,
         R2,
-        ParametricSelector<S1 & S2, P1 & P2, R2>,
+        NamedParametricSelector<S1 & S2, P1 & P2, R2>,
         SelectorChainHierarchy<
           (result: R1) => ParametricSelector<S2, P2, R2>,
           SelectorChainType
@@ -157,7 +155,7 @@ export class SelectorMonad<
         defineDynamicSelectorName(higherOrderSelector, () => {
           const baseName = getSelectorName(this.selector);
 
-          return `${baseName} (pre-chained ${sumString(fn)})`;
+          return `higher order for ${baseName} (${sumString(fn)})`;
         });
       }
     }
@@ -253,7 +251,7 @@ export class SelectorMonad<
           defineDynamicSelectorName(selector, () => {
             const baseName = getSelectorName(this.selector);
 
-            return `${baseName} (mapped ${sumString(fn)})`;
+            return `mapped from ${baseName} (${sumString(fn)})`;
           });
         }
       }

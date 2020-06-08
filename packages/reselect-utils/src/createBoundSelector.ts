@@ -25,24 +25,31 @@ const generateBindingName = (binding: {}) => {
   return `${structureKeys} -> ${structureValues}`;
 };
 
-const innerCreateBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
+const innerCreateBoundSelector = <S, P2, P1 extends P2, R>(
   baseSelector: ParametricSelector<S, P1, R>,
   binding: P2,
 ) => {
   const boundSelector = (state: S, props: Omit<P1, keyof P2> | void) =>
     baseSelector(state, ({
-      ...(props || {}),
-      ...(binding || {}),
+      ...props,
+      ...binding,
     } as unknown) as P1);
 
-  type BoundSelector = Exclude<keyof P1, keyof P2> extends never
-    ? NamedSelector<S, R>
-    : NamedParametricSelector<S, Omit<P1, keyof P2>, R>;
+  type StrictRequired<T> = {
+    [P in keyof T]-?: NonNullable<T[P]>;
+  };
+
+  // all binding properties are not optional
+  type BoundSelector = P2 extends StrictRequired<P2>
+    ? Exclude<keyof P1, keyof P2> extends never
+      ? NamedSelector<S, R>
+      : NamedParametricSelector<S, Omit<P1, keyof P2>, R>
+    : never;
 
   return boundSelector as BoundSelector;
 };
 
-export const createBoundSelector = <S, P1, P2 extends Partial<P1>, R>(
+export const createBoundSelector = <S, P2, P1 extends P2, R>(
   baseSelector: ParametricSelector<S, P1, R>,
   binding: P2,
 ) => {

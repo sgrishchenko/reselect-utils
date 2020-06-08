@@ -7,6 +7,7 @@ import { State, commonState } from '../__data__/state';
 import { createPathSelector } from '../createPathSelector';
 import { createPropSelector } from '../createPropSelector';
 import { composingKeySelectorCreator } from '../composingKeySelectorCreator';
+import { NamedParametricSelector } from '../types';
 
 describe('createChainSelector', () => {
   const personSelector = (state: State, props: { id: number }) =>
@@ -71,6 +72,44 @@ describe('createChainSelector', () => {
 
     someByMessageIdSelector(commonState, { id: 200 });
     expect(chainMock).toHaveBeenCalledTimes(2);
+  });
+
+  test('should generate selector name', () => {
+    const fullNameNamedSelector = createSelector(
+      [personSelector],
+      ({ firstName, secondName }) => `${firstName} ${secondName}`,
+    );
+
+    (fullNameNamedSelector as NamedParametricSelector<
+      unknown,
+      unknown,
+      unknown
+    >).selectorName = 'fullNameNamedSelector';
+
+    const personByMessageIdSelector = createChainSelector(messageSelector)
+      .chain(message =>
+        createBoundSelector(personSelector, { id: message.personId }),
+      )
+      .chain(person =>
+        createBoundSelector(fullNameNamedSelector, { id: person.id }),
+      )
+      .build();
+
+    expect(personByMessageIdSelector.selectorName).toMatchInlineSnapshot(
+      `"messageSelector (will be chained 11430) (will be chained 11285)"`,
+    );
+
+    personByMessageIdSelector(commonState, { id: 100 });
+
+    expect(personByMessageIdSelector.selectorName).toMatchInlineSnapshot(
+      `"messageSelector (chained by personSelector (id -> [*])) (chained by fullNameNamedSelector (id -> [*]))"`,
+    );
+
+    const [higherOrderSelector] = personByMessageIdSelector.dependencies;
+
+    expect(higherOrderSelector.selectorName).toMatchInlineSnapshot(
+      `"higher order for messageSelector (chained by personSelector (id -> [*])) (11285)"`,
+    );
   });
 
   test('should build selector with chainHierarchy property for unit test', () => {

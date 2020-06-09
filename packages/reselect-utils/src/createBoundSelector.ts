@@ -35,12 +35,8 @@ const innerCreateBoundSelector = <S, P2, P1 extends P2, R>(
       ...binding,
     } as unknown) as P1);
 
-  type StrictRequired<T> = {
-    [P in keyof T]-?: NonNullable<T[P]>;
-  };
-
-  // all binding properties are not optional
-  type BoundSelector = P2 extends StrictRequired<P2>
+  // prevent binding non optional props on optional values
+  type BoundSelector = P2 extends Pick<P1, keyof P2>
     ? Exclude<keyof P1, keyof P2> extends never
       ? NamedSelector<S, R>
       : NamedParametricSelector<S, Omit<P1, keyof P2>, R>

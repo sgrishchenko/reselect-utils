@@ -11,12 +11,16 @@ const dagreLayout = {
   nodeDimensionsIncludeLabels: true,
 };
 
+const url = new URL(document.location.href);
+const theme = url.searchParams.get('theme');
+
 const cytoDefaults = {
   style: [
     {
       selector: 'node',
       style: {
         'background-color': '#666',
+        color: theme === 'dark' ? '#fff' : '#000',
         label: 'data(id)',
       },
     },

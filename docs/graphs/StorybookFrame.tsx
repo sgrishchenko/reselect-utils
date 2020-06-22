@@ -1,4 +1,5 @@
 import React, { FunctionComponent, CSSProperties } from 'react';
+import { useColorMode } from 'theme-ui';
 
 export type StorybookFrameProps = {
   title: string;
@@ -9,6 +10,8 @@ export const StorybookFrame: FunctionComponent<StorybookFrameProps> = ({
   title,
   route,
 }) => {
+  const [colorMode] = useColorMode();
+
   const style: CSSProperties = {
     resize: 'both',
     overflow: 'auto',
@@ -24,7 +27,7 @@ export const StorybookFrame: FunctionComponent<StorybookFrameProps> = ({
     <iframe
       title={title}
       style={style}
-      src={`https://sgrishchenko.github.io/reselect-utils/storybook/iframe.html?id=${route}`}
+      src={`https://sgrishchenko.github.io/reselect-utils/storybook/iframe.html?id=${route}&theme=${colorMode}`}
     />
   );
 };

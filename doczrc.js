@@ -36,6 +36,7 @@ export default {
         { name: 'Path Selector' },
         { name: 'Prop Selector' },
         { name: 'Bound Selector' },
+        { name: 'Empty Selector' },
         { name: 'Adapted Selector' },
         { name: 'Structured Selector' },
         { name: 'Cached Structured Selector' },

@@ -17,7 +17,7 @@ export default {
         { name: 'Path & Prop Selectors' },
         { name: 'Bound & Adapted Selectors' },
         { name: 'Structured & Sequence Selectors' },
-        // { name: 'Chain Selector' },
+        { name: 'Chain & Empty Selectors' },
         // { name: 'Composing Key Selector Creator' },
       ],
     },

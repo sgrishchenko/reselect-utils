@@ -29,8 +29,8 @@ const cytoDefaults = {
       selector: 'edge',
       style: {
         width: 3,
-        'line-color': '#ccc',
-        'target-arrow-color': '#ccc',
+        'line-color': theme === 'dark' ? '#444' : '#ccc',
+        'target-arrow-color': theme === 'dark' ? '#444' : '#ccc',
         'target-arrow-shape': 'triangle',
       },
     },

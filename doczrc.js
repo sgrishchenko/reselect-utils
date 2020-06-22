@@ -18,7 +18,7 @@ export default {
         { name: 'Bound & Adapted Selectors' },
         { name: 'Structured & Sequence Selectors' },
         { name: 'Chain & Empty Selectors' },
-        // { name: 'Composing Key Selector Creator' },
+        { name: 'Composing Key Selector Creator' },
       ],
     },
     {

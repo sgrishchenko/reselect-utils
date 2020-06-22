@@ -151,14 +151,14 @@ const personSelector = createCachedSelector(
   keySelector: prop<{ personId: number }>().personId(),
 });
 
-const fullNameSelector = createSelector(
+const fullNameSelector = createCachedSelector(
   [personSelector],
   ({ firstName, secondName }) => `${firstName} ${secondName}`,
 )({
   keySelector: prop<{ personId: number }>().personId(),
 });
 
-const shortNameSelector = createSelector(
+const shortNameSelector = createCachedSelector(
   [personSelector],
   ({ firstName, secondName }) => `${firstName[0]}. ${secondName}`,
 );
@@ -250,7 +250,7 @@ const personSelector = createCachedSelector(
   keySelector: prop<{ personId: number }>().personId(),
 });
 
-const fullNameSelector = createSelector(
+const fullNameSelector = createCachedSelector(
   [personSelector],
   ({ firstName, secondName }) => `${firstName} ${secondName}`,
 )({

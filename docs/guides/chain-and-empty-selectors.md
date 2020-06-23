@@ -6,6 +6,8 @@ route: '/guides/chain-and-empty-selectors'
 
 # Chain & Empty Selectors
 
+## Chain Selector
+
 If you design your state like a data base, you should be familiar with _foreign keys_. Imagine that you have this normalized state:
 
 ```js
@@ -80,7 +82,7 @@ const messagePersonSelector = createCachedSelector(
 });
 ```
 
-Now our solution has become only worth. This selector is still fully uncached, because it depends on whole state. Additionally, written selector has an ugly combiner, which calls other selectors right in body. Reselect Utils propose next way:
+`Prop Selector` is described [here](/guides/path-and-prop-selectors#prop-selector). Now our solution has become only worth. This selector is still fully uncached, because it depends on whole state. Additionally, written selector has an ugly combiner, which calls other selectors right in body. Reselect Utils propose next way:
 
 ```typescript
 import createCachedSelector from 're-reselect';
@@ -109,7 +111,7 @@ const messagePersonSelector = createChainSelector(messageSelector)
   .build();
 ```
 
-You can build longer chains. For example, if you want find person by `documentId` you can add next code:
+`Bound Selector` is described [here](/guides/bound-and-adapted-selectors#bound-selector). You can build longer chains. For example, if you want find person by `documentId` you can add next code:
 
 ```typescript
 import { prop, chain, bound } from 'reselect-utils';
@@ -128,7 +130,7 @@ const documentPersonSelector = chain(documentSelector)
   .build();
 ```
 
-Here we have used compact aliases `chain` and `bound` to reduce code. Now if we call `documentPersonSelector`, we can receive next results:
+Here we have used compact aliases `chain` and `bound` to reduce code. Now if we call `documentPersonSelector` with state declared above, we can receive next results:
 
 ```typescript
 documentPersonSelector(state, { documentId: 111 }); // => { firstName: 'Marry', ... }
@@ -171,7 +173,11 @@ nameSelector(state, { personId: 1, isShort: false }); // => 'Marry Poppins'
 nameSelector(state, { personId: 1, isShort: true }); // => 'M. Poppins'
 ```
 
-Here we change business logic implementation dynamically by `isShort` property. Another place where we can use conditional chaining is _optional foreign keys_. For example, we have next structure:
+Here we change business logic implementation dynamically by `isShort` property.
+
+## Empty Selector
+
+Another place where we can use conditional chaining is _optional foreign keys_. For example, we have next structure:
 
 ```typescript
 type Parent = {
@@ -235,6 +241,8 @@ const parentByChildSelector = chain(childSelector)
 
 We have used `Empty Selector` here. `Empty Selector` is a selector, which always returns `undefined`. You can just write `() => undefined` instead, but `empty` will help you to infer types correctly. Also you can use more verbose helper alias: `createEmptySelector`.
 
+## Aggregation
+
 Another task, that can be solved via `Chain Selector`, is aggregation. For example, you have these selectors:
 
 ```typescript
@@ -286,7 +294,9 @@ What happens here? At first, we select persons normalized structure in point `(1
 
 Both of `map` and `chain` methods are cached. It means, that passed to them callback will not be called while result from a previous selector in a chain is the same.
 
-Also, you can test logic in your `Chain Selectors`. Created `Chain Selector` exposes special static field `chainHierarchy`. You can use this field in your unit tests next way:
+## Unit Tests
+
+You can test logic in your `Chain Selectors`. Created `Chain Selector` exposes special static field `chainHierarchy`. You can use this field in your unit tests next way:
 
 ```typescript
 const documentPersonSelector = chain(documentSelector)

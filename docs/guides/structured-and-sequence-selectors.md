@@ -6,6 +6,8 @@ route: '/guides/structured-and-sequence-selectors'
 
 # Structured & Sequence Selectors
 
+## Structured Selector
+
 If you ever used [Reselect](https://github.com/reduxjs/reselect), you must be familiar with [Structured Selector](https://github.com/reduxjs/reselect#createstructuredselectorinputselectors-selectorcreator--createselector). Reselect Utils provides implementation of this helper but with improved typings. You can use `Structured Selector` from this library with heterogeneous selectors. Heterogeneous selectors are selectors with different types of state. See example:
 
 ```typescript
@@ -22,7 +24,7 @@ type MessagesStateSlice = {
 const messagesSelector = (state: MessagesStateSlice) => state.messages;
 ```
 
-Now we can write selector what select data from both state slices:
+Now we can write a selector what select data from both state slices:
 
 ```typescript
 import { createStructuredSelector } from 'reselect-utils';
@@ -44,7 +46,9 @@ const personsAndMessagesSelector = struct({
 });
 ```
 
-If you use parametric selector, you can use [Re-reselect](https://github.com/toomuchdesign/re-reselect). Reselect Utils provides `Cached Structured Selector` for these proposes. For example, we have next selectors:
+## Cached Structured Selector
+
+If you use a parametric selector, you can use [Re-reselect](https://github.com/toomuchdesign/re-reselect). Reselect Utils provides `Cached Structured Selector` for these purposes. For example, we have next selectors:
 
 ```typescript
 import createCachedSelector from 're-reselect';
@@ -77,6 +81,10 @@ const personAndMessageSelector = cachedStruct({
 })({ keySelector: (state, props) => `${props.personId}:${props.messageId}` });
 ```
 
+`cachedStruct` is short alias for `Cached Structured Selector`.
+
+## Sequence Selector
+
 There is also another type of structure besides objects - arrays. Reselect Utils provides `Sequence Selector` helper for them:
 
 ```typescript
@@ -100,7 +108,7 @@ const firstTwoPersonsSelector = createSequenceSelector([
 ]);
 ```
 
-Now if you have next state, you will receive next result:
+`Bound Selector` is described [here](/guides/bound-and-adapted-selectors#bound-selector). Now if you have next state, you will receive next result:
 
 ```typescript
 const state = {
@@ -121,9 +129,12 @@ const state = {
 firstTwoPersonsSelector(state); // => [{ firstName: 'Marry', ... }, { firstName: 'Harry', ... }]
 ```
 
-If you try to combine parametric selectors, there is cached version of this helper:
+## Cached Sequence Selector
+
+If you try to combine parametric selectors, there is a cached version of `Sequence Selector`:
 
 ```typescript
+import createCachedSelector from 're-reselect';
 import { path, prop, bound, cachedSeq } from 'reselect-utils';
 
 type Props = {
@@ -158,3 +169,5 @@ firstTwoPersonsSelector(state, { postfix: '*' }); // => ['Marry Poppins (*)', 'H
 
 firstTwoPersonsSelector(state, { postfix: '?' }); // => ['Marry Poppins (?)', 'Harry Potter (?)' }]
 ```
+
+`Path Selector` and `Prop Selector` are described [here](/guides/path-and-prop-selectors).

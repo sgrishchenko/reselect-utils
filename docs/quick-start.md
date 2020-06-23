@@ -86,7 +86,7 @@ const personSelectorInfo = createSelector(
 );
 ```
 
-A more detailed description can be found [here](/reference/guides/path-and-prop-selectors).
+A more detailed description can be found [here](/guides/path-and-prop-selectors).
 
 ## Chain Selector
 
@@ -145,4 +145,4 @@ const personByMessageIdSelector = chain(messageSelector)
   .build();
 ```
 
-`Chain Selector` allows you to create dynamic selectors that depend on the current state. Moreover, the callback that is passed to the `chain` method is cached by input parameters. `bound` binds the selector to specific parameter values and turns a parametric selector into an non parametric. And at the end you must call the `build` method to get the normal selector. It’s like a chain of [Promises](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise). [Chain Selector](/reference/guides/chain-selector) and [Bound Selector](/reference/guides/bound-and-adapted-selectors) are described in detail in Guides section.
+`Chain Selector` allows you to create dynamic selectors that depend on the current state. Moreover, the callback that is passed to the `chain` method is cached by input parameters. `bound` binds the selector to specific parameter values and turns a parametric selector into an non parametric. And at the end you must call the `build` method to get the normal selector. It’s like a chain of [Promises](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise). [Chain Selector](/guides/chain-and-empty-selectors) and [Bound Selector](/guides/bound-and-adapted-selectors) are described in detail in Guides section.

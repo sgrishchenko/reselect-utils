@@ -6,6 +6,8 @@ route: '/guides/path-and-prop-selectors'
 
 # Path & Prop Selectors
 
+## Path Selectors
+
 `Path Selector` helper is useful when you try to describe deep nested dependencies of your selector. Suppose you have such state:
 
 ```js
@@ -18,7 +20,7 @@ const state = {
 };
 ```
 
-Lets's write simple selector for it:
+Lets's write a simple selector for it:
 
 ```js
 const personFullNameSelector = createSelector(
@@ -117,7 +119,9 @@ const personFullNameSelector = createCachedSelector(
 });
 ```
 
-There is short alias for `Path Selector` helper. Also there is another `Prop Selector` helper for properties selection. `Prop Selector` is built on top `Path Selector`. With this helpers you can re-write your code like this:
+## Prop Selector
+
+There is another `Prop Selector` helper for properties selection. `Prop Selector` is built on top `Path Selector`. Also, there are short aliases for `Prop Selector` and `Path Selector` helper. With these helpers you can re-write your code like this:
 
 ```typescript
 import { path, prop } from 'reselect-utils';
@@ -135,6 +139,18 @@ const personSelector = createCachedSelector(
 const personFullNameSelector = createCachedSelector(
   path(personSelector).firstName(),
   path(personSelector).secondName(),
+  (firstName, secondName) => `${firstName} ${secondName}`,
+)({
+  keySelector: prop<Props>().personId(),
+});
+```
+
+You can set up default values in `Path Selector`, if you need:
+
+```typescript
+const personFullNameSelector = createCachedSelector(
+  path(personSelector).firstName('John'), // <- Default value is used here
+  path(personSelector).secondName('Doe'), // <- and here
   (firstName, secondName) => `${firstName} ${secondName}`,
 )({
   keySelector: prop<Props>().personId(),

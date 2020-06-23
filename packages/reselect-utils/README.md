@@ -1,4 +1,4 @@
-# Reselect-Utils
+# [Reselect Utils](https://sgrishchenko.github.io/reselect-utils/docz)
 
 [![build status](https://img.shields.io/travis/com/sgrishchenko/reselect-utils/master.svg?style=flat-square)](https://travis-ci.com/sgrishchenko/reselect-utils)
 [![coverage status](https://img.shields.io/coveralls/sgrishchenko/reselect-utils/master.svg?style=flat-square)](https://coveralls.io/github/sgrishchenko/reselect-utils?branch=master)

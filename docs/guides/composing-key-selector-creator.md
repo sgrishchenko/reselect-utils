@@ -6,6 +6,8 @@ route: '/guides/composing-key-selector-creator'
 
 # Composing Key Selector Creator
 
+## Main Purpose
+
 There is a concept of [Key Selector](https://github.com/toomuchdesign/re-reselect#keyselector) in [re-reselect](https://github.com/toomuchdesign/re-reselect). It is working approach, but there are some limitations in straight forward using of this solution. Look at this example:
 
 ```typescript
@@ -91,6 +93,8 @@ fullNameSelector.keySelector(state, {
   prefix: 'Ms.',
 }); // => 'Ms.:2'
 ```
+
+## Key Selectors Composition
 
 If you want use few props in selector dependencies, you can use `composeKeySelectors` helper:
 

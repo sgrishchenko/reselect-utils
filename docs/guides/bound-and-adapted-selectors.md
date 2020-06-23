@@ -6,7 +6,9 @@ route: '/guides/bound-and-adapted-selectors'
 
 # Bound & Adapted Selectors
 
-Some times you may need to bind your parametric selector with certain fixed properties. There is `Bound Selector` helper for this cases. For example, you have this normalized state:
+## Bound Selector
+
+Some times you may need to bind your parametric selector with certain fixed properties. There is `Bound Selector` helper for these cases. For example, you have this normalized state:
 
 ```js
 const state = {
@@ -39,7 +41,7 @@ And you have this selector:
 
 ```typescript
 import createCachedSelector from 're-reselect';
-import { path, prop } from 'reselect-utils';
+import { prop } from 'reselect-utils';
 
 const messagesSelector = (state: State) => state.messages;
 
@@ -53,7 +55,7 @@ const messageSelector = createCachedSelector(
 });
 ```
 
-You can create selector only for input or output messages using `Bound Selector`:
+`Prop Selector` is described [here](/guides/path-and-prop-selectors#prop-selector). You can create a selector only for input or output messages using `Bound Selector`:
 
 ```typescript
 import { createBoundSelector, bound } from 'reselect-utils';
@@ -68,6 +70,10 @@ const outputMessageSelector = bound(messageSelector, { messageType: 'output' });
 
 outputMessageSelector(state, { messageId: 100 }); // => { text: 'How are you?', ... }
 ```
+
+`bound` is short alias for `Bound Selector`.
+
+## Adapted Selector
 
 There is another problem with parametric selectors. Sometimes you have one interface of props but interface of selector you need is different. With `Adapted Selector` helper you can switch shape of selector properties. Imagine, that you need to write next selector:
 

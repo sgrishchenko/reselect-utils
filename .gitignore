@@ -64,9 +64,7 @@ typings/
 
 # build output
 .docz/
-docz/
-storybook/
-typedoc/
+site/
 examples/*/dist/
 packages/*/dist/
 packages/*/es/

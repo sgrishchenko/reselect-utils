@@ -1,7 +1,6 @@
 export default {
   title: 'Reselect Utils',
   description: 'A collection of helpers and utilities for selectors',
-  dest: 'docz',
   base: '/reselect-utils/docz/',
   ignore: ['README.md', 'packages/**', 'docs/api/*'],
   typescript: true,

@@ -2,7 +2,6 @@
 name: Chain Selector
 menu: Graphs
 route: '/graphs/chain-selector'
-edit: false
 ---
 
 import { StorybookFrame } from './StorybookFrame'

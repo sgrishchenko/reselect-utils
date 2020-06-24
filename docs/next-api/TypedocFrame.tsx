@@ -18,7 +18,8 @@ export const TypedocFrame: FunctionComponent<TypedocFrameProps> = ({
   route,
 }) => {
   const iframe = useRef<HTMLIFrameElement>(null);
-  const [height, setHeight] = useState();
+  const [height, setHeight] = useState<number>();
+  const [isMobile, setMobile] = useState(false);
   const [colorMode] = useColorMode();
 
   const source = `https://sgrishchenko.github.io/reselect-utils/typedoc/${colorMode}/${route}`;
@@ -28,12 +29,31 @@ export const TypedocFrame: FunctionComponent<TypedocFrameProps> = ({
       border: 'none',
       width: '100%',
       height,
+      marginTop: isMobile ? 50 : 0,
     },
   };
+
+  const onMobileMatch = useCallback(
+    (event: MediaQueryListEvent) => {
+      setMobile(event.matches);
+    },
+    [setMobile],
+  );
 
   const onContentWindowResize = useCallback(() => {
     setHeight(iframe.current?.contentDocument?.body.scrollHeight);
   }, [iframe, setHeight]);
+
+  useEffect(() => {
+    const query = window.matchMedia(`(max-width: ${920 / 16}em)`);
+
+    setMobile(query.matches);
+    query.addEventListener('change', onMobileMatch);
+
+    return () => {
+      query.removeEventListener('change', onMobileMatch);
+    };
+  }, [setMobile, onMobileMatch]);
 
   useEffect(() => {
     const contentWindow = iframe.current?.contentWindow;
@@ -78,7 +98,11 @@ export const TypedocFrame: FunctionComponent<TypedocFrameProps> = ({
 
   return (
     <>
-      <ExternalLink source={source} top={50} right={40} />
+      <ExternalLink
+        source={source}
+        top={isMobile ? 15 : 50}
+        right={isMobile ? 30 : 40}
+      />
       <iframe
         ref={iframe}
         title={title}

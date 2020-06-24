@@ -9,16 +9,22 @@ script:
   - yarn lint
   - yarn compile
   - yarn test
+  - yarn site
 after_success:
   - cat ./coverage/lcov.info | yarn coveralls
 cache:
   directories:
     - "node_modules"
 deploy:
-  provider: script
-  script: >-
-    yarn config set _authToken $NPM_AUTH_TOKEN &&
-    yarn workspace reselect-utils publish --non-interactive --tag alpha
-  skip_cleanup: true
-  on:
-    tags: true
+  - provider: script
+    script: >-
+      yarn config set _authToken $NPM_AUTH_TOKEN &&
+      yarn workspace reselect-utils publish --non-interactive --tag alpha
+    skip_cleanup: true
+    on:
+      tags: true
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN
+    on:
+      branch: master

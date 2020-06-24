@@ -13,7 +13,7 @@
     "format": "prettier --write **/*.{js,ts,tsx,json,md}",
     "compile": "tsc --noEmit",
     "clean": "rimraf docz storybook typedoc",
-    "site": "yarn clean && yarn docz:build && storybook:build && typedoc:light && typedoc:dark",
+    "site": "yarn clean && yarn docz:build && yarn storybook:build && yarn typedoc:light && yarn typedoc:dark",
     "docz:dev": "docz dev",
     "docz:build": "docz build",
     "storybook:dev": "start-storybook",

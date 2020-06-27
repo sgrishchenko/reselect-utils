@@ -7,7 +7,7 @@ import {
   defineDynamicSelectorName,
 } from './helpers';
 
-const generateMappingName = (mapping: Function) => {
+const generateMappingName = <P1, P2>(mapping: (props: P2) => P1) => {
   if (mapping.name) {
     return mapping.name;
   }
@@ -18,7 +18,7 @@ const generateMappingName = (mapping: Function) => {
       {
         get: (target, key) => key,
       },
-    ),
+    ) as P2,
   );
   const structureKeys = Object.keys(structure).join();
   const structureValues = Object.values(structure).join();

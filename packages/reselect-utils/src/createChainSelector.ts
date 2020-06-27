@@ -4,8 +4,12 @@ import createCachedSelector, {
   FifoObjectCache,
   FlatMapCache,
   FlatObjectCache,
+  ICacheObject,
+  KeySelector,
   LruMapCache,
   LruObjectCache,
+  OutputCachedSelector,
+  ParametricKeySelector,
 } from 're-reselect';
 import { NamedSelector, NamedParametricSelector } from './types';
 import {
@@ -29,8 +33,9 @@ const sumString = (source: unknown) => {
   return result;
 };
 
-const generateSelectorKey = (selector: { dependencies?: unknown[] }) => {
-  const dependencies = selector.dependencies ?? [];
+const generateSelectorKey = (selector: unknown) => {
+  const dependencies =
+    (selector as { dependencies?: unknown[] }).dependencies ?? [];
   let result = sumString(selector);
 
   for (let i = dependencies.length - 1; i >= 0; i -= 1) {
@@ -42,7 +47,7 @@ const generateSelectorKey = (selector: { dependencies?: unknown[] }) => {
   return result;
 };
 
-const cloneCacheObject = (cacheObject: any) => {
+const cloneCacheObject = (cacheObject: unknown) => {
   // TODO: find more elegant solution for cloning
   if (
     cacheObject instanceof FifoMapCache ||
@@ -53,8 +58,11 @@ const cloneCacheObject = (cacheObject: any) => {
     cacheObject instanceof LruObjectCache
   ) {
     // eslint-disable-next-line no-underscore-dangle
-    const cacheSize = (cacheObject as any)._cacheSize;
-    const CacheConstructor = cacheObject.constructor as any;
+    const cacheSize = ((cacheObject as unknown) as { _cacheSize: number })
+      ._cacheSize;
+    const CacheConstructor = cacheObject.constructor as {
+      new (options: { cacheSize: number }): ICacheObject;
+    };
     return new CacheConstructor({ cacheSize });
   }
 
@@ -69,6 +77,11 @@ export type SelectorChainHierarchy<
   C extends SelectorChain<any, any, any, any>,
   H extends SelectorChainHierarchy<any, any>
 > = C & { parentChain?: H };
+
+export type SelectorCreator<S, P, R1, R2> = (
+  selector: Selector<S, R1> | ParametricSelector<S, P, R1>,
+  combiner: (result: R1) => R2,
+) => Selector<S, R2> | ParametricSelector<S, P, R2>;
 
 export class SelectorMonad<
   S1,
@@ -134,15 +147,25 @@ export class SelectorMonad<
         >
       >;
 
-  public chain(fn: Function) {
-    const selectorCreator: any = isCachedSelector(this.selector)
+  public chain<S2, P2, R2>(fn: SelectorChain<R1, S2, P2, R2>) {
+    const selectorCreator = (isCachedSelector(this.selector)
       ? createCachedSelector
-      : createSelector;
+      : createSelector) as SelectorCreator<
+      S1,
+      P1,
+      R1,
+      Selector<S2, R2> | ParametricSelector<S2, P2, R2>
+    >;
 
     let higherOrderSelector = selectorCreator(this.selector, fn);
 
     if (isCachedSelector(this.selector)) {
-      higherOrderSelector = higherOrderSelector({
+      higherOrderSelector = ((higherOrderSelector as unknown) as OutputCachedSelector<
+        S1,
+        Selector<S2, R2> | ParametricSelector<S2, P2, R2>,
+        unknown,
+        unknown[]
+      >)({
         keySelector: this.selector.keySelector,
         cacheObject: cloneCacheObject(this.selector.cache),
       });
@@ -160,7 +183,7 @@ export class SelectorMonad<
       }
     }
 
-    const combinedSelector = (state: unknown, props: unknown) => {
+    const combinedSelector = (state: S1 & S2, props: P1 & P2) => {
       const derivedSelector = higherOrderSelector(state, props);
 
       combinedSelector.dependencies = [higherOrderSelector, derivedSelector];
@@ -192,15 +215,24 @@ export class SelectorMonad<
       return derivedSelector(state, props);
     };
 
-    combinedSelector.dependencies = [higherOrderSelector];
+    combinedSelector.dependencies = [higherOrderSelector] as unknown[];
 
-    if (isCachedSelector(this.selector)) {
+    if (isCachedSelector(higherOrderSelector)) {
       combinedSelector.cache = higherOrderSelector.cache;
     }
 
-    let higherOrderKeySelector = selectorCreator(
+    const keySelectorCreator = (isCachedSelector(this.selector)
+      ? createCachedSelector
+      : createSelector) as SelectorCreator<
+      S1,
+      P1,
+      Selector<S2, R2> | ParametricSelector<S2, P2, R2>,
+      KeySelector<S1 & S2> | ParametricKeySelector<S1 & S2, P1 & P2>
+    >;
+
+    let higherOrderKeySelector = keySelectorCreator(
       higherOrderSelector,
-      (derivedSelector: unknown) => {
+      (derivedSelector) => {
         return composingKeySelectorCreator({
           inputSelectors: [higherOrderSelector, derivedSelector],
         });
@@ -208,15 +240,28 @@ export class SelectorMonad<
     );
 
     if (isCachedSelector(this.selector)) {
-      higherOrderKeySelector = higherOrderKeySelector({
+      higherOrderKeySelector = ((higherOrderKeySelector as unknown) as OutputCachedSelector<
+        S1,
+        | Selector<
+            S1,
+            KeySelector<S1 & S2> | ParametricKeySelector<S1 & S2, P1 & P2>
+          >
+        | ParametricSelector<
+            S1,
+            P1,
+            KeySelector<S1 & S2> | ParametricKeySelector<S1 & S2, P1 & P2>
+          >,
+        unknown,
+        unknown[]
+      >)({
         keySelector: this.selector.keySelector,
         cacheObject: cloneCacheObject(this.selector.cache),
       });
     }
 
-    combinedSelector.keySelector = (state: unknown, props: unknown) => {
+    combinedSelector.keySelector = (state: S1 & S2, props: P1 & P2) => {
       const derivedKeySelector = higherOrderKeySelector(state, props);
-      return derivedKeySelector(state, props);
+      return derivedKeySelector(state, props) as unknown;
     };
 
     /* istanbul ignore else  */
@@ -231,16 +276,21 @@ export class SelectorMonad<
       }
     }
 
-    return new SelectorMonad(
-      combinedSelector,
-      Object.assign(fn, {
-        parentChain: this.prevChain,
-      }),
-    ) as unknown;
+    const prevChain = Object.assign(fn, {
+      parentChain: this.prevChain,
+    });
+
+    return new SelectorMonad<
+      S1 & S2,
+      P1 & P2,
+      R2,
+      typeof combinedSelector,
+      typeof prevChain
+    >(combinedSelector, prevChain) as unknown;
   }
 
   public map<R2>(fn: (result: R1) => R2) {
-    return this.chain(result => {
+    return this.chain((result) => {
       const output = fn(result);
       const selector = () => output;
 
@@ -275,6 +325,10 @@ export function createChainSelector<S, P, R>(
   selector: ParametricSelector<S, P, R>,
 ): SelectorMonad<S, P, R, ParametricSelector<S, P, R>, void>;
 
-export function createChainSelector(selector: any) {
-  return new SelectorMonad(selector) as unknown;
+export function createChainSelector<S, P, R>(
+  selector: Selector<S, R> | ParametricSelector<S, P, R>,
+) {
+  return new SelectorMonad<S, P, R, typeof selector, never>(
+    selector,
+  ) as unknown;
 }

@@ -24,8 +24,8 @@ Lets's write a simple selector for it:
 
 ```js
 const personFullNameSelector = createSelector(
-  state => state.person.firstName,
-  state => state.person.secondName,
+  (state) => state.person.firstName,
+  (state) => state.person.secondName,
   (firstName, secondName) => `${firstName} ${secondName}`,
 );
 ```
@@ -34,8 +34,8 @@ It is working example and now we don't need any helper to implement it. But what
 
 ```js
 const personFullNameSelector = createSelector(
-  state => state.person && state.person.firstName,
-  state => state.person && state.person.secondName,
+  (state) => state.person && state.person.firstName,
+  (state) => state.person && state.person.secondName,
   (firstName, secondName) => `${firstName} ${secondName}`,
 );
 ```
@@ -44,8 +44,8 @@ I can also use [optional chaining](https://github.com/tc39/proposal-optional-cha
 
 ```js
 const personFullNameSelector = createSelector(
-  state => state.person?.firstName,
-  state => state.person?.secondName,
+  (state) => state.person?.firstName,
+  (state) => state.person?.secondName,
   (firstName, secondName) => `${firstName} ${secondName}`,
 );
 ```

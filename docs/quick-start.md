@@ -141,7 +141,7 @@ const messageSelector = (state, props) => state.messages[props.messageId];
 const personSelector = (state, props) => state.persons[props.personId];
 
 const personByMessageIdSelector = chain(messageSelector)
-  .chain(message => bound(personSelector, { personId: message.personId }))
+  .chain((message) => bound(personSelector, { personId: message.personId }))
   .build();
 ```
 

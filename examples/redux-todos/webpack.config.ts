@@ -1,6 +1,7 @@
 import path from 'path';
 import { Configuration } from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import HtmlWebpackTemplate from 'html-webpack-template';
 
 const config: Configuration = {
   mode: 'development',
@@ -31,7 +32,7 @@ const config: Configuration = {
     new HtmlWebpackPlugin({
       inject: false,
       /* eslint-disable-next-line global-require */
-      template: require('html-webpack-template'),
+      template: HtmlWebpackTemplate,
       appMountId: 'root',
       title: 'Redux Todos Example',
     }),

@@ -1,8 +1,6 @@
 .git/
 .docz/
-docz/
-storybook/
-typedoc/
+site/
 coverage/
 examples/*/dist/
 packages/*/dist/

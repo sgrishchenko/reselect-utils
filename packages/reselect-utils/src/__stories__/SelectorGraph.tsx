@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Core as CytoscapeCore } from 'cytoscape';
+import { Core as CytoscapeCore, SingularData } from 'cytoscape';
 import {
   Edges,
   Nodes,
@@ -56,8 +56,9 @@ export const SelectorGraph: FunctionComponent<SelectorGraphProps> = ({
   useEffect(() => {
     if (cy.current) {
       cy.current.off('click', 'node');
-      cy.current.on('click', 'node', event => {
-        const { name } = event.target.data();
+      cy.current.on('click', 'node', (event) => {
+        const target = event.target as SingularData;
+        const { name } = target.data() as { name: string };
         onNodeClick(name, checkSelector(name));
       });
     }

@@ -1,4 +1,4 @@
-import { PreloadedState, Middleware } from 'redux';
+import { PreloadedState, Middleware, Dispatch } from 'redux';
 
 export const createLocalStorageMiddleware = <S>(
   stateLocalStorageKey: string,
@@ -6,9 +6,9 @@ export const createLocalStorageMiddleware = <S>(
 ) => {
   let prevState: S;
 
-  const middleware: Middleware<{}, S> = ({ getState }) => next => {
-    return action => {
-      const result = next(action);
+  const middleware: Middleware<Dispatch, S> = ({ getState }) => (next) => {
+    return (action) => {
+      const result = next(action) as unknown;
 
       const nextState = getState();
       if (prevState !== nextState) {
@@ -26,7 +26,9 @@ export const createLocalStorageMiddleware = <S>(
   return Object.assign(middleware, {
     getSavedState: (): PreloadedState<S> | undefined => {
       const savedState = window.localStorage.getItem(stateLocalStorageKey);
-      return savedState ? JSON.parse(savedState) : undefined;
+      return savedState
+        ? (JSON.parse(savedState) as PreloadedState<S>)
+        : undefined;
     },
   });
 };

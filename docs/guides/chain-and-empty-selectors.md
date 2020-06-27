@@ -105,7 +105,7 @@ const messageSelector = createCachedSelector(
 });
 
 const messagePersonSelector = createChainSelector(messageSelector)
-  .chain(message =>
+  .chain((message) =>
     createBoundSelector(personSelector, { personId: message.id }),
   )
   .build();
@@ -125,8 +125,8 @@ const documentSelector = createCachedSelector(
 });
 
 const documentPersonSelector = chain(documentSelector)
-  .chain(document => bound(messageSelector, { messageId: document.id }))
-  .chain(message => bound(personSelector, { personId: message.id }))
+  .chain((document) => bound(messageSelector, { messageId: document.id }))
+  .chain((message) => bound(personSelector, { personId: message.id }))
   .build();
 ```
 
@@ -166,7 +166,7 @@ const shortNameSelector = createCachedSelector(
 );
 
 const nameSelector = chain(prop<{ isShort: boolean }>().isShort())
-  .chain(isShort => (isShort ? shortNameSelector : fullNameSelector))
+  .chain((isShort) => (isShort ? shortNameSelector : fullNameSelector))
   .build();
 
 nameSelector(state, { personId: 1, isShort: false }); // => 'Marry Poppins'
@@ -272,11 +272,11 @@ And you need find out the longest full name. You can use `Chain Selector` next w
 import { chain, bound, seq } from 'reselect-utils';
 
 const longestFullNameSelector = chain(personsSelector) // (1)
-  .chain(persons =>
+  .chain((persons) =>
     seq(
       // (2)
       Object.values(persons).map(
-        person => bound(fullNameSelector, { personId: person.id }), // (3)
+        (person) => bound(fullNameSelector, { personId: person.id }), // (3)
       ),
     ),
   )
@@ -300,8 +300,8 @@ You can test logic in your `Chain Selectors`. Created `Chain Selector` exposes s
 
 ```typescript
 const documentPersonSelector = chain(documentSelector)
-  .chain(document => bound(messageSelector, { messageId: document.id }))
-  .chain(message => bound(personSelector, { personId: message.id }))
+  .chain((document) => bound(messageSelector, { messageId: document.id }))
+  .chain((message) => bound(personSelector, { personId: message.id }))
   .build();
 
 const samplePerson = { id: 1 };

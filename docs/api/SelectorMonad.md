@@ -93,13 +93,13 @@ const state = {
   },
 };
 
-const personsSelector = state => state.persons;
+const personsSelector = (state) => state.persons;
 const personSelector = (state, props) => state.persons[props.id];
 
-const messagesSelector = state => state.messages;
+const messagesSelector = (state) => state.messages;
 const messageSelector = (state, props) => state.messages[props.id];
 
-const documentsSelector = state => state.documents;
+const documentsSelector = (state) => state.documents;
 const documentSelector = (state, props) => state.documents[props.id];
 ```
 
@@ -115,10 +115,10 @@ const fullNameSelector = createSelector(
 );
 
 const personByDocumentIdSelector = SelectorMonad.of(documentSelector)
-  .chain(document =>
+  .chain((document) =>
     createBoundSelector(messageSelector, { id: document.messageId }),
   )
-  .chain(message =>
+  .chain((message) =>
     createBoundSelector(fullNameSelector, { id: message.personId }),
   )
   .buildSelector();
@@ -143,14 +143,14 @@ const fullNameSelector = createSelector(
 );
 
 const longestFullNameSelector = SelectorMonad.of(personsSelector)
-  .chain(persons =>
+  .chain((persons) =>
     createSequenceSelector(
-      Object.values(persons).map(person =>
+      Object.values(persons).map((person) =>
         createBoundSelector(fullNameSelector, { id: person.id }),
       ),
     ),
   )
-  .map(fullNames =>
+  .map((fullNames) =>
     fullNames.reduce((longest, current) =>
       current.length > longest.length ? current : longest,
     ),
@@ -177,7 +177,7 @@ const shortNameSelector = createSelector(
 );
 
 const nameSelector = SelectorMonad.of(createPropSelector().isShort())
-  .chain(isShort => (isShort ? shortNameSelector : fullNameSelector))
+  .chain((isShort) => (isShort ? shortNameSelector : fullNameSelector))
   .buildSelector();
 
 nameSelector({ id: 1, isShort: false }); // => 'Marry Poppins'

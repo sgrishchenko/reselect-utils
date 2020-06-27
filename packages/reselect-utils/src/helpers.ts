@@ -1,8 +1,9 @@
 import { CachedSelector } from './types';
 
-export const getSelectorName = (
-  selector: Function & { selectorName?: string },
-): string => {
+export const getSelectorName = (selector: {
+  name: string;
+  selectorName?: string;
+}): string => {
   if ('selectorName' in selector && selector.selectorName) {
     return selector.selectorName;
   }
@@ -17,7 +18,7 @@ export const isCachedSelector = (
 };
 
 export const defineDynamicSelectorName = (
-  selector: Function,
+  selector: unknown,
   selectorNameGetter: () => string,
 ) => {
   let overriddenSelectorName: string;

@@ -110,13 +110,13 @@ export type OptionalArrayParametricSelectorWrapper<S, P, R, D> = {
 
 export type RequiredDataSelectorWrapper<S, R, D> = R extends unknown[]
   ? RequiredArraySelectorWrapper<S, R[number], D>
-  : R extends object
+  : R extends Record<string, unknown>
   ? RequiredObjectSelectorWrapper<S, R, D>
   : RequiredSelectorBuilder<S, R, D>;
 
 export type OptionalDataSelectorWrapper<S, R, D> = R extends unknown[]
   ? OptionalArraySelectorWrapper<S, R[number], D>
-  : R extends object
+  : R extends Record<string, unknown>
   ? OptionalObjectSelectorWrapper<S, R, D>
   : OptionalSelectorBuilder<S, R, D>;
 
@@ -127,7 +127,7 @@ export type RequiredDataParametricSelectorWrapper<
   D
 > = R extends unknown[]
   ? RequiredArrayParametricSelectorWrapper<S, P, R[number], D>
-  : R extends object
+  : R extends Record<string, unknown>
   ? RequiredObjectParametricSelectorWrapper<S, P, R, D>
   : RequiredParametricSelectorBuilder<S, P, R, D>;
 
@@ -138,7 +138,7 @@ export type OptionalDataParametricSelectorWrapper<
   D
 > = R extends unknown[]
   ? OptionalArrayParametricSelectorWrapper<S, P, R[number], D>
-  : R extends object
+  : R extends Record<string, unknown>
   ? OptionalObjectParametricSelectorWrapper<S, P, R, D>
   : OptionalParametricSelectorBuilder<S, P, R, D>;
 
@@ -176,17 +176,21 @@ const isObject = (value: unknown) =>
   value !== null && typeof value === 'object';
 
 const innerCreatePathSelector = <S, P, R>(
-  baseSelector: Function,
-  path: PropertyKey[] = [],
+  baseSelector: (...args: unknown[]) => unknown,
+  path: (string | number)[] = [],
 ): unknown => {
   const proxyTarget = (defaultValue?: unknown) => {
     function resultSelector() {
       // performance optimisation
-      // eslint-disable-next-line prefer-spread,prefer-rest-params
-      let result = baseSelector.apply(null, arguments);
+      // eslint-disable-next-line prefer-spread
+      let result = baseSelector.apply(
+        null,
+        // eslint-disable-next-line prefer-rest-params
+        (arguments as unknown) as unknown[],
+      );
 
       for (let i = 0; i < path.length && isObject(result); i += 1) {
-        result = result[path[i]];
+        result = (result as Record<string, unknown>)[path[i]];
       }
 
       return result ?? defaultValue;
@@ -211,7 +215,8 @@ const innerCreatePathSelector = <S, P, R>(
   };
 
   return new Proxy(proxyTarget, {
-    get: (target, key) => innerCreatePathSelector(baseSelector, [...path, key]),
+    get: (target, key: string | number) =>
+      innerCreatePathSelector(baseSelector, [...path, key]),
   });
 };
 
@@ -231,6 +236,8 @@ export function createPathSelector<S, P, R>(
   ? OptionalPathParametricSelectorType<S, P, R, [ParametricSelector<S, P, R>]>
   : RequiredPathParametricSelectorType<S, P, R, [ParametricSelector<S, P, R>]>;
 
-export function createPathSelector<S, P, R>(baseSelector: Function) {
+export function createPathSelector<S, P, R>(
+  baseSelector: (...args: unknown[]) => unknown,
+) {
   return innerCreatePathSelector(baseSelector);
 }

@@ -5,7 +5,7 @@ import { TodoFilter } from '../todosView.interface';
 import { todosSelector } from '../../todos/todos.selector';
 import { todosViewSelector } from '../todosView.selector';
 
-const todoListSelector = createSelector(todosSelector, todos =>
+const todoListSelector = createSelector(todosSelector, (todos) =>
   Object.values(todos),
 );
 
@@ -15,19 +15,19 @@ const filteredTodoListSelector = createCachedSelector(
   todoListSelector,
   prop<IsCompletedProps>().completed(),
   (todos, completed) => {
-    return todos.filter(todo => todo.completed === completed);
+    return todos.filter((todo) => todo.completed === completed);
   },
 )((state, props) => String(props.completed));
 
 export const todoListPropsSelector = chain(path(todosViewSelector).filter())
-  .chain(todoFilter => {
+  .chain((todoFilter) => {
     return todoFilter === TodoFilter.ALL
       ? todoListSelector
       : bound(filteredTodoListSelector, {
           completed: todoFilter === TodoFilter.COMPLETED,
         });
   })
-  .map(todos => ({
+  .map((todos) => ({
     todos,
   }))
   .build();

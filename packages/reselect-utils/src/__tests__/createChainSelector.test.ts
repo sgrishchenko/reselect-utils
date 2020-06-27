@@ -7,7 +7,7 @@ import { State, commonState } from '../__data__/state';
 import { createPathSelector } from '../createPathSelector';
 import { createPropSelector } from '../createPropSelector';
 import { composingKeySelectorCreator } from '../composingKeySelectorCreator';
-import { NamedParametricSelector } from '../types';
+import { NamedParametricSelector, NamedSelector } from '../types';
 
 describe('createChainSelector', () => {
   const personSelector = (state: State, props: { id: number }) =>
@@ -17,15 +17,17 @@ describe('createChainSelector', () => {
 
   const fullNameSelector = createSelector(
     [personSelector],
-    ({ firstName, secondName }) => `${firstName} ${secondName}`,
+    ({ firstName = '', secondName = '' }) => `${firstName} ${secondName}`,
   );
 
   test('should implement simple selector chain', () => {
     const personByMessageIdSelector = createChainSelector(messageSelector)
-      .chain(message =>
+      .chain((message) =>
         createBoundSelector(personSelector, { id: message.personId }),
       )
-      .chain(person => createBoundSelector(fullNameSelector, { id: person.id }))
+      .chain((person) =>
+        createBoundSelector(fullNameSelector, { id: person.id }),
+      )
       .build();
 
     expect(personByMessageIdSelector(commonState, { id: 100 })).toBe(
@@ -40,14 +42,14 @@ describe('createChainSelector', () => {
     const personsSelector = (state: State) => state.persons;
 
     const longestFullNameSelector = createChainSelector(personsSelector)
-      .chain(persons =>
+      .chain((persons) =>
         createSequenceSelector(
-          Object.values(persons).map(person =>
+          Object.values(persons).map((person) =>
             createBoundSelector(fullNameSelector, { id: person.id }),
           ),
         ),
       )
-      .map(fullNames =>
+      .map((fullNames) =>
         fullNames.reduce((longest, current) =>
           current.length > longest.length ? current : longest,
         ),
@@ -77,7 +79,7 @@ describe('createChainSelector', () => {
   test('should generate selector name', () => {
     const fullNameNamedSelector = createSelector(
       [personSelector],
-      ({ firstName, secondName }) => `${firstName} ${secondName}`,
+      ({ firstName = '', secondName = '' }) => `${firstName} ${secondName}`,
     );
 
     (fullNameNamedSelector as NamedParametricSelector<
@@ -87,10 +89,10 @@ describe('createChainSelector', () => {
     >).selectorName = 'fullNameNamedSelector';
 
     const personByMessageIdSelector = createChainSelector(messageSelector)
-      .chain(message =>
+      .chain((message) =>
         createBoundSelector(personSelector, { id: message.personId }),
       )
-      .chain(person =>
+      .chain((person) =>
         createBoundSelector(fullNameNamedSelector, { id: person.id }),
       )
       .build();
@@ -105,9 +107,13 @@ describe('createChainSelector', () => {
       `"messageSelector (chained by personSelector (id -> [*])) (chained by fullNameNamedSelector (id -> [*]))"`,
     );
 
-    const [higherOrderSelector] = personByMessageIdSelector.dependencies;
+    const [
+      higherOrderSelector,
+    ] = personByMessageIdSelector.dependencies as unknown[];
 
-    expect(higherOrderSelector.selectorName).toMatchInlineSnapshot(
+    expect(
+      (higherOrderSelector as NamedSelector<unknown, unknown>).selectorName,
+    ).toMatchInlineSnapshot(
       `"higher order for messageSelector (chained by personSelector (id -> [*])) (11285)"`,
     );
   });
@@ -120,7 +126,7 @@ describe('createChainSelector', () => {
     type SecondState = { secondValue: number };
     type SecondProps = { prop: boolean };
     const secondSelector = (state: SecondState, props: SecondProps) =>
-      `${state.secondValue} ${props.prop}`;
+      `${state.secondValue} ${String(props.prop)}`;
     const secondChain = () => secondSelector;
 
     const someByMessageIdSelector = createChainSelector(messageSelector)
@@ -161,7 +167,7 @@ describe('createChainSelector', () => {
   describe('integration with re-reselect', () => {
     const fullNameCachedSelector = createCachedSelector(
       [personSelector],
-      ({ firstName, secondName }) => `${firstName} ${secondName}`,
+      ({ firstName = '', secondName = '' }) => `${firstName} ${secondName}`,
     )((state, props) => props.id);
 
     afterEach(() => {
@@ -170,7 +176,7 @@ describe('createChainSelector', () => {
     });
 
     test('should not invalidate cache for input parametric selector', () => {
-      const chainFn = jest.fn(result => () => result);
+      const chainFn = jest.fn((result: string) => () => result);
       const fullNameProxyCachedSelector = createChainSelector(
         fullNameCachedSelector,
       )
@@ -189,10 +195,10 @@ describe('createChainSelector', () => {
     test('should not invalidate cache for input path parametric selector', () => {
       const personCachedSelector = createCachedSelector(
         [personSelector],
-        person => person,
+        (person) => person,
       )((state, props) => props.id);
 
-      const chainFn = jest.fn(result => () => result);
+      const chainFn = jest.fn((result?: string) => () => result);
       const nameProxyCachedSelector = createChainSelector(
         createPathSelector(personCachedSelector).firstName(),
       )
@@ -218,19 +224,19 @@ describe('createChainSelector', () => {
 
       const firstSelector = createCachedSelector(
         firstKeySelector,
-        firstProp => firstProp,
+        (firstProp) => firstProp,
       )({
         keySelector: firstKeySelector,
       });
 
       const secondSelector = createCachedSelector(
         secondKeySelector,
-        secondProp => secondProp,
+        (secondProp) => secondProp,
       )({
         keySelector: secondKeySelector,
       });
 
-      const chainFn = jest.fn(result => () => result);
+      const chainFn = jest.fn((result: string) => () => result);
 
       const chainSelector = createChainSelector(firstSelector)
         .chain(() => secondSelector)
@@ -308,7 +314,7 @@ describe('createChainSelector', () => {
       const personByMessageIdSelector = createChainSelector(
         cachedMessageSelector,
       )
-        .chain(message =>
+        .chain((message) =>
           createBoundSelector(cachedPersonSelector, {
             personId: message.personId,
           }),
@@ -317,7 +323,7 @@ describe('createChainSelector', () => {
 
       const fullNameByMessageSelector = createCachedSelector(
         [personByMessageIdSelector],
-        ({ firstName, secondName }) => `${firstName} ${secondName}`,
+        ({ firstName = '', secondName = '' }) => `${firstName} ${secondName}`,
       )({
         keySelectorCreator: composingKeySelectorCreator,
       });

@@ -29,7 +29,7 @@ const state = {
   },
 };
 
-const personsSelector = state => state.persons;
+const personsSelector = (state) => state.persons;
 
 const personSelector = createSelector(
   personsSelector,

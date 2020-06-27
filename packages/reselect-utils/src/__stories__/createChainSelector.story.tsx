@@ -23,14 +23,14 @@ storiesOf('createChainSelector', module)
 
       const fullNameSelector = createSelector(
         [personSelector],
-        ({ firstName, secondName }) => `${firstName} ${secondName}`,
+        ({ firstName = '', secondName = '' }) => `${firstName} ${secondName}`,
       );
 
       const personByDocumentIdSelector = createChainSelector(documentSelector)
-        .chain(document =>
+        .chain((document) =>
           createBoundSelector(messageSelector, { id: document.messageId }),
         )
-        .chain(message =>
+        .chain((message) =>
           createBoundSelector(fullNameSelector, { id: message.personId }),
         )
         .build();
@@ -72,18 +72,18 @@ storiesOf('createChainSelector', module)
 
       const fullNameSelector = createSelector(
         [personSelector],
-        ({ firstName, secondName }) => `${firstName} ${secondName}`,
+        ({ firstName = '', secondName = '' }) => `${firstName} ${secondName}`,
       );
 
       const longestFullNameSelector = createChainSelector(personsSelector)
-        .chain(persons =>
+        .chain((persons) =>
           createSequenceSelector(
-            Object.values(persons).map(person =>
+            Object.values(persons).map((person) =>
               createBoundSelector(fullNameSelector, { id: person.id }),
             ),
           ),
         )
-        .map(fullNames =>
+        .map((fullNames) =>
           fullNames.reduce((longest, current) =>
             current.length > longest.length ? current : longest,
           ),
@@ -128,7 +128,7 @@ storiesOf('createChainSelector', module)
         documentSelector,
       )
         .chain(
-          document =>
+          (document) =>
             (document.messageId === 100
               ? createBoundSelector(personSelector, { id: 1 })
               : createBoundSelector(messageSelector, {

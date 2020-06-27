@@ -97,7 +97,7 @@ describe('createEmptySelector', () => {
       const key = emptyParentCachedSelector.keySelector(
         expect.anything(),
         expect.anything(),
-      );
+      ) as unknown;
 
       expect(key).toBeDefined();
     });

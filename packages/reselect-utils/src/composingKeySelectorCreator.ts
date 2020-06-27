@@ -12,17 +12,22 @@ export function composingKeySelectorCreator<S, P, D>(selectorInputs: {
   keySelector?: ParametricKeySelector<S, P>;
 }): ParametricKeySelector<S, P>;
 
-export function composingKeySelectorCreator({
+export function composingKeySelectorCreator<S, P>({
   inputSelectors,
   keySelector,
-}: any) {
-  const keySelectorSet = new Set<any>();
+}: {
+  inputSelectors: (KeySelector<S> | ParametricKeySelector<S, P>)[];
+  keySelector?: KeySelector<S> | ParametricKeySelector<S, P>;
+}) {
+  const keySelectorSet = new Set<
+    KeySelector<S> | ParametricKeySelector<S, P>
+  >();
 
   if (keySelector) {
     keySelectorSet.add(keySelector);
   }
 
-  inputSelectors.forEach((selector: any) => {
+  inputSelectors.forEach((selector) => {
     if (isCachedSelector(selector)) {
       keySelectorSet.add(selector.keySelector);
     }

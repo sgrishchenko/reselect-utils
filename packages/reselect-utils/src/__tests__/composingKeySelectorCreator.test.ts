@@ -42,7 +42,7 @@ describe('composingKeySelectorCreator', () => {
     const key = keySelector(expect.anything(), {
       firstProp,
       secondProp,
-    });
+    }) as unknown;
 
     expect(key).toBe(`${firstProp}:${secondProp}`);
   });
@@ -59,7 +59,7 @@ describe('composingKeySelectorCreator', () => {
     const key = keySelector(expect.anything(), {
       firstProp,
       secondProp,
-    } as { firstProp: string });
+    } as { firstProp: string }) as unknown;
 
     expect(key).toBe(`${firstProp}:${secondProp}`);
   });
@@ -78,7 +78,7 @@ describe('composingKeySelectorCreator', () => {
       firstProp,
       secondProp,
       thirdProp,
-    } as { thirdProp: string });
+    } as { thirdProp: string }) as unknown;
 
     expect(key).toBe(`${thirdProp}:${firstProp}:${secondProp}`);
   });
@@ -93,7 +93,7 @@ describe('composingKeySelectorCreator', () => {
 
     const key = keySelector(expect.anything(), {
       firstProp,
-    });
+    }) as unknown;
 
     expect(key).toBe(firstProp);
     expect(keySelector).toBe(firstKeySelector);
@@ -123,7 +123,7 @@ describe('composingKeySelectorCreator', () => {
       const key = keySelector(expect.anything(), {
         firstProp,
         altSecondProp,
-      } as { firstProp: string });
+      } as { firstProp: string }) as unknown;
 
       expect(key).toBe(`${firstProp}:alt ${altSecondProp}`);
     },
@@ -147,7 +147,7 @@ describe('composingKeySelectorCreator', () => {
       firstProp,
       secondProp,
       thirdProp,
-    } as { thirdProp: string });
+    } as { thirdProp: string }) as unknown;
 
     expect(key).toBe(`${thirdProp}:${firstProp}:${secondProp}`);
   });
@@ -167,7 +167,7 @@ describe('composingKeySelectorCreator', () => {
     const key = keySelector(expect.anything(), {
       firstProp,
       secondProp,
-    });
+    }) as unknown;
 
     expect(key).toBe(`${firstProp}:${secondProp}`);
   });

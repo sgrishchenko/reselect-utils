@@ -4,7 +4,7 @@ import { todosViewSelector } from '../todosView.selector';
 
 export const todoFilterSwitchPropsSelector = createSelector(
   path(todosViewSelector).filter(),
-  todoFilter => ({
+  (todoFilter) => ({
     todoFilter,
   }),
 );

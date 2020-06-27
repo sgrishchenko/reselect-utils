@@ -56,7 +56,7 @@ describe('createPathSelector', () => {
       const personId = 1;
       const key = firstNameSelector.keySelector(expect.anything(), {
         personId,
-      });
+      }) as unknown;
 
       expect(key).toBe(personId);
     });

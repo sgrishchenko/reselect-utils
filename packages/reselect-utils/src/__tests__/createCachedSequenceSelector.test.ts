@@ -18,8 +18,14 @@ describe('createCachedSequenceSelector', () => {
     const result3 = selector(commonState, { personId: 1 });
     const result4 = selector(commonState, { personId: 2 });
 
-    expect(result1.map(person => person.firstName)).toEqual(['Marry', 'Marry']);
-    expect(result2.map(person => person.firstName)).toEqual(['Harry', 'Harry']);
+    expect(result1.map((person) => person.firstName)).toEqual([
+      'Marry',
+      'Marry',
+    ]);
+    expect(result2.map((person) => person.firstName)).toEqual([
+      'Harry',
+      'Harry',
+    ]);
 
     expect(result1).toBe(result3);
     expect(result2).toBe(result4);

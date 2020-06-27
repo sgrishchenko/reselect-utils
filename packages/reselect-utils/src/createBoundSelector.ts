@@ -11,8 +11,8 @@ import {
   defineDynamicSelectorName,
 } from './helpers';
 
-const generateBindingName = (binding: {}) => {
-  const structure: {} = Object.keys(binding).reduce(
+const generateBindingName = <P>(binding: P) => {
+  const structure = Object.keys(binding).reduce(
     (result, key) => ({
       ...result,
       [key]: '[*]',

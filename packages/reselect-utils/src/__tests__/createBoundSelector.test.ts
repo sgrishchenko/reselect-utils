@@ -102,7 +102,7 @@ describe('createAdaptedSelector', () => {
   describe('integration with re-reselect', () => {
     const fullNameCachedSelector = createCachedSelector(
       [personSelector],
-      ({ firstName, secondName }) => `${firstName} ${secondName}`,
+      ({ firstName = '', secondName = '' }) => `${firstName} ${secondName}`,
     )((state, props) => props.personId);
 
     test('should decorate getMatchingSelector and removeMatchingSelector of dependency', () => {
@@ -135,7 +135,10 @@ describe('createAdaptedSelector', () => {
       );
       expect(selectorInstance).toBeUndefined();
 
-      const key = marrySelector.keySelector(commonState, expect.anything());
+      const key = marrySelector.keySelector(
+        commonState,
+        expect.anything(),
+      ) as unknown;
       expect(key).toBe(1);
     });
   });

@@ -415,9 +415,11 @@ export function composeKeySelectors<S, P>(
   ...keySelectors: ParametricKeySelector<S, P>[]
 ): ParametricKeySelector<S, P>;
 
-export function composeKeySelectors(...keySelectors: Function[]) {
-  return (state: unknown, props: unknown) => {
-    let key = keySelectors[0](state, props);
+export function composeKeySelectors<S, P>(
+  ...keySelectors: (KeySelector<S> | ParametricKeySelector<S, P>)[]
+) {
+  return (state: S, props: P) => {
+    let key = keySelectors[0](state, props) as unknown;
 
     for (let i = 1; i < keySelectors.length; i += 1) {
       key += ':';

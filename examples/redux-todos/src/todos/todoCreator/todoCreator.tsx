@@ -5,10 +5,9 @@ import React, {
   useState,
 } from 'react';
 import { useDispatch } from 'react-redux';
-import { TodoCreatorProps } from './todoCreator.interface';
 import { TodosAction } from '../todos.action';
 
-export const TodoCreator: FunctionComponent<TodoCreatorProps> = () => {
+export const TodoCreator: FunctionComponent = () => {
   const [todoName, setTodoName] = useState('');
   const dispatch = useDispatch();
 

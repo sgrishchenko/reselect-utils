@@ -1,11 +1,10 @@
 import React, { ChangeEvent, FunctionComponent, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { TodoFilterSwitchProps } from './todoFilterSwitch.interface';
 import { TodoFilter } from '../todosView.interface';
 import { TodosViewAction } from '../todosView.action';
 import { todoFilterSwitchPropsSelector } from './todoFilterSwitch.selector';
 
-export const TodoFilterSwitch: FunctionComponent<TodoFilterSwitchProps> = () => {
+export const TodoFilterSwitch: FunctionComponent = () => {
   const { todoFilter } = useSelector(todoFilterSwitchPropsSelector);
   const dispatch = useDispatch();
 

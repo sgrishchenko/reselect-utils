@@ -7,6 +7,7 @@
   "unpkg": "dist/index.js",
   "typings": "lib/index.d.ts",
   "repository": "git+https://github.com/sgrishchenko/reselect-utils.git",
+  "homepage": "https://sgrishchenko.github.io/reselect-utils/docz",
   "author": "Sergei Grishchenko",
   "license": "MIT",
   "files": [

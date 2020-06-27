@@ -3,6 +3,7 @@ name: Path Selector
 menu: API
 route: '/api/path-selector'
 edit: false
+fullScreen: true
 ---
 
 import { TypedocFrame } from './TypedocFrame'

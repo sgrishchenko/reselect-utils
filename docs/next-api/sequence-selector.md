@@ -3,6 +3,7 @@ name: Sequence Selector
 menu: API
 route: '/api/sequence-selector'
 edit: false
+fullScreen: true
 ---
 
 import { TypedocFrame } from './TypedocFrame'

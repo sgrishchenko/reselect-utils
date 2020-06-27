@@ -3,6 +3,7 @@ name: Cached Structured Selector
 menu: API
 route: '/api/cached-structured-selector'
 edit: false
+fullScreen: true
 ---
 
 import { TypedocFrame } from './TypedocFrame'

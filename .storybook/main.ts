@@ -27,6 +27,10 @@ export default {
       }),
     );
 
+    if (config.performance) {
+      config.performance.hints = false;
+    }
+
     return config;
   },
 };

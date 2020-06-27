@@ -23,14 +23,14 @@
     "build": "yarn clean && yarn build:cjs && yarn build:es && yarn build:umd"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^5.3.14",
-    "@storybook/react": "^5.3.14",
-    "@types/cytoscape": "^3.14.0",
-    "@types/react": "^16.9.23",
-    "cytoscape": "^3.14.0",
+    "@storybook/addon-actions": "^5.3.19",
+    "@storybook/react": "^5.3.19",
+    "@types/cytoscape": "^3.14.6",
+    "@types/react": "^16.9.41",
+    "cytoscape": "^3.15.1",
     "cytoscape-dagre": "^2.2.2",
     "re-reselect": "^3.4.0",
-    "react": "^16.13.0",
+    "react": "^16.13.1",
     "reselect": "^4.0.0",
     "reselect-tools": "^0.0.7"
   }

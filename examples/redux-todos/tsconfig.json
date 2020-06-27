@@ -2,11 +2,12 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "lib": ["es2018", "dom"],
+    "lib": ["es2020", "dom"],
     "strict": true,
     "moduleResolution": "node",
     "sourceMap": true,
     "esModuleInterop": true,
+    "downlevelIteration": true,
     "jsx": "react",
     "noUnusedLocals": true
   }

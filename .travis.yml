@@ -9,12 +9,13 @@ script:
   - yarn lint
   - yarn compile
   - yarn test
-  - yarn site
 after_success:
   - cat ./coverage/lcov.info | yarn coveralls
 cache:
   directories:
     - "node_modules"
+before_deploy:
+  - yarn site
 deploy:
   - provider: script
     script: >-

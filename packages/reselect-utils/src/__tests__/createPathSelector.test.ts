@@ -34,6 +34,22 @@ describe('createPathSelector', () => {
     ).toBe(100500);
   });
 
+  test('should handle states typed as interface', () => {
+    interface IState {
+      name: string;
+    }
+
+    const baseSelector = (state: IState) => state;
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    createPathSelector(baseSelector).name('');
+
+    const nameSelector = createPathSelector(baseSelector).name();
+
+    expect(nameSelector({ name: 'name' })).toBe('name');
+  });
+
   describe('integration with re-reselect', () => {
     test('should expose keySelector if base selector is cached', () => {
       const personSelector = createCachedSelector(

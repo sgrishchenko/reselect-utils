@@ -8,6 +8,15 @@ import {
 
 export type Defined<T> = Exclude<T, undefined>;
 
+export type IsOptional<T> = undefined extends T
+  ? true
+  : null extends T
+  ? true
+  : false;
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type IsObject<T> = T extends object ? true : false;
+
 export type RequiredSelectorBuilder<S, R, D> = () => NamedSelector<S, R, D>;
 
 export type OptionalSelectorBuilder<S, R, D> = {
@@ -53,9 +62,7 @@ export type OptionalParametricSelectorBuilder<S, P, R, D> = {
 };
 
 export type RequiredObjectSelectorWrapper<S, R, D> = {
-  [K in keyof R]-?: undefined extends R[K]
-    ? OptionalPathSelectorType<S, R[K], D>
-    : null extends R[K]
+  [K in keyof R]-?: IsOptional<R[K]> extends true
     ? OptionalPathSelectorType<S, R[K], D>
     : RequiredPathSelectorType<S, R[K], D>;
 };
@@ -65,9 +72,7 @@ export type OptionalObjectSelectorWrapper<S, R, D> = {
 };
 
 export type RequiredObjectParametricSelectorWrapper<S, P, R, D> = {
-  [K in keyof R]-?: undefined extends R[K]
-    ? OptionalPathParametricSelectorType<S, P, R[K], D>
-    : null extends R[K]
+  [K in keyof R]-?: IsOptional<R[K]> extends true
     ? OptionalPathParametricSelectorType<S, P, R[K], D>
     : RequiredPathParametricSelectorType<S, P, R[K], D>;
 };
@@ -79,9 +84,7 @@ export type OptionalObjectParametricSelectorWrapper<S, P, R, D> = {
 export type RequiredArraySelectorWrapper<S, R, D> = {
   length: RequiredPathSelectorType<S, number, D>;
 
-  [K: number]: undefined extends R
-    ? OptionalPathSelectorType<S, R, D>
-    : null extends R
+  [K: number]: IsOptional<R> extends true
     ? OptionalPathSelectorType<S, R, D>
     : RequiredPathSelectorType<S, R, D>;
 };
@@ -95,9 +98,7 @@ export type OptionalArraySelectorWrapper<S, R, D> = {
 export type RequiredArrayParametricSelectorWrapper<S, P, R, D> = {
   length: RequiredPathParametricSelectorType<S, P, number, D>;
 
-  [K: number]: undefined extends R
-    ? OptionalPathParametricSelectorType<S, P, R, D>
-    : null extends R
+  [K: number]: IsOptional<R> extends true
     ? OptionalPathParametricSelectorType<S, P, R, D>
     : RequiredPathParametricSelectorType<S, P, R, D>;
 };
@@ -110,13 +111,13 @@ export type OptionalArrayParametricSelectorWrapper<S, P, R, D> = {
 
 export type RequiredDataSelectorWrapper<S, R, D> = R extends unknown[]
   ? RequiredArraySelectorWrapper<S, R[number], D>
-  : R extends Record<string, unknown>
+  : IsObject<R> extends true
   ? RequiredObjectSelectorWrapper<S, R, D>
   : RequiredSelectorBuilder<S, R, D>;
 
 export type OptionalDataSelectorWrapper<S, R, D> = R extends unknown[]
   ? OptionalArraySelectorWrapper<S, R[number], D>
-  : R extends Record<string, unknown>
+  : IsObject<R> extends true
   ? OptionalObjectSelectorWrapper<S, R, D>
   : OptionalSelectorBuilder<S, R, D>;
 
@@ -127,7 +128,7 @@ export type RequiredDataParametricSelectorWrapper<
   D
 > = R extends unknown[]
   ? RequiredArrayParametricSelectorWrapper<S, P, R[number], D>
-  : R extends Record<string, unknown>
+  : IsObject<R> extends true
   ? RequiredObjectParametricSelectorWrapper<S, P, R, D>
   : RequiredParametricSelectorBuilder<S, P, R, D>;
 
@@ -138,7 +139,7 @@ export type OptionalDataParametricSelectorWrapper<
   D
 > = R extends unknown[]
   ? OptionalArrayParametricSelectorWrapper<S, P, R[number], D>
-  : R extends Record<string, unknown>
+  : IsObject<R> extends true
   ? OptionalObjectParametricSelectorWrapper<S, P, R, D>
   : OptionalParametricSelectorBuilder<S, P, R, D>;
 
@@ -222,17 +223,13 @@ const innerCreatePathSelector = <S, P, R>(
 
 export function createPathSelector<S, R>(
   baseSelector: Selector<S, R>,
-): undefined extends R
-  ? OptionalPathSelectorType<S, R, [Selector<S, R>]>
-  : null extends R
+): IsOptional<R> extends true
   ? OptionalPathSelectorType<S, R, [Selector<S, R>]>
   : RequiredPathSelectorType<S, R, [Selector<S, R>]>;
 
 export function createPathSelector<S, P, R>(
   baseSelector: ParametricSelector<S, P, R>,
-): undefined extends R
-  ? OptionalPathParametricSelectorType<S, P, R, [ParametricSelector<S, P, R>]>
-  : null extends R
+): IsOptional<R> extends true
   ? OptionalPathParametricSelectorType<S, P, R, [ParametricSelector<S, P, R>]>
   : RequiredPathParametricSelectorType<S, P, R, [ParametricSelector<S, P, R>]>;
 

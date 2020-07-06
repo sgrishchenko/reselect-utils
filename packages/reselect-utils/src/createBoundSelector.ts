@@ -25,7 +25,7 @@ const generateBindingName = <P>(binding: P) => {
   return `${structureKeys} -> ${structureValues}`;
 };
 
-const innerCreateBoundSelector = <S, P2, P1 extends P2, R>(
+const innerCreateBoundSelector = <S, P2, P1 extends Partial<P2>, R>(
   baseSelector: ParametricSelector<S, P1, R>,
   binding: P2,
 ) => {
@@ -45,7 +45,7 @@ const innerCreateBoundSelector = <S, P2, P1 extends P2, R>(
   return boundSelector as BoundSelector;
 };
 
-export const createBoundSelector = <S, P2, P1 extends P2, R>(
+export const createBoundSelector = <S, P2, P1 extends Partial<P2>, R>(
   baseSelector: ParametricSelector<S, P1, R>,
   binding: P2,
 ) => {

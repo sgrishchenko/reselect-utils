@@ -17,14 +17,27 @@ export type IsOptional<T> = undefined extends T
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type IsObject<T> = T extends object ? true : false;
 
-export type RequiredSelectorBuilder<S, R, D> = () => NamedSelector<S, R, D>;
+export type PathSelector<S, R, D> = NamedSelector<S, R, D> & {
+  path: (string | number)[];
+};
+
+export type PathParametricSelector<S, P, R, D> = NamedParametricSelector<
+  S,
+  P,
+  R,
+  D
+> & {
+  path: (string | number)[];
+};
+
+export type RequiredSelectorBuilder<S, R, D> = () => PathSelector<S, R, D>;
 
 export type OptionalSelectorBuilder<S, R, D> = {
-  (noDefaultValue?: undefined): NamedSelector<S, Defined<R> | undefined, D>;
+  (noDefaultValue?: undefined): PathSelector<S, Defined<R> | undefined, D>;
 
-  (defaultValue: NonNullable<R>): NamedSelector<S, NonNullable<R>, D>;
+  (defaultValue: NonNullable<R>): PathSelector<S, NonNullable<R>, D>;
 
-  (nullDefaultValue: R extends null ? null : never): NamedSelector<
+  (nullDefaultValue: R extends null ? null : never): PathSelector<
     S,
     Defined<R>,
     D
@@ -36,24 +49,24 @@ export type RequiredParametricSelectorBuilder<
   P,
   R,
   D
-> = () => NamedParametricSelector<S, P, R, D>;
+> = () => PathParametricSelector<S, P, R, D>;
 
 export type OptionalParametricSelectorBuilder<S, P, R, D> = {
-  (noDefaultValue?: undefined): NamedParametricSelector<
+  (noDefaultValue?: undefined): PathParametricSelector<
     S,
     P,
     Defined<R> | undefined,
     D
   >;
 
-  (defaultValue: NonNullable<R>): NamedParametricSelector<
+  (defaultValue: NonNullable<R>): PathParametricSelector<
     S,
     P,
     NonNullable<R>,
     D
   >;
 
-  (nullDefaultValue: R extends null ? null : never): NamedParametricSelector<
+  (nullDefaultValue: R extends null ? null : never): PathParametricSelector<
     S,
     P,
     Defined<R>,
@@ -176,9 +189,11 @@ export type OptionalPathParametricSelectorType<
 const isObject = (value: unknown) =>
   value !== null && typeof value === 'object';
 
-const innerCreatePathSelector = <S, P, R>(
+/** @internal */
+export const innerCreatePathSelector = (
   baseSelector: (...args: unknown[]) => unknown,
   path: (string | number)[] = [],
+  meta: Record<string, unknown> = {},
 ): unknown => {
   const proxyTarget = (defaultValue?: unknown) => {
     function resultSelector() {
@@ -197,7 +212,7 @@ const innerCreatePathSelector = <S, P, R>(
       return result ?? defaultValue;
     }
 
-    Object.assign(resultSelector, baseSelector);
+    Object.assign(resultSelector, baseSelector, { path }, meta);
     resultSelector.dependencies = [baseSelector];
 
     /* istanbul ignore else  */
@@ -217,7 +232,7 @@ const innerCreatePathSelector = <S, P, R>(
 
   return new Proxy(proxyTarget, {
     get: (target, key: string | number) =>
-      innerCreatePathSelector(baseSelector, [...path, key]),
+      innerCreatePathSelector(baseSelector, [...path, key], meta),
   });
 };
 
@@ -233,7 +248,7 @@ export function createPathSelector<S, P, R>(
   ? OptionalPathParametricSelectorType<S, P, R, [ParametricSelector<S, P, R>]>
   : RequiredPathParametricSelectorType<S, P, R, [ParametricSelector<S, P, R>]>;
 
-export function createPathSelector<S, P, R>(
+export function createPathSelector(
   baseSelector: (...args: unknown[]) => unknown,
 ) {
   return innerCreatePathSelector(baseSelector);

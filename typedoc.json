@@ -1,5 +1,6 @@
 {
   "excludeNotExported": true,
+  "stripInternal": true,
   "exclude": [
     "packages/*/src/__data__/**",
     "packages/*/src/__tests__/**",

@@ -1,5 +1,5 @@
 import { KeySelector, ParametricKeySelector } from 're-reselect';
-import { isCachedSelector } from './helpers';
+import { areSelectorsEqual, isCachedSelector } from './helpers';
 import {
   composeKeySelectors,
   OutputKeySelector,
@@ -36,7 +36,20 @@ const flatKeySelectors = <S, P>(
 const uniqKeySelectors = <S, P>(
   keySelectors: (KeySelector<S> | ParametricKeySelector<S, P>)[],
 ) => {
-  return [...new Set(keySelectors)];
+  const result: (KeySelector<S> | ParametricKeySelector<S, P>)[] = [];
+
+  for (let i = 0; i < keySelectors.length; i += 1) {
+    const keySelector = keySelectors[i];
+
+    const isKeySelectorAdded = result.some((resultKeySelector) =>
+      areSelectorsEqual(keySelector, resultKeySelector),
+    );
+    if (!isKeySelectorAdded) {
+      result.push(keySelector);
+    }
+  }
+
+  return result;
 };
 
 export function composingKeySelectorCreator<S, D>(selectorInputs: {

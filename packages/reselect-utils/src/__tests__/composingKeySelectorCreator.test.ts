@@ -16,8 +16,8 @@ describe('composingKeySelectorCreator', () => {
   }>().secondProp();
 
   const thirdKeySelector = createPropSelector<{
-    thirdProp: string;
-  }>().thirdProp();
+    thirdProp: { value: string };
+  }>().thirdProp.value();
 
   const firstSelector = createCachedSelector(
     firstKeySelector,
@@ -73,15 +73,15 @@ describe('composingKeySelectorCreator', () => {
 
     const firstProp = 'firstProp';
     const secondProp = 'secondProp';
-    const thirdProp = 'thirdProp';
+    const thirdProp = { value: 'thirdProp' };
 
     const key = keySelector(expect.anything(), {
       firstProp,
       secondProp,
       thirdProp,
-    } as { thirdProp: string }) as unknown;
+    } as { thirdProp: { value: string } }) as unknown;
 
-    expect(key).toBe(`${thirdProp}:${firstProp}:${secondProp}`);
+    expect(key).toBe(`${thirdProp.value}:${firstProp}:${secondProp}`);
   });
 
   test('should not duplicate selectors if they are equal', () => {
@@ -142,15 +142,15 @@ describe('composingKeySelectorCreator', () => {
 
     const firstProp = 'firstProp';
     const secondProp = 'secondProp';
-    const thirdProp = 'thirdProp';
+    const thirdProp = { value: 'thirdProp' };
 
     const key = keySelector(expect.anything(), {
       firstProp,
       secondProp,
       thirdProp,
-    } as { thirdProp: string }) as unknown;
+    } as { thirdProp: { value: string } }) as unknown;
 
-    expect(key).toBe(`${thirdProp}:${firstProp}:${secondProp}`);
+    expect(key).toBe(`${thirdProp.value}:${firstProp}:${secondProp}`);
   });
 
   test('should can be used as real keySelectorCreator', () => {
@@ -204,4 +204,45 @@ describe('composingKeySelectorCreator', () => {
 
     expect(key).toBe(`${prop}`);
   });
+
+  test(
+    'should flat output key selector ' +
+      '(even if prop selectors are declared independently)',
+    () => {
+      const keySelector = composingKeySelectorCreator({
+        keySelector: composeKeySelectors(
+          createPropSelector<{ prop: string }>().prop(),
+          createPropSelector<{ prop: string }>().prop(),
+        ),
+        inputSelectors: [
+          createCachedSelector(
+            createPropSelector<{ prop: string }>().prop(),
+            () => undefined,
+          )({
+            keySelector: composeKeySelectors(
+              createPropSelector<{ prop: string }>().prop(),
+              createPropSelector<{ prop: string }>().prop(),
+            ),
+          }),
+          createCachedSelector(
+            createPropSelector<{ prop: string }>().prop(),
+            () => undefined,
+          )({
+            keySelector: composeKeySelectors(
+              createPropSelector<{ prop: string }>().prop(),
+              createPropSelector<{ prop: string }>().prop(),
+            ),
+          }),
+        ],
+      });
+
+      const prop = 'prop';
+
+      const key = keySelector(expect.anything(), {
+        prop,
+      }) as unknown;
+
+      expect(key).toBe(`${prop}`);
+    },
+  );
 });

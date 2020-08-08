@@ -17,6 +17,36 @@ export const isCachedSelector = (
   return selector instanceof Object && 'keySelector' in selector;
 };
 
+export const areSelectorsEqual = (selector: unknown, another: unknown) => {
+  if (selector === another) {
+    return true;
+  }
+
+  if (
+    selector instanceof Object &&
+    another instanceof Object &&
+    'isPropSelector' in selector &&
+    'isPropSelector' in another
+  ) {
+    const { path: selectorPath } = selector as { path: (string | number)[] };
+    const { path: anotherPath } = another as { path: (string | number)[] };
+
+    if (selectorPath.length !== anotherPath.length) {
+      return false;
+    }
+
+    for (let i = 0; i < selectorPath.length; i += 1) {
+      if (selectorPath[i] !== anotherPath[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+};
+
 export const defineDynamicSelectorName = (
   selector: unknown,
   selectorNameGetter: () => string,

@@ -61,6 +61,50 @@ describe('createAdaptedSelector', () => {
     expect(marryAndHello.message.text).toBe('Hello');
   });
 
+  test('should not support binding of optional values to non-optional props', () => {
+    type Props = {
+      first: string;
+      second?: string;
+    };
+
+    type WrongProps = {
+      first?: string;
+    };
+
+    const wrongProps: WrongProps = {};
+
+    const selector = (state: State, props: Props) =>
+      JSON.stringify(state) + JSON.stringify(props);
+
+    const boundSelector: never = createBoundSelector(selector, wrongProps);
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    boundSelector(commonState, {});
+  });
+
+  test('should support binding of non-optional values to optional props', () => {
+    type Props = {
+      first: string;
+      second?: string;
+    };
+
+    type RightProps = {
+      second: string;
+    };
+
+    const rightProps: RightProps = {
+      second: 'second',
+    };
+
+    const selector = (state: State, props: Props) =>
+      JSON.stringify(state) + JSON.stringify(props);
+
+    const boundSelector = createBoundSelector(selector, rightProps);
+
+    expect(boundSelector(commonState, { first: 'first' })).toBeDefined();
+  });
+
   test('should generate selector name', () => {
     const marrySelector = createBoundSelector(personSelector, {
       personId: 1,

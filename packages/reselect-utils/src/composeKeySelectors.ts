@@ -2,6 +2,7 @@ import { KeySelector, ParametricKeySelector } from 're-reselect';
 
 export type OutputKeySelector<S, D> = KeySelector<S> & {
   dependencies: D;
+  isComposedKeySelector: true;
 };
 
 export type OutputParametricKeySelector<S, P, D> = ParametricKeySelector<
@@ -9,6 +10,7 @@ export type OutputParametricKeySelector<S, P, D> = ParametricKeySelector<
   P
 > & {
   dependencies: D;
+  isComposedKeySelector: true;
 };
 
 export function composeKeySelectors<S1>(
@@ -656,5 +658,6 @@ export function composeKeySelectors<S, P>(
 
   return Object.assign(resultSelector, {
     dependencies: keySelectors,
+    isComposedKeySelector: true,
   });
 }

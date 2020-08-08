@@ -4,6 +4,7 @@ import { composingKeySelectorCreator } from '../composingKeySelectorCreator';
 import { createPathSelector } from '../createPathSelector';
 import { createAdaptedSelector } from '../createAdaptedSelector';
 import { createChainSelector } from '../createChainSelector';
+import { composeKeySelectors } from '../composeKeySelectors';
 
 describe('composingKeySelectorCreator', () => {
   const firstKeySelector = createPropSelector<{
@@ -170,5 +171,37 @@ describe('composingKeySelectorCreator', () => {
     }) as unknown;
 
     expect(key).toBe(`${firstProp}:${secondProp}`);
+  });
+
+  test('should flat output key selector', () => {
+    const inputKeySelector = createPropSelector<{
+      prop: string;
+    }>().prop();
+
+    const keySelector = composingKeySelectorCreator({
+      keySelector: composeKeySelectors(inputKeySelector, inputKeySelector),
+      inputSelectors: [
+        createCachedSelector(
+          inputKeySelector,
+          () => undefined,
+        )({
+          keySelector: composeKeySelectors(inputKeySelector, inputKeySelector),
+        }),
+        createCachedSelector(
+          inputKeySelector,
+          () => undefined,
+        )({
+          keySelector: composeKeySelectors(inputKeySelector, inputKeySelector),
+        }),
+      ],
+    });
+
+    const prop = 'prop';
+
+    const key = keySelector(expect.anything(), {
+      prop,
+    }) as unknown;
+
+    expect(key).toBe(`${prop}`);
   });
 });

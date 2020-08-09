@@ -1,10 +1,37 @@
 import { KeySelector, ParametricKeySelector } from 're-reselect';
-import { areSelectorsEqual, isCachedSelector } from './helpers';
+import { isPropSelector } from './createPropSelector';
+import { isCachedSelector } from './helpers';
 import {
   composeKeySelectors,
+  isComposedKeySelector,
   OutputKeySelector,
   OutputParametricKeySelector,
 } from './composeKeySelectors';
+
+const areSelectorsEqual = (selector: unknown, another: unknown) => {
+  if (selector === another) {
+    return true;
+  }
+
+  if (isPropSelector(selector) && isPropSelector(another)) {
+    const { path: selectorPath } = selector as { path: (string | number)[] };
+    const { path: anotherPath } = another as { path: (string | number)[] };
+
+    if (selectorPath.length !== anotherPath.length) {
+      return false;
+    }
+
+    for (let i = 0; i < selectorPath.length; i += 1) {
+      if (selectorPath[i] !== anotherPath[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+};
 
 const flatKeySelectors = <S, P>(
   keySelectors: (
@@ -23,7 +50,7 @@ const flatKeySelectors = <S, P>(
   for (let i = 0; i < keySelectors.length; i += 1) {
     const keySelector = keySelectors[i];
 
-    if ('dependencies' in keySelector && keySelector.isComposedKeySelector) {
+    if ('dependencies' in keySelector && isComposedKeySelector(keySelector)) {
       result.push(...flatKeySelectors(keySelector.dependencies));
     } else {
       result.push(keySelector);

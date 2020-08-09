@@ -62,6 +62,9 @@ typings/
 # next.js build output
 .next
 
+# IDE configs
+.idea/
+
 # build output
 .docz/
 site/

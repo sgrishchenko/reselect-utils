@@ -193,7 +193,7 @@ const isObject = (value: unknown) =>
 export const innerCreatePathSelector = (
   baseSelector: (...args: unknown[]) => unknown,
   path: (string | number)[] = [],
-  meta: Record<string, unknown> = {},
+  applyMeta: (selector: unknown) => void = () => {},
 ): unknown => {
   const proxyTarget = (defaultValue?: unknown) => {
     function resultSelector() {
@@ -212,8 +212,10 @@ export const innerCreatePathSelector = (
       return result ?? defaultValue;
     }
 
-    Object.assign(resultSelector, baseSelector, { path }, meta);
+    Object.assign(resultSelector, baseSelector, { path });
     resultSelector.dependencies = [baseSelector];
+
+    applyMeta(resultSelector);
 
     /* istanbul ignore else  */
     if (process.env.NODE_ENV !== 'production') {
@@ -232,7 +234,7 @@ export const innerCreatePathSelector = (
 
   return new Proxy(proxyTarget, {
     get: (target, key: string | number) =>
-      innerCreatePathSelector(baseSelector, [...path, key], meta),
+      innerCreatePathSelector(baseSelector, [...path, key], applyMeta),
   });
 };
 

@@ -4,6 +4,12 @@ import {
   RequiredPathParametricSelectorType,
 } from './createPathSelector';
 
+const propSelectorSymbol = Symbol.for('PropSelector');
+
+export const isPropSelector = (selector: unknown) => {
+  return selector instanceof Object && propSelectorSymbol in selector;
+};
+
 export function createPropSelector<P>(): RequiredPathParametricSelectorType<
   unknown,
   P,
@@ -13,5 +19,10 @@ export function createPropSelector<P>(): RequiredPathParametricSelectorType<
 
 export function createPropSelector() {
   const propsSelector = (state: unknown, props: unknown) => props;
-  return innerCreatePathSelector(propsSelector, [], { isPropSelector: true });
+
+  const applyMeta = (selector: unknown) => {
+    Object.defineProperty(selector, propSelectorSymbol, { value: true });
+  };
+
+  return innerCreatePathSelector(propsSelector, [], applyMeta);
 }

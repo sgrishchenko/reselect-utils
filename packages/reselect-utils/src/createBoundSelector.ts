@@ -29,11 +29,17 @@ const innerCreateBoundSelector = <S, P2, P1 extends Partial<P2>, R>(
   baseSelector: ParametricSelector<S, P1, R>,
   binding: P2,
 ) => {
-  const boundSelector = (state: S, props: Omit<P1, keyof P2> | void) =>
-    baseSelector(state, ({
-      ...props,
-      ...binding,
-    } as unknown) as P1);
+  const boundSelector = (state: S, props: Omit<P1, keyof P2> | void) => {
+    if (props) {
+      return baseSelector(
+        state,
+        // performance optimisation
+        Object.assign(Object.create(props), binding),
+      );
+    }
+
+    return baseSelector(state, (binding as unknown) as P1);
+  };
 
   // prevent binding non optional props on optional values
   type BoundSelector = P2 extends Pick<P1, keyof P2>

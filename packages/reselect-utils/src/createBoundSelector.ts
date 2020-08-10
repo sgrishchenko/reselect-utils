@@ -34,7 +34,10 @@ const innerCreateBoundSelector = <S, P2, P1 extends Partial<P2>, R>(
       return baseSelector(
         state,
         // performance optimisation
-        Object.assign(Object.create(props), binding),
+        Object.assign(
+          Object.isFrozen(props) ? { ...props } : Object.create(props),
+          binding,
+        ),
       );
     }
 

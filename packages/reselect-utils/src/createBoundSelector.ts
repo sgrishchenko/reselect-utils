@@ -30,7 +30,7 @@ const innerCreateBoundSelector = <S, P2, P1 extends Partial<P2>, R>(
   binding: P2,
 ) => {
   const boundSelector = (state: S, props: Omit<P1, keyof P2> | void) => {
-    if (props) {
+    if (typeof props === 'object') {
       return baseSelector(
         state,
         // performance optimisation

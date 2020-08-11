@@ -21,7 +21,7 @@
     "storybook:build": "build-storybook --output-dir site/storybook --quiet",
     "typedoc:light": "typedoc --out site/typedoc/light --theme typedoc-theme/light packages/reselect-utils",
     "typedoc:dark": "typedoc --out site/typedoc/dark --theme typedoc-theme/dark packages/reselect-utils",
-    "distribute": "yarn workspace reselect-utils version && git push"
+    "distribute": "yarn workspace reselect-utils version && git push --tags"
   },
   "husky": {
     "hooks": {

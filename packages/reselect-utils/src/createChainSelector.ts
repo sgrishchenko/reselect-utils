@@ -1,13 +1,5 @@
 import { ParametricSelector, Selector } from 'reselect';
-import createCachedSelector, {
-  FifoMapCache,
-  FifoObjectCache,
-  FlatMapCache,
-  FlatObjectCache,
-  ICacheObject,
-  LruMapCache,
-  LruObjectCache,
-} from 're-reselect';
+import createCachedSelector, { ICacheObject } from 're-reselect';
 import { NamedSelector, NamedParametricSelector } from './types';
 import {
   defineDynamicSelectorName,
@@ -45,26 +37,8 @@ const generateSelectorKey = (selector: unknown) => {
   return result;
 };
 
-const cloneCacheObject = (cacheObject: unknown) => {
-  // TODO: find more elegant solution for cloning
-  if (
-    cacheObject instanceof FifoMapCache ||
-    cacheObject instanceof FifoObjectCache ||
-    cacheObject instanceof FlatMapCache ||
-    cacheObject instanceof FlatObjectCache ||
-    cacheObject instanceof LruMapCache ||
-    cacheObject instanceof LruObjectCache
-  ) {
-    // eslint-disable-next-line no-underscore-dangle
-    const cacheSize = ((cacheObject as unknown) as { _cacheSize: number })
-      ._cacheSize;
-    const CacheConstructor = cacheObject.constructor as {
-      new (options: { cacheSize: number }): ICacheObject;
-    };
-    return new CacheConstructor({ cacheSize });
-  }
-
-  return undefined;
+export type ChainSelectorOptions = {
+  createCacheObject?: () => ICacheObject;
 };
 
 export type SelectorChain<R1, S, P, R2> =
@@ -90,15 +64,23 @@ export class SelectorMonad<
 > {
   private readonly selector: SelectorType;
 
+  private readonly options: ChainSelectorOptions;
+
   private readonly prevChain?: SelectorChainType;
 
-  public constructor(selector: SelectorType, prevChain?: SelectorChainType) {
+  public constructor(
+    selector: SelectorType,
+    options: ChainSelectorOptions = {},
+    prevChain?: SelectorChainType,
+  ) {
     this.selector = selector;
+    this.options = options;
     this.prevChain = prevChain;
   }
 
   public chain<S2, R2>(
     fn: (result: R1) => Selector<S2, R2>,
+    options?: ChainSelectorOptions,
   ): SelectorType extends Selector<S1, R1>
     ? SelectorMonad<
         S1 & S2,
@@ -123,6 +105,7 @@ export class SelectorMonad<
 
   public chain<S2, P2, R2>(
     fn: (result: R1) => ParametricSelector<S2, P2, R2>,
+    options?: ChainSelectorOptions,
   ): SelectorType extends Selector<S1, R1>
     ? SelectorMonad<
         S1 & S2,
@@ -145,16 +128,20 @@ export class SelectorMonad<
         >
       >;
 
-  public chain<S2, P2, R2>(fn: SelectorChain<R1, S2, P2, R2>) {
+  public chain<S2, P2, R2>(
+    fn: SelectorChain<R1, S2, P2, R2>,
+    inputOptions?: ChainSelectorOptions,
+  ) {
+    const options = {
+      ...this.options,
+      ...inputOptions,
+    };
+
     const keySelector = isCachedSelector(this.selector)
       ? this.selector.keySelector
       : defaultKeySelector;
 
-    const createCacheObject = () => {
-      return isCachedSelector(this.selector)
-        ? cloneCacheObject(this.selector.cache)
-        : undefined;
-    };
+    const { createCacheObject = () => undefined } = options;
 
     const higherOrderSelector = createCachedSelector(
       this.selector,
@@ -250,7 +237,7 @@ export class SelectorMonad<
       R2,
       typeof combinedSelector,
       typeof prevChain
-    >(combinedSelector, prevChain) as unknown;
+    >(combinedSelector, options, prevChain) as unknown;
   }
 
   public map<R2>(fn: (result: R1) => R2) {

@@ -1,5 +1,5 @@
 import { ParametricSelector, Selector } from 'reselect';
-import { isCachedSelector } from './helpers';
+import { defaultKeySelector, isCachedSelector } from './helpers';
 import { CachedSelector } from './types';
 
 export const createEmptySelector = <S, P, R>(
@@ -10,7 +10,7 @@ export const createEmptySelector = <S, P, R>(
   if (isCachedSelector(baseSelector)) {
     const cachedEmptySelector = (emptySelector as unknown) as CachedSelector;
 
-    cachedEmptySelector.keySelector = () => '<DefaultKey>';
+    cachedEmptySelector.keySelector = defaultKeySelector;
   }
 
   return emptySelector;

@@ -33,6 +33,8 @@ export const defineDynamicSelectorName = (
   });
 };
 
+export const defaultKeySelector = () => '<DefaultKey>';
+
 let debugMode = true;
 
 export const isDebugMode = () => debugMode;

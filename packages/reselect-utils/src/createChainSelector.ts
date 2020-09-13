@@ -1,15 +1,12 @@
-import { createSelector, ParametricSelector, Selector } from 'reselect';
+import { ParametricSelector, Selector } from 'reselect';
 import createCachedSelector, {
   FifoMapCache,
   FifoObjectCache,
   FlatMapCache,
   FlatObjectCache,
   ICacheObject,
-  KeySelector,
   LruMapCache,
   LruObjectCache,
-  OutputCachedSelector,
-  ParametricKeySelector,
 } from 're-reselect';
 import { NamedSelector, NamedParametricSelector } from './types';
 import {
@@ -17,6 +14,7 @@ import {
   getSelectorName,
   isDebugMode,
   isCachedSelector,
+  defaultKeySelector,
 } from './helpers';
 import { composingKeySelectorCreator } from './composingKeySelectorCreator';
 
@@ -148,28 +146,23 @@ export class SelectorMonad<
       >;
 
   public chain<S2, P2, R2>(fn: SelectorChain<R1, S2, P2, R2>) {
-    const selectorCreator = (isCachedSelector(this.selector)
-      ? createCachedSelector
-      : createSelector) as SelectorCreator<
-      S1,
-      P1,
-      R1,
-      Selector<S2, R2> | ParametricSelector<S2, P2, R2>
-    >;
+    const keySelector = isCachedSelector(this.selector)
+      ? this.selector.keySelector
+      : defaultKeySelector;
 
-    let higherOrderSelector = selectorCreator(this.selector, fn);
+    const createCacheObject = () => {
+      return isCachedSelector(this.selector)
+        ? cloneCacheObject(this.selector.cache)
+        : undefined;
+    };
 
-    if (isCachedSelector(this.selector)) {
-      higherOrderSelector = ((higherOrderSelector as unknown) as OutputCachedSelector<
-        S1,
-        Selector<S2, R2> | ParametricSelector<S2, P2, R2>,
-        unknown,
-        unknown[]
-      >)({
-        keySelector: this.selector.keySelector,
-        cacheObject: cloneCacheObject(this.selector.cache),
-      });
-    }
+    const higherOrderSelector = createCachedSelector(
+      this.selector,
+      fn,
+    )({
+      keySelector,
+      cacheObject: createCacheObject(),
+    });
 
     /* istanbul ignore else  */
     if (process.env.NODE_ENV !== 'production') {
@@ -216,48 +209,19 @@ export class SelectorMonad<
     };
 
     combinedSelector.dependencies = [higherOrderSelector] as unknown[];
+    combinedSelector.cache = higherOrderSelector.cache;
 
-    if (isCachedSelector(higherOrderSelector)) {
-      combinedSelector.cache = higherOrderSelector.cache;
-    }
-
-    const keySelectorCreator = (isCachedSelector(this.selector)
-      ? createCachedSelector
-      : createSelector) as SelectorCreator<
-      S1,
-      P1,
-      Selector<S2, R2> | ParametricSelector<S2, P2, R2>,
-      KeySelector<S1 & S2> | ParametricKeySelector<S1 & S2, P1 & P2>
-    >;
-
-    let higherOrderKeySelector = keySelectorCreator(
+    const higherOrderKeySelector = createCachedSelector(
       higherOrderSelector,
       (derivedSelector) => {
         return composingKeySelectorCreator({
           inputSelectors: [higherOrderSelector, derivedSelector],
         });
       },
-    );
-
-    if (isCachedSelector(this.selector)) {
-      higherOrderKeySelector = ((higherOrderKeySelector as unknown) as OutputCachedSelector<
-        S1,
-        | Selector<
-            S1,
-            KeySelector<S1 & S2> | ParametricKeySelector<S1 & S2, P1 & P2>
-          >
-        | ParametricSelector<
-            S1,
-            P1,
-            KeySelector<S1 & S2> | ParametricKeySelector<S1 & S2, P1 & P2>
-          >,
-        unknown,
-        unknown[]
-      >)({
-        keySelector: this.selector.keySelector,
-        cacheObject: cloneCacheObject(this.selector.cache),
-      });
-    }
+    )({
+      keySelector,
+      cacheObject: createCacheObject(),
+    });
 
     combinedSelector.keySelector = (state: S1 & S2, props: P1 & P2) => {
       const derivedKeySelector = higherOrderKeySelector(state, props);

@@ -1,6 +1,6 @@
 import { KeySelector, ParametricKeySelector } from 're-reselect';
 import { isPropSelector } from './createPropSelector';
-import { isCachedSelector } from './helpers';
+import { defaultKeySelector, isCachedSelector } from './helpers';
 import {
   composeKeySelectors,
   isComposedKeySelector,
@@ -112,7 +112,7 @@ export function composingKeySelectorCreator<S, P>({
   keySelectors = uniqKeySelectors(keySelectors);
 
   if (keySelectors.length === 0) {
-    return () => '<DefaultKey>';
+    return defaultKeySelector;
   }
 
   if (keySelectors.length === 1) {

@@ -270,16 +270,20 @@ export class SelectorMonad<
 
 export function createChainSelector<S, R>(
   selector: Selector<S, R>,
+  options?: ChainSelectorOptions,
 ): SelectorMonad<S, void, R, Selector<S, R>, void>;
 
 export function createChainSelector<S, P, R>(
   selector: ParametricSelector<S, P, R>,
+  options?: ChainSelectorOptions,
 ): SelectorMonad<S, P, R, ParametricSelector<S, P, R>, void>;
 
 export function createChainSelector<S, P, R>(
   selector: Selector<S, R> | ParametricSelector<S, P, R>,
+  options?: ChainSelectorOptions,
 ) {
   return new SelectorMonad<S, P, R, typeof selector, never>(
     selector,
+    options,
   ) as unknown;
 }

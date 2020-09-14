@@ -38,7 +38,7 @@ const generateSelectorKey = (selector: unknown) => {
 };
 
 export type ChainSelectorOptions = {
-  createCacheObject?: () => ICacheObject;
+  cacheObjectCreator?: () => ICacheObject;
 };
 
 export type SelectorChain<R1, S, P, R2> =
@@ -141,14 +141,14 @@ export class SelectorMonad<
       ? this.selector.keySelector
       : defaultKeySelector;
 
-    const { createCacheObject = () => undefined } = options;
+    const { cacheObjectCreator = () => undefined } = options;
 
     const higherOrderSelector = createCachedSelector(
       this.selector,
       fn,
     )({
       keySelector,
-      cacheObject: createCacheObject(),
+      cacheObject: cacheObjectCreator(),
     });
 
     /* istanbul ignore else  */
@@ -207,7 +207,7 @@ export class SelectorMonad<
       },
     )({
       keySelector,
-      cacheObject: createCacheObject(),
+      cacheObject: cacheObjectCreator(),
     });
 
     combinedSelector.keySelector = (state: S1 & S2, props: P1 & P2) => {

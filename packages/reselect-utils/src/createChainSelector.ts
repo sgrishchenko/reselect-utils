@@ -240,7 +240,7 @@ export class SelectorMonad<
     >(combinedSelector, options, prevChain) as unknown;
   }
 
-  public map<R2>(fn: (result: R1) => R2) {
+  public map<R2>(fn: (result: R1) => R2, options?: ChainSelectorOptions) {
     return this.chain((result) => {
       const output = fn(result);
       const selector = () => output;
@@ -258,7 +258,7 @@ export class SelectorMonad<
       }
 
       return selector;
-    });
+    }, options);
   }
 
   public build() {

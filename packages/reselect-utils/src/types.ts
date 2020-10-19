@@ -20,7 +20,6 @@ export type NamedParametricSelector<S, P, R, D = any[]> = ParametricSelector<
   P,
   R
 > & {
-  (state: S, props: P, ...args: any[]): R;
   selectorName?: string;
   dependencies?: D;
 };

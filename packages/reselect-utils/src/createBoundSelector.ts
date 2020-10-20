@@ -57,10 +57,16 @@ const innerCreateBoundSelector = <S, P2, P1 extends Partial<P2>, R>(
   return boundSelector as BoundSelector<S, P2, P1, R>;
 };
 
-export const createBoundSelector = <S, P2, P1 extends Partial<P2>, R>(
+export const createBoundSelector = <
+  S,
+  P2,
+  P1 extends Partial<P2>,
+  R,
+  OR extends R
+>(
   baseSelector: ParametricSelector<S, P1, R>,
   binding: P2,
-  options: BoundSelectorOptions<S, P2, P1, R> = {},
+  options: BoundSelectorOptions<S, P2, P1, OR> = {},
 ): BoundSelector<S, P2, P1, R> => {
   const bindingStrategy =
     (options.bindingStrategy as typeof innerCreateBoundSelector) ??

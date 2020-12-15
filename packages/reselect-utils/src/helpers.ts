@@ -13,9 +13,8 @@ export const getSelectorName = (selector: {
 
 export const isCachedSelector = (
   selector: unknown,
-): selector is CachedSelector => {
-  return selector instanceof Object && 'keySelector' in selector;
-};
+): selector is CachedSelector =>
+  selector instanceof Object && 'keySelector' in selector;
 
 export const defineDynamicSelectorName = (
   selector: unknown,
@@ -24,9 +23,7 @@ export const defineDynamicSelectorName = (
   let overriddenSelectorName: string;
   Object.defineProperty(selector, 'selectorName', {
     configurable: true,
-    get: () => {
-      return overriddenSelectorName ?? selectorNameGetter();
-    },
+    get: () => overriddenSelectorName ?? selectorNameGetter(),
     set: (value: string) => {
       overriddenSelectorName = value;
     },

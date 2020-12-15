@@ -14,19 +14,17 @@ type IsCompletedProps = { completed: boolean };
 const filteredTodoListSelector = createCachedSelector(
   todoListSelector,
   prop<IsCompletedProps>().completed(),
-  (todos, completed) => {
-    return todos.filter((todo) => todo.completed === completed);
-  },
+  (todos, completed) => todos.filter((todo) => todo.completed === completed),
 )((state, props) => String(props.completed));
 
 export const todoListPropsSelector = chain(path(todosViewSelector).filter())
-  .chain((todoFilter) => {
-    return todoFilter === TodoFilter.ALL
+  .chain((todoFilter) =>
+    todoFilter === TodoFilter.ALL
       ? todoListSelector
       : bound(filteredTodoListSelector, {
           completed: todoFilter === TodoFilter.COMPLETED,
-        });
-  })
+        }),
+  )
   .map((todos) => ({
     todos,
   }))

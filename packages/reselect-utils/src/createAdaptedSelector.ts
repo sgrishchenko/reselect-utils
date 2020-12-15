@@ -29,9 +29,8 @@ const generateMappingName = <P1, P2>(mapping: (props: P2) => P1) => {
 const innerCreateAdaptedSelector = <S, P1, P2, R>(
   baseSelector: ParametricSelector<S, P1, R>,
   mapping: (props: P2) => P1,
-): NamedParametricSelector<S, P2, R> => {
-  return (state: S, props: P2) => baseSelector(state, mapping(props));
-};
+): NamedParametricSelector<S, P2, R> => (state: S, props: P2) =>
+  baseSelector(state, mapping(props));
 
 export const createAdaptedSelector = <S, P1, P2, R>(
   baseSelector: ParametricSelector<S, P1, R>,

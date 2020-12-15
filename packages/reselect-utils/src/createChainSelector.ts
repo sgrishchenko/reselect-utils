@@ -200,11 +200,10 @@ export class SelectorMonad<
 
     const higherOrderKeySelector = createCachedSelector(
       higherOrderSelector,
-      (derivedSelector) => {
-        return composingKeySelectorCreator({
+      (derivedSelector) =>
+        composingKeySelectorCreator({
           inputSelectors: [higherOrderSelector, derivedSelector],
-        });
-      },
+        }),
     )({
       keySelector,
       cacheObject: cacheObjectCreator(),

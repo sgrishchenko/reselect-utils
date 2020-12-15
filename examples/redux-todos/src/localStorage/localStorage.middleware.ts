@@ -6,21 +6,21 @@ export const createLocalStorageMiddleware = <S>(
 ) => {
   let prevState: S;
 
-  const middleware: Middleware<Dispatch, S> = ({ getState }) => (next) => {
-    return (action) => {
-      const result = next(action) as unknown;
+  const middleware: Middleware<Dispatch, S> = ({ getState }) => (next) => (
+    action,
+  ) => {
+    const result = next(action) as unknown;
 
-      const nextState = getState();
-      if (prevState !== nextState) {
-        window.localStorage.setItem(
-          stateLocalStorageKey,
-          JSON.stringify(project(nextState)),
-        );
-        prevState = nextState;
-      }
+    const nextState = getState();
+    if (prevState !== nextState) {
+      window.localStorage.setItem(
+        stateLocalStorageKey,
+        JSON.stringify(project(nextState)),
+      );
+      prevState = nextState;
+    }
 
-      return result;
-    };
+    return result;
   };
 
   return Object.assign(middleware, {

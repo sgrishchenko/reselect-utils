@@ -58,12 +58,11 @@ export const createCytoElements = (nodes: Nodes, edges: Edges) => {
   return [...cytoNodes, ...cytoEdges];
 };
 
-export const drawCytoscapeGraph = (cyElement: HTMLElement | null) => {
-  return cytoscape({
+export const drawCytoscapeGraph = (cyElement: HTMLElement | null) =>
+  cytoscape({
     ...cytoDefaults,
     container: cyElement,
   });
-};
 
 export const updateCytoscapeGraph = (cy: Core, nodes: Nodes, edges: Edges) => {
   const elements = createCytoElements(nodes, edges);

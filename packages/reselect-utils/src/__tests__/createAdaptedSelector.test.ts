@@ -69,17 +69,17 @@ describe('createAdaptedSelector', () => {
       `"personAndMessageNamedSelector (personId,messageId -> inputPersonId,inputMessageId)"`,
     );
 
+    const mapPersonAndMessageProps = (props: {
+      inputPersonId: number;
+      inputMessageId: number;
+    }) => ({
+      personId: props.inputPersonId,
+      messageId: props.inputMessageId,
+    });
+
     const personAndMessageAdaptedWithNamedMapperSelector = createAdaptedSelector(
       personAndMessageNamedSelector,
-      function mapPersonAndMessageProps(props: {
-        inputPersonId: number;
-        inputMessageId: number;
-      }) {
-        return {
-          personId: props.inputPersonId,
-          messageId: props.inputMessageId,
-        };
-      },
+      mapPersonAndMessageProps,
     );
 
     expect(

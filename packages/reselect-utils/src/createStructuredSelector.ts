@@ -19,16 +19,13 @@ export function createStructuredSelector(
   const objectKeys = Object.keys(selectors);
   return selectorCreator(
     objectKeys.map((key) => selectors[key]),
-    (...values: unknown[]) => {
-      return values.reduce<Record<string, unknown>>(
-        (composition, value, index) => {
-          return {
-            ...composition,
-            [objectKeys[index]]: value,
-          };
-        },
+    (...values: unknown[]) =>
+      values.reduce<Record<string, unknown>>(
+        (composition, value, index) => ({
+          ...composition,
+          [objectKeys[index]]: value,
+        }),
         {},
-      );
-    },
+      ),
   );
 }

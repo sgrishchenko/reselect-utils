@@ -30,23 +30,21 @@ describe('createEmptySelector', () => {
     },
   };
 
-  const parentSelector = (state: State, props: { parentId: number }) => {
-    return state.firstGeneration[props.parentId];
-  };
+  const parentSelector = (state: State, props: { parentId: number }) =>
+    state.firstGeneration[props.parentId];
 
-  const childSelector = (state: State, props: { childId: number }) => {
-    return state.secondGeneration[props.childId];
-  };
+  const childSelector = (state: State, props: { childId: number }) =>
+    state.secondGeneration[props.childId];
 
   test('should return undefined for optional links', () => {
     const parentByChildSelector = createChainSelector(childSelector)
-      .chain(({ parentId }) => {
-        return parentId !== undefined
+      .chain(({ parentId }) =>
+        parentId !== undefined
           ? createBoundSelector(parentSelector, {
               parentId,
             })
-          : createEmptySelector(parentSelector);
-      })
+          : createEmptySelector(parentSelector),
+      )
       .build();
 
     const result1 = parentByChildSelector(exampleState, {
@@ -76,9 +74,7 @@ describe('createEmptySelector', () => {
         (state: State) => state.firstGeneration,
         (_: State, props: { parentId: number }) => props.parentId,
       ],
-      (firstGeneration, parentId) => {
-        return firstGeneration[parentId];
-      },
+      (firstGeneration, parentId) => firstGeneration[parentId],
     )({
       keySelector: (_, props) => props.parentId,
     });

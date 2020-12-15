@@ -2,9 +2,8 @@ import { KeySelector, ParametricKeySelector } from 're-reselect';
 
 const composedKeySelectorSymbol = Symbol.for('ComposedKeySelector');
 
-export const isComposedKeySelector = (selector: unknown) => {
-  return selector instanceof Object && composedKeySelectorSymbol in selector;
-};
+export const isComposedKeySelector = (selector: unknown) =>
+  selector instanceof Object && composedKeySelectorSymbol in selector;
 
 export type OutputKeySelector<S, D> = KeySelector<S> & {
   dependencies: D;

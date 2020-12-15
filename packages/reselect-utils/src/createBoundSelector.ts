@@ -25,6 +25,25 @@ const generateBindingName = <P>(binding: P) => {
   return `${structureKeys} -> ${structureValues}`;
 };
 
+/**
+ * The special type to prevent binding of non optional props on optional values
+ */
+export type BoundSelector<S, P2, P1 extends Partial<P2>, R> = P2 extends Pick<
+  P1,
+  keyof P2
+>
+  ? Exclude<keyof P1, keyof P2> extends never
+    ? NamedSelector<S, R>
+    : NamedParametricSelector<S, Omit<P1, keyof P2>, R>
+  : never;
+
+export type BoundSelectorOptions<S, P2, P1 extends Partial<P2>, R> = {
+  bindingStrategy?: (
+    baseSelector: ParametricSelector<S, P1, R>,
+    binding: P2,
+  ) => ParametricSelector<S, Omit<P1, keyof P2>, R>;
+};
+
 const innerCreateBoundSelector = <S, P2, P1 extends Partial<P2>, R>(
   baseSelector: ParametricSelector<S, P1, R>,
   binding: P2,
@@ -35,21 +54,25 @@ const innerCreateBoundSelector = <S, P2, P1 extends Partial<P2>, R>(
       ...binding,
     } as unknown) as P1);
 
-  // prevent binding non optional props on optional values
-  type BoundSelector = P2 extends Pick<P1, keyof P2>
-    ? Exclude<keyof P1, keyof P2> extends never
-      ? NamedSelector<S, R>
-      : NamedParametricSelector<S, Omit<P1, keyof P2>, R>
-    : never;
-
-  return boundSelector as BoundSelector;
+  return boundSelector as BoundSelector<S, P2, P1, R>;
 };
 
-export const createBoundSelector = <S, P2, P1 extends Partial<P2>, R>(
+export const createBoundSelector = <
+  S,
+  P2,
+  P1 extends Partial<P2>,
+  R,
+  OR extends R
+>(
   baseSelector: ParametricSelector<S, P1, R>,
   binding: P2,
-) => {
-  const boundSelector = innerCreateBoundSelector(baseSelector, binding);
+  options: BoundSelectorOptions<S, P2, P1, OR> = {},
+): BoundSelector<S, P2, P1, R> => {
+  const bindingStrategy =
+    (options.bindingStrategy as typeof innerCreateBoundSelector) ??
+    innerCreateBoundSelector;
+
+  const boundSelector = bindingStrategy(baseSelector, binding);
 
   Object.assign(boundSelector, baseSelector);
   boundSelector.dependencies = [baseSelector];
@@ -71,20 +94,20 @@ export const createBoundSelector = <S, P2, P1 extends Partial<P2>, R>(
     const cachedBoundSelector = (boundSelector as unknown) as CachedSelector;
 
     if (baseSelector.getMatchingSelector) {
-      cachedBoundSelector.getMatchingSelector = innerCreateBoundSelector(
+      cachedBoundSelector.getMatchingSelector = bindingStrategy(
         baseSelector.getMatchingSelector,
         binding,
       );
     }
 
     if (baseSelector.removeMatchingSelector) {
-      cachedBoundSelector.removeMatchingSelector = innerCreateBoundSelector(
+      cachedBoundSelector.removeMatchingSelector = bindingStrategy(
         baseSelector.removeMatchingSelector,
         binding,
       );
     }
 
-    cachedBoundSelector.keySelector = innerCreateBoundSelector(
+    cachedBoundSelector.keySelector = bindingStrategy(
       baseSelector.keySelector,
       binding,
     );

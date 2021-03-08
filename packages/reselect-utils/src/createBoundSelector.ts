@@ -127,15 +127,17 @@ export const createBoundSelector = <
 
       keySelectors = excludeDefaultSelectors(keySelectors);
 
-      keySelectors = keySelectors.filter((keySelector) => {
-        if (isPropSelector(keySelector)) {
-          const { path: selectorPath } = keySelector;
-
-          return paths.every((path) => !arePathsEqual(selectorPath, path));
-        }
-
-        return true;
-      });
+      keySelectors = keySelectors
+        .filter(
+          (keySelector) =>
+            !isPropSelector(keySelector) ||
+            !paths.some((path) => arePathsEqual(keySelector.path, path)),
+        )
+        .map((keySelector) =>
+          isPropSelector(keySelector)
+            ? keySelector
+            : bindingStrategy(keySelector, binding),
+        );
 
       if (keySelectors.length === 0) {
         cachedBoundSelector.keySelector = defaultKeySelector;
@@ -144,17 +146,6 @@ export const createBoundSelector = <
         cachedBoundSelector.keySelector = keySelector;
       } else {
         cachedBoundSelector.keySelector = composeKeySelectors(...keySelectors);
-      }
-
-      const isThereExoticKeySelectors = keySelectors.some(
-        (keySelector) => !isPropSelector(keySelector),
-      );
-
-      if (isThereExoticKeySelectors) {
-        cachedBoundSelector.keySelector = bindingStrategy(
-          cachedBoundSelector.keySelector,
-          binding,
-        );
       }
     } else {
       cachedBoundSelector.keySelector = bindingStrategy(

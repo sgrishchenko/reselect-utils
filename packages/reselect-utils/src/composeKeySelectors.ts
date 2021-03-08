@@ -2,8 +2,27 @@ import { KeySelector, ParametricKeySelector } from 're-reselect';
 
 const composedKeySelectorSymbol = Symbol.for('ComposedKeySelector');
 
-export const isComposedKeySelector = (selector: unknown) =>
-  selector instanceof Object && composedKeySelectorSymbol in selector;
+export function isComposedKeySelector<S>(
+  keySelector: KeySelector<S>,
+): keySelector is OutputKeySelector<S, KeySelector<S>[]>;
+
+export function isComposedKeySelector<S, P>(
+  keySelector: ParametricKeySelector<S, P>,
+): keySelector is OutputParametricKeySelector<
+  S,
+  P,
+  ParametricKeySelector<S, P>[]
+>;
+
+export function isComposedKeySelector<S, P>(
+  keySelector: KeySelector<S> | ParametricKeySelector<S, P>,
+): keySelector is
+  | OutputKeySelector<S, KeySelector<S>>
+  | OutputParametricKeySelector<S, P, ParametricKeySelector<S, P>[]> {
+  return (
+    'dependencies' in keySelector && composedKeySelectorSymbol in keySelector
+  );
+}
 
 export type OutputKeySelector<S, D> = KeySelector<S> & {
   dependencies: D;

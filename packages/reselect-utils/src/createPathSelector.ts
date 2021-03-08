@@ -4,6 +4,7 @@ import {
   defineDynamicSelectorName,
   getSelectorName,
   isDebugMode,
+  isObject,
 } from './helpers';
 
 export type Defined<T> = Exclude<T, undefined>;
@@ -186,9 +187,6 @@ export type OptionalPathParametricSelectorType<
 > = OptionalParametricSelectorBuilder<S, P, R, D> &
   OptionalDataParametricSelectorWrapper<S, P, NonNullable<R>, D>;
 
-const isObject = (value: unknown) =>
-  value !== null && typeof value === 'object';
-
 /** @internal */
 export const innerCreatePathSelector = (
   baseSelector: (...args: unknown[]) => unknown,
@@ -206,7 +204,7 @@ export const innerCreatePathSelector = (
       );
 
       for (let i = 0; i < path.length && isObject(result); i += 1) {
-        result = (result as Record<string, unknown>)[path[i]];
+        result = result[path[i]];
       }
 
       return result ?? defaultValue;

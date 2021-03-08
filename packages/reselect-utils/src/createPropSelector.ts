@@ -6,7 +6,9 @@ import {
 
 const propSelectorSymbol = Symbol.for('PropSelector');
 
-export const isPropSelector = (selector: unknown) =>
+export const isPropSelector = (
+  selector: unknown,
+): selector is { path: (string | number)[] } =>
   selector instanceof Object && propSelectorSymbol in selector;
 
 export function createPropSelector<P>(): RequiredPathParametricSelectorType<

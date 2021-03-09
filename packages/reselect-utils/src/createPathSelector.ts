@@ -1,9 +1,10 @@
 import { Selector, ParametricSelector } from 'reselect';
-import { NamedSelector, NamedParametricSelector } from './types';
+import { NamedSelector, NamedParametricSelector, Path } from './types';
 import {
   defineDynamicSelectorName,
   getSelectorName,
   isDebugMode,
+  isObject,
 } from './helpers';
 
 export type Defined<T> = Exclude<T, undefined>;
@@ -18,7 +19,7 @@ export type IsOptional<T> = undefined extends T
 export type IsObject<T> = T extends object ? true : false;
 
 export type PathSelector<S, R, D> = NamedSelector<S, R, D> & {
-  path: (string | number)[];
+  path: Path;
 };
 
 export type PathParametricSelector<S, P, R, D> = NamedParametricSelector<
@@ -27,7 +28,7 @@ export type PathParametricSelector<S, P, R, D> = NamedParametricSelector<
   R,
   D
 > & {
-  path: (string | number)[];
+  path: Path;
 };
 
 export type RequiredSelectorBuilder<S, R, D> = () => PathSelector<S, R, D>;
@@ -186,13 +187,10 @@ export type OptionalPathParametricSelectorType<
 > = OptionalParametricSelectorBuilder<S, P, R, D> &
   OptionalDataParametricSelectorWrapper<S, P, NonNullable<R>, D>;
 
-const isObject = (value: unknown) =>
-  value !== null && typeof value === 'object';
-
 /** @internal */
 export const innerCreatePathSelector = (
   baseSelector: (...args: unknown[]) => unknown,
-  path: (string | number)[] = [],
+  path: Path = [],
   applyMeta: (selector: unknown) => void = () => {},
 ): unknown => {
   const proxyTarget = (defaultValue?: unknown) => {
@@ -206,7 +204,7 @@ export const innerCreatePathSelector = (
       );
 
       for (let i = 0; i < path.length && isObject(result); i += 1) {
-        result = (result as Record<string, unknown>)[path[i]];
+        result = result[path[i]];
       }
 
       return result ?? defaultValue;
@@ -234,7 +232,7 @@ export const innerCreatePathSelector = (
 
   return new Proxy(proxyTarget, {
     get: (target, key: string | number) =>
-      innerCreatePathSelector(baseSelector, [...path, key], applyMeta),
+      innerCreatePathSelector(baseSelector, [...path, String(key)], applyMeta),
   });
 };
 

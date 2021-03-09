@@ -226,13 +226,11 @@ describe('createBoundSelector', () => {
       const { keySelector } = boundSelector;
 
       const key = keySelector(commonState, {
-        value1: 3,
         value2: 2,
-        value3: 5,
-        value4: 6,
+        value3: 3,
       }) as unknown;
 
-      expect(key).toBe('2:5');
+      expect(key).toBe('2:3');
     });
   });
 
@@ -315,7 +313,7 @@ describe('createBoundSelector', () => {
     expect(isComposedKeySelector(keySelector)).toBeFalsy();
   });
 
-  test('should return composed key selector if result key sector has more than one dependency', () => {
+  test('should return composed key selector if result key selector has more than one dependency', () => {
     const firstPropSelector = createPropSelector<{ value1: number }>().value1();
     const secondPropSelector = createPropSelector<{
       value2: number;
@@ -343,7 +341,7 @@ describe('createBoundSelector', () => {
     expect(isComposedKeySelector(keySelector)).toBeTruthy();
   });
 
-  test('should bound not props selector without exclude', () => {
+  test('should bound exotic key selector without exclude', () => {
     const firstPropSelector = (state: State, props: { value1: number }) =>
       props.value1;
     const secondPropSelector = (state: State, props: { value2: number }) =>

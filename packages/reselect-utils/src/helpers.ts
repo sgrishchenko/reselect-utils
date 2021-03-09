@@ -1,4 +1,4 @@
-import { CachedSelector } from './types';
+import { CachedSelector, Path } from './types';
 
 export const getSelectorName = (selector: {
   name: string;
@@ -43,10 +43,7 @@ export const setDebugMode = (value: boolean) => {
 export const isObject = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === 'object';
 
-export const arePathsEqual = (
-  path: (string | number)[],
-  anotherPath: (string | number)[],
-) => {
+export const arePathsEqual = (path: Path, anotherPath: Path) => {
   if (path.length !== anotherPath.length) {
     return false;
   }
@@ -60,41 +57,14 @@ export const arePathsEqual = (
   return true;
 };
 
-interface Node {
-  obj: Record<string, unknown>;
-  path: string[];
-}
+export const getObjectPaths = (
+  value: unknown,
+  parentPath: Path = [],
+): Path[] => {
+  if (!isObject(value)) return [parentPath];
 
-export const getObjectPaths = (obj: Record<string, unknown>) => {
-  const paths: string[][] = [];
-  const nodes: Node[] = [
-    {
-      obj,
-      path: [],
-    },
-  ];
-
-  while (nodes.length > 0) {
-    const node = nodes.pop();
-
-    if (node) {
-      const keys = Object.keys(node.obj);
-
-      for (let i = 0; i < keys.length; i += 1) {
-        const key = keys[i];
-        const value = node.obj[key];
-        const path = node.path.concat(key);
-
-        if (isObject(value)) {
-          nodes.push({
-            obj: value,
-            path,
-          });
-        } else {
-          paths.push(path);
-        }
-      }
-    }
-  }
-  return paths;
+  return Object.keys(value).reduce<Path[]>((result, key) => {
+    const paths = getObjectPaths(value[key], parentPath.concat([key]));
+    return result.concat(paths);
+  }, []);
 };

@@ -14,10 +14,7 @@ const areSelectorsEqual = (selector: unknown, another: unknown) => {
   }
 
   if (isPropSelector(selector) && isPropSelector(another)) {
-    const { path: selectorPath } = selector;
-    const { path: anotherPath } = another;
-
-    return arePathsEqual(selectorPath, anotherPath);
+    return arePathsEqual(selector.path, another.path);
   }
 
   return false;

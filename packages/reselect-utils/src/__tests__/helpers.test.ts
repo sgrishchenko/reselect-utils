@@ -34,10 +34,23 @@ describe('getObjectPaths', () => {
     const actual = getObjectPaths(obj);
 
     expect(actual).toEqual([
+      ['key1', 'key2', 'key3'],
+      ['key1', 'key4', 'key5'],
       ['key1', 'key6', 'key7'],
       ['key1', 'key6', 'key8'],
-      ['key1', 'key4', 'key5'],
-      ['key1', 'key2', 'key3'],
+    ]);
+  });
+
+  test('should work with array', () => {
+    const obj = {
+      key1: [{ key2: { key3: [1] } }, 2],
+    };
+
+    const actual = getObjectPaths(obj);
+
+    expect(actual).toEqual([
+      ['key1', '0', 'key2', 'key3', '0'],
+      ['key1', '1'],
     ]);
   });
 });

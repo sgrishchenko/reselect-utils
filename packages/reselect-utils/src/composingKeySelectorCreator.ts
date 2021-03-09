@@ -4,8 +4,6 @@ import { arePathsEqual, defaultKeySelector, isCachedSelector } from './helpers';
 import {
   composeKeySelectors,
   isComposedKeySelector,
-  OutputKeySelector,
-  OutputParametricKeySelector,
 } from './composeKeySelectors';
 
 const areSelectorsEqual = (selector: unknown, another: unknown) => {
@@ -21,18 +19,9 @@ const areSelectorsEqual = (selector: unknown, another: unknown) => {
 };
 
 const flatKeySelectors = <S, P>(
-  keySelectors: (
-    | KeySelector<S>
-    | ParametricKeySelector<S, P>
-    | OutputKeySelector<S, (KeySelector<S> | ParametricKeySelector<S, P>)[]>
-    | OutputParametricKeySelector<
-        S,
-        P,
-        (KeySelector<S> | ParametricKeySelector<S, P>)[]
-      >
-  )[],
+  keySelectors: (KeySelector<S> | ParametricKeySelector<S, P>)[],
 ) => {
-  const result: (KeySelector<S> | ParametricKeySelector<S, P>)[] = [];
+  const result: typeof keySelectors = [];
 
   for (let i = 0; i < keySelectors.length; i += 1) {
     const keySelector = keySelectors[i];
@@ -50,7 +39,7 @@ const flatKeySelectors = <S, P>(
 const uniqKeySelectors = <S, P>(
   keySelectors: (KeySelector<S> | ParametricKeySelector<S, P>)[],
 ) => {
-  const result: (KeySelector<S> | ParametricKeySelector<S, P>)[] = [];
+  const result: typeof keySelectors = [];
 
   for (let i = 0; i < keySelectors.length; i += 1) {
     const keySelector = keySelectors[i];
@@ -69,7 +58,7 @@ const uniqKeySelectors = <S, P>(
 export const excludeDefaultSelectors = <S, P>(
   keySelectors: (KeySelector<S> | ParametricKeySelector<S, P>)[],
 ) => {
-  const result: (KeySelector<S> | ParametricKeySelector<S, P>)[] = [];
+  const result: typeof keySelectors = [];
 
   for (let i = 0; i < keySelectors.length; i += 1) {
     const keySelector = keySelectors[i];

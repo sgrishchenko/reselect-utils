@@ -1,12 +1,16 @@
 import createCachedSelector from 're-reselect';
 import { createPropSelector } from '../createPropSelector';
-import { composingKeySelectorCreator } from '../composingKeySelectorCreator';
+import { createKeySelectorCreator } from '../createKeySelectorCreator';
 import { createPathSelector } from '../createPathSelector';
 import { createAdaptedSelector } from '../createAdaptedSelector';
 import { createChainSelector } from '../createChainSelector';
-import { composeKeySelectors } from '../composeKeySelectors';
+import { stringComposeKeySelectors } from '../stringComposeKeySelectors';
 
-describe('composingKeySelectorCreator', () => {
+describe('createKeySelectorCreator', () => {
+  const keySelectorCreator = createKeySelectorCreator(
+    stringComposeKeySelectors,
+  );
+
   const firstKeySelector = createPropSelector<{
     firstProp: string;
   }>().firstProp();
@@ -33,7 +37,7 @@ describe('composingKeySelectorCreator', () => {
   });
 
   test('should compose result selector key with delimiter', () => {
-    const keySelector = composingKeySelectorCreator({
+    const keySelector = keySelectorCreator({
       inputSelectors: [firstSelector, secondSelector],
     });
 
@@ -49,7 +53,7 @@ describe('composingKeySelectorCreator', () => {
   });
 
   test('should use own keySelector in composition', () => {
-    const keySelector = composingKeySelectorCreator({
+    const keySelector = keySelectorCreator({
       keySelector: firstKeySelector,
       inputSelectors: [secondSelector],
     });
@@ -66,7 +70,7 @@ describe('composingKeySelectorCreator', () => {
   });
 
   test('should compose any number of selectors', () => {
-    const keySelector = composingKeySelectorCreator({
+    const keySelector = keySelectorCreator({
       keySelector: thirdKeySelector,
       inputSelectors: [firstSelector, secondSelector],
     });
@@ -85,7 +89,7 @@ describe('composingKeySelectorCreator', () => {
   });
 
   test('should not duplicate selectors if they are equal', () => {
-    const keySelector = composingKeySelectorCreator({
+    const keySelector = keySelectorCreator({
       keySelector: firstKeySelector,
       inputSelectors: [firstSelector, firstSelector, firstSelector],
     });
@@ -113,7 +117,7 @@ describe('composingKeySelectorCreator', () => {
         ),
       ).someValue();
 
-      const keySelector = composingKeySelectorCreator({
+      const keySelector = keySelectorCreator({
         keySelector: firstKeySelector,
         inputSelectors: [inputSelector],
       });
@@ -135,7 +139,7 @@ describe('composingKeySelectorCreator', () => {
       .chain(() => secondSelector)
       .build();
 
-    const keySelector = composingKeySelectorCreator({
+    const keySelector = keySelectorCreator({
       keySelector: thirdKeySelector,
       inputSelectors: [inputSelector],
     });
@@ -158,7 +162,7 @@ describe('composingKeySelectorCreator', () => {
       [firstSelector, secondSelector],
       () => undefined,
     )({
-      keySelectorCreator: composingKeySelectorCreator,
+      keySelectorCreator,
     });
 
     const { keySelector } = cachedSelector;
@@ -178,20 +182,29 @@ describe('composingKeySelectorCreator', () => {
       prop: string;
     }>().prop();
 
-    const keySelector = composingKeySelectorCreator({
-      keySelector: composeKeySelectors(inputKeySelector, inputKeySelector),
+    const keySelector = keySelectorCreator({
+      keySelector: stringComposeKeySelectors(
+        inputKeySelector,
+        inputKeySelector,
+      ),
       inputSelectors: [
         createCachedSelector(
           inputKeySelector,
           () => undefined,
         )({
-          keySelector: composeKeySelectors(inputKeySelector, inputKeySelector),
+          keySelector: stringComposeKeySelectors(
+            inputKeySelector,
+            inputKeySelector,
+          ),
         }),
         createCachedSelector(
           inputKeySelector,
           () => undefined,
         )({
-          keySelector: composeKeySelectors(inputKeySelector, inputKeySelector),
+          keySelector: stringComposeKeySelectors(
+            inputKeySelector,
+            inputKeySelector,
+          ),
         }),
       ],
     });
@@ -209,8 +222,8 @@ describe('composingKeySelectorCreator', () => {
     'should flat output key selector ' +
       '(even if prop selectors are declared independently)',
     () => {
-      const keySelector = composingKeySelectorCreator({
-        keySelector: composeKeySelectors(
+      const keySelector = keySelectorCreator({
+        keySelector: stringComposeKeySelectors(
           createPropSelector<{ prop: string }>().prop(),
           createPropSelector<{ prop: string }>().prop(),
         ),
@@ -219,7 +232,7 @@ describe('composingKeySelectorCreator', () => {
             createPropSelector<{ prop: string }>().prop(),
             () => undefined,
           )({
-            keySelector: composeKeySelectors(
+            keySelector: stringComposeKeySelectors(
               createPropSelector<{ prop: string }>().prop(),
               createPropSelector<{ prop: string }>().prop(),
             ),
@@ -228,7 +241,7 @@ describe('composingKeySelectorCreator', () => {
             createPropSelector<{ prop: string }>().prop(),
             () => undefined,
           )({
-            keySelector: composeKeySelectors(
+            keySelector: stringComposeKeySelectors(
               createPropSelector<{ prop: string }>().prop(),
               createPropSelector<{ prop: string }>().prop(),
             ),

@@ -2,8 +2,8 @@ import { KeySelector, ParametricKeySelector } from 're-reselect';
 import { isPropSelector } from './createPropSelector';
 import { arePathsEqual, defaultKeySelector, isCachedSelector } from './helpers';
 import {
-  composeKeySelectors,
   isComposedKeySelector,
+  KeySelectorComposer,
 } from './composeKeySelectors';
 
 const areSelectorsEqual = (selector: unknown, another: unknown) => {
@@ -71,47 +71,55 @@ export const excludeDefaultSelectors = <S, P>(
   return result;
 };
 
-export function composingKeySelectorCreator<S, D>(selectorInputs: {
+export function createKeySelectorCreator(
+  keySelectorComposer: KeySelectorComposer,
+): <S, D>(selectorInputs: {
   inputSelectors: D;
   keySelector?: KeySelector<S>;
-}): KeySelector<S>;
+}) => KeySelector<S>;
 
-export function composingKeySelectorCreator<S, P, D>(selectorInputs: {
+export function createKeySelectorCreator(
+  keySelectorComposer: KeySelectorComposer,
+): <S, P, D>(selectorInputs: {
   inputSelectors: D;
   keySelector?: ParametricKeySelector<S, P>;
-}): ParametricKeySelector<S, P>;
+}) => ParametricKeySelector<S, P>;
 
-export function composingKeySelectorCreator<S, P>({
-  inputSelectors,
-  keySelector,
-}: {
-  inputSelectors: (KeySelector<S> | ParametricKeySelector<S, P>)[];
-  keySelector?: KeySelector<S> | ParametricKeySelector<S, P>;
-}) {
-  let keySelectors: (KeySelector<S> | ParametricKeySelector<S, P>)[] = [];
+export function createKeySelectorCreator(
+  keySelectorComposer: KeySelectorComposer,
+) {
+  return <S, P>({
+    inputSelectors,
+    keySelector,
+  }: {
+    inputSelectors: unknown[];
+    keySelector?: KeySelector<S> | ParametricKeySelector<S, P>;
+  }) => {
+    let keySelectors: (KeySelector<S> | ParametricKeySelector<S, P>)[] = [];
 
-  if (keySelector) {
-    keySelectors.push(keySelector);
-  }
-
-  inputSelectors.forEach((selector) => {
-    if (isCachedSelector(selector)) {
-      keySelectors.push(selector.keySelector);
+    if (keySelector) {
+      keySelectors.push(keySelector);
     }
-  });
 
-  keySelectors = flatKeySelectors(keySelectors);
-  keySelectors = uniqKeySelectors(keySelectors);
-  keySelectors = excludeDefaultSelectors(keySelectors);
+    inputSelectors.forEach((selector) => {
+      if (isCachedSelector(selector)) {
+        keySelectors.push(selector.keySelector);
+      }
+    });
 
-  if (keySelectors.length === 0) {
-    return defaultKeySelector;
-  }
+    keySelectors = flatKeySelectors(keySelectors);
+    keySelectors = uniqKeySelectors(keySelectors);
+    keySelectors = excludeDefaultSelectors(keySelectors);
 
-  if (keySelectors.length === 1) {
-    const [resultSelector] = keySelectors;
-    return resultSelector;
-  }
+    if (keySelectors.length === 0) {
+      return defaultKeySelector;
+    }
 
-  return composeKeySelectors(...keySelectors);
+    if (keySelectors.length === 1) {
+      const [resultSelector] = keySelectors;
+      return resultSelector;
+    }
+
+    return keySelectorComposer(...keySelectors);
+  };
 }

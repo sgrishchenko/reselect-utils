@@ -3,9 +3,14 @@ import { commonState, State } from '../__data__/state';
 import { createBoundSelector } from '../createBoundSelector';
 import { createStructuredSelector } from '../createStructuredSelector';
 import { NamedParametricSelector } from '../types';
-import { isCachedSelector } from '../helpers';
+import { defaultKeySelector, isCachedSelector } from '../helpers';
+import { createPropSelector } from '../createPropSelector';
+import {
+  composeKeySelectors,
+  isComposedKeySelector,
+} from '../composeKeySelectors';
 
-describe('createAdaptedSelector', () => {
+describe('createBoundSelector', () => {
   const personSelector = (state: State, props: { personId: number }) =>
     state.persons[props.personId];
   const messageSelector = (state: State, props: { messageId: number }) =>
@@ -185,5 +190,193 @@ describe('createAdaptedSelector', () => {
       ) as unknown;
       expect(key).toBe(1);
     });
+
+    test('should return key without keys which selectors are bounded', () => {
+      const firstPropSelector = createPropSelector<{
+        value1: number;
+      }>().value1();
+      const secondPropSelector = createPropSelector<{
+        value2: number;
+      }>().value2();
+      const thirdPropSelector = createPropSelector<{
+        value3: number;
+      }>().value3();
+      const fourthPropSelector = createPropSelector<{
+        value4: number;
+      }>().value4();
+
+      const selector = createCachedSelector([], () => {})({
+        keySelector: composeKeySelectors(
+          firstPropSelector,
+          secondPropSelector,
+          thirdPropSelector,
+          fourthPropSelector,
+        ),
+      });
+
+      const boundSelector = createBoundSelector(selector, {
+        value1: 1,
+        value4: 4,
+      });
+
+      if (!isCachedSelector(boundSelector)) {
+        throw new Error('selector should be cached');
+      }
+
+      const { keySelector } = boundSelector;
+
+      const key = keySelector(commonState, {
+        value2: 2,
+        value3: 3,
+      }) as unknown;
+
+      expect(key).toBe('2:3');
+    });
+  });
+
+  test('should return default key selector if all selectors are bounded', () => {
+    const firstPropSelector = createPropSelector<{ value1: number }>().value1();
+    const secondPropSelector = createPropSelector<{
+      value2: number;
+    }>().value2();
+
+    const selector = createCachedSelector([], () => {})({
+      keySelector: composeKeySelectors(firstPropSelector, secondPropSelector),
+    });
+
+    const boundSelector = createBoundSelector(selector, {
+      value1: 1,
+      value2: 2,
+    });
+
+    if (!isCachedSelector(boundSelector)) {
+      throw new Error('selector should be cached');
+    }
+
+    const { keySelector } = boundSelector;
+
+    expect(keySelector).toBe(defaultKeySelector);
+  });
+
+  test('should exclude default key selector from result key selector', () => {
+    const firstPropSelector = createPropSelector<{ value1: number }>().value1();
+    const secondPropSelector = createPropSelector<{
+      value2: number;
+    }>().value2();
+
+    const selector = createCachedSelector([], () => {})({
+      keySelector: composeKeySelectors(
+        firstPropSelector,
+        secondPropSelector,
+        defaultKeySelector,
+      ),
+    });
+
+    const boundSelector = createBoundSelector(selector, {
+      value3: 3,
+    });
+
+    if (!isCachedSelector(boundSelector)) {
+      throw new Error('selector should be cached');
+    }
+
+    const { keySelector } = boundSelector;
+
+    const key = keySelector(commonState, {
+      value1: 1,
+      value2: 2,
+    }) as unknown;
+
+    expect(key).toBe('1:2');
+  });
+
+  test('should return not composed key selector if result key sector has only one dependency', () => {
+    const firstPropSelector = createPropSelector<{ value1: number }>().value1();
+    const secondPropSelector = createPropSelector<{
+      value2: number;
+    }>().value2();
+
+    const selector = createCachedSelector([], () => {})({
+      keySelector: composeKeySelectors(firstPropSelector, secondPropSelector),
+    });
+
+    const boundSelector = createBoundSelector(selector, {
+      value1: 1,
+    });
+
+    if (!isCachedSelector(boundSelector)) {
+      throw new Error('selector should be cached');
+    }
+
+    const { keySelector } = boundSelector;
+
+    expect(isComposedKeySelector(keySelector)).toBeFalsy();
+  });
+
+  test('should return composed key selector if result key selector has more than one dependency', () => {
+    const firstPropSelector = createPropSelector<{ value1: number }>().value1();
+    const secondPropSelector = createPropSelector<{
+      value2: number;
+    }>().value2();
+    const thirdPropSelector = createPropSelector<{ value3: number }>().value3();
+
+    const selector = createCachedSelector([], () => {})({
+      keySelector: composeKeySelectors(
+        firstPropSelector,
+        secondPropSelector,
+        thirdPropSelector,
+      ),
+    });
+
+    const boundSelector = createBoundSelector(selector, {
+      value1: 1,
+    });
+
+    if (!isCachedSelector(boundSelector)) {
+      throw new Error('selector should be cached');
+    }
+
+    const { keySelector } = boundSelector;
+
+    expect(isComposedKeySelector(keySelector)).toBeTruthy();
+  });
+
+  test('should bound exotic key selector without exclude', () => {
+    const firstPropSelector = (state: State, props: { value1: number }) =>
+      props.value1;
+    const secondPropSelector = (state: State, props: { value2: number }) =>
+      props.value2;
+    const thirdPropSelector = (state: State, props: { value3: number }) =>
+      props.value3;
+
+    const selector = createCachedSelector(
+      [firstPropSelector, secondPropSelector, thirdPropSelector],
+      () => {},
+    )({
+      keySelector: composeKeySelectors(
+        firstPropSelector,
+        secondPropSelector,
+        thirdPropSelector,
+      ),
+    });
+
+    const boundSelector = createBoundSelector(selector, {
+      value1: 1,
+      value3: 3,
+    });
+
+    if (!isCachedSelector(boundSelector)) {
+      throw new Error('selector should be cached');
+    }
+
+    const { keySelector } = boundSelector;
+
+    const key = keySelector(commonState, {
+      value1: 10,
+      value2: 20,
+      value3: 30,
+    }) as unknown;
+
+    expect(key).toBe('1:20:3');
   });
 });

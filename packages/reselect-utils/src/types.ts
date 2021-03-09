@@ -44,3 +44,5 @@ export type ReReselectSelector =
 
 export type CachedSelector = Pick<ReReselectSelector, 'cache' | 'keySelector'> &
   Partial<ReReselectSelector>;
+
+export type Path = string[];

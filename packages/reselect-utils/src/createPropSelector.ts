@@ -3,10 +3,11 @@ import {
   innerCreatePathSelector,
   RequiredPathParametricSelectorType,
 } from './createPathSelector';
+import { Path } from './types';
 
 const propSelectorSymbol = Symbol.for('PropSelector');
 
-export const isPropSelector = (selector: unknown) =>
+export const isPropSelector = (selector: unknown): selector is { path: Path } =>
   selector instanceof Object && propSelectorSymbol in selector;
 
 export function createPropSelector<P>(): RequiredPathParametricSelectorType<

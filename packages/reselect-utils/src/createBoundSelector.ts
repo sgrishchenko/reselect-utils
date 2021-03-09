@@ -9,7 +9,17 @@ import {
   isDebugMode,
   isCachedSelector,
   defineDynamicSelectorName,
+  defaultKeySelector,
+  isObject,
+  arePathsEqual,
+  getObjectPaths,
 } from './helpers';
+import {
+  composeKeySelectors,
+  isComposedKeySelector,
+} from './composeKeySelectors';
+import { isPropSelector } from './createPropSelector';
+import { excludeDefaultSelectors } from './composingKeySelectorCreator';
 
 const generateBindingName = <P>(binding: P) => {
   const structure = Object.keys(binding).reduce(
@@ -107,10 +117,42 @@ export const createBoundSelector = <
       );
     }
 
-    cachedBoundSelector.keySelector = bindingStrategy(
-      baseSelector.keySelector,
-      binding,
-    );
+    const baseKeySelector = baseSelector.keySelector;
+
+    if (isObject(binding)) {
+      const paths = getObjectPaths(binding);
+      let keySelectors = isComposedKeySelector(baseKeySelector)
+        ? baseKeySelector.dependencies
+        : [baseKeySelector];
+
+      keySelectors = excludeDefaultSelectors(keySelectors);
+
+      keySelectors = keySelectors
+        .filter(
+          (keySelector) =>
+            !isPropSelector(keySelector) ||
+            !paths.some((path) => arePathsEqual(keySelector.path, path)),
+        )
+        .map((keySelector) =>
+          isPropSelector(keySelector)
+            ? keySelector
+            : bindingStrategy(keySelector, binding),
+        );
+
+      if (keySelectors.length === 0) {
+        cachedBoundSelector.keySelector = defaultKeySelector;
+      } else if (keySelectors.length === 1) {
+        const [keySelector] = keySelectors;
+        cachedBoundSelector.keySelector = keySelector;
+      } else {
+        cachedBoundSelector.keySelector = composeKeySelectors(...keySelectors);
+      }
+    } else {
+      cachedBoundSelector.keySelector = bindingStrategy(
+        baseKeySelector,
+        binding,
+      );
+    }
   }
 
   return boundSelector;

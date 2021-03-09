@@ -1,6 +1,6 @@
 import { KeySelector, ParametricKeySelector } from 're-reselect';
 import { isPropSelector } from './createPropSelector';
-import { defaultKeySelector, isCachedSelector } from './helpers';
+import { arePathsEqual, defaultKeySelector, isCachedSelector } from './helpers';
 import {
   composeKeySelectors,
   isComposedKeySelector,
@@ -14,20 +14,7 @@ const areSelectorsEqual = (selector: unknown, another: unknown) => {
   }
 
   if (isPropSelector(selector) && isPropSelector(another)) {
-    const { path: selectorPath } = selector as { path: (string | number)[] };
-    const { path: anotherPath } = another as { path: (string | number)[] };
-
-    if (selectorPath.length !== anotherPath.length) {
-      return false;
-    }
-
-    for (let i = 0; i < selectorPath.length; i += 1) {
-      if (selectorPath[i] !== anotherPath[i]) {
-        return false;
-      }
-    }
-
-    return true;
+    return arePathsEqual(selector.path, another.path);
   }
 
   return false;
@@ -50,7 +37,7 @@ const flatKeySelectors = <S, P>(
   for (let i = 0; i < keySelectors.length; i += 1) {
     const keySelector = keySelectors[i];
 
-    if ('dependencies' in keySelector && isComposedKeySelector(keySelector)) {
+    if (isComposedKeySelector(keySelector)) {
       result.push(...flatKeySelectors(keySelector.dependencies));
     } else {
       result.push(keySelector);
@@ -72,6 +59,22 @@ const uniqKeySelectors = <S, P>(
       areSelectorsEqual(keySelector, resultKeySelector),
     );
     if (!isKeySelectorAdded) {
+      result.push(keySelector);
+    }
+  }
+
+  return result;
+};
+
+export const excludeDefaultSelectors = <S, P>(
+  keySelectors: (KeySelector<S> | ParametricKeySelector<S, P>)[],
+) => {
+  const result: (KeySelector<S> | ParametricKeySelector<S, P>)[] = [];
+
+  for (let i = 0; i < keySelectors.length; i += 1) {
+    const keySelector = keySelectors[i];
+
+    if (keySelector !== defaultKeySelector) {
       result.push(keySelector);
     }
   }
@@ -110,6 +113,7 @@ export function composingKeySelectorCreator<S, P>({
 
   keySelectors = flatKeySelectors(keySelectors);
   keySelectors = uniqKeySelectors(keySelectors);
+  keySelectors = excludeDefaultSelectors(keySelectors);
 
   if (keySelectors.length === 0) {
     return defaultKeySelector;

@@ -35,7 +35,7 @@ export const TypedocFrame: FunctionComponent<TypedocFrameProps> = ({
   };
 
   const onContentWindowResize = useCallback(() => {
-    setHeight(iframe.current?.contentDocument?.body.scrollHeight);
+    setHeight(iframe.current?.contentDocument?.documentElement.scrollHeight);
   }, [iframe, setHeight]);
 
   useEffect(() => {

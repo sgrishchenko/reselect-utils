@@ -77,7 +77,7 @@ export class TreeCache implements ICacheObject {
     currentNode.selectorFn = selectorFn;
   }
 
-  public remove(key: unknown): void {
+  public remove(key: unknown) {
     const keyPath = normalizeKey(key);
     let currentNode = this.root;
 
@@ -88,12 +88,11 @@ export class TreeCache implements ICacheObject {
       if (cacheResponse instanceof TreeCacheNode) {
         currentNode = cacheResponse;
       } else {
-        return undefined;
+        return;
       }
     }
 
     currentNode.selectorFn = undefined;
-    return undefined;
   }
 
   public isValidCacheKey(key: unknown) {

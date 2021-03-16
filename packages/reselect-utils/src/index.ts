@@ -46,4 +46,4 @@ export { composeKeySelectors } from './composeKeySelectors';
 export { composingKeySelectorCreator } from './composingKeySelectorCreator';
 
 /* Configuration */
-export { setDebugMode, isDebugMode } from './helpers';
+export { setDebugMode, isDebugMode, defaultKeySelector } from './helpers';

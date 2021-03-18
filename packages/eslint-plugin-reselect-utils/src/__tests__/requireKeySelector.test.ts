@@ -1,6 +1,6 @@
 import { stripIndent } from 'common-tags';
-import { createRuleTester } from '../../utils/ruleTester';
-import { Errors, requireKeySelectorRule } from '../requireKeySelector';
+import { createRuleTester } from '../utils/ruleTester';
+import { Errors, requireKeySelectorRule } from '../rules/requireKeySelector';
 
 const ruleTester = createRuleTester();
 

@@ -1,6 +1,6 @@
 import { stripIndent } from 'common-tags';
-import { createRuleTester } from '../../utils/ruleTester';
-import { noDifferentPropsRule, Errors } from '../noDifferentProps';
+import { createRuleTester } from '../utils/ruleTester';
+import { noDifferentPropsRule, Errors } from '../rules/noDifferentProps';
 
 const ruleTester = createRuleTester();
 

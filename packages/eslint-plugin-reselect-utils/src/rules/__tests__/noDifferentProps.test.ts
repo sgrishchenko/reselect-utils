@@ -277,7 +277,7 @@ ruleTester.run(
           ],
           () => 1,
         )({
-          keySelector: prop<{ prop1?: Field | undefined }>().prop1(),
+          keySelector: prop<{ prop1?: Field }>().prop1(),
         });
       `,
         errors: [
@@ -310,7 +310,7 @@ ruleTester.run(
           ],
           () => 1,
         )({
-          keySelector: prop<{ prop1?: number | undefined }>().prop1(),
+          keySelector: prop<{ prop1?: number }>().prop1(),
         });
       `,
         errors: [

@@ -1,5 +1,6 @@
 import ts from 'typescript';
 import { getTypeFromSymbol } from './getTypeFromSymbol';
+import { unknownPropsType } from './getPropSelectorString';
 
 export const arePropsDifferent = (
   selectorProperties: ts.Symbol[],
@@ -17,7 +18,7 @@ export const arePropsDifferent = (
     } = getTypeFromSymbol(selectorProperty, typeChecker);
     const propertyTypeString = propertyType
       ? typeChecker.typeToString(propertyType)
-      : 'any';
+      : unknownPropsType;
 
     return !keySelectorProperties.find((keySelectorProperty) => {
       const {
@@ -26,7 +27,7 @@ export const arePropsDifferent = (
       } = getTypeFromSymbol(keySelectorProperty, typeChecker);
       const keySelectorPropertyTypeString = keySelectorPropertyType
         ? typeChecker.typeToString(keySelectorPropertyType)
-        : 'any';
+        : unknownPropsType;
 
       return (
         selectorProperty.name === keySelectorProperty.name &&

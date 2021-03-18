@@ -34,7 +34,6 @@ export const requireKeySelectorRule = ruleCreator({
       context,
     );
     const typeChecker = program.getTypeChecker();
-    let isAdded = false;
     let reselectUtilsImportNode: TSESTree.ImportDeclaration | undefined;
 
     return {
@@ -71,16 +70,8 @@ export const requireKeySelectorRule = ruleCreator({
                   if (argument.type === AST_NODE_TYPES.ObjectExpression) {
                     const selectorFixer = fixer.insertTextBeforeRange(
                       [argument.range[1] - 1, argument.range[1] - 1],
-                      argument.properties.length === 0
-                        ? defaultKeySelector
-                        : `, ${defaultKeySelector}`,
+                      `\n${defaultKeySelector}\n`,
                     );
-
-                    if (isAdded) {
-                      return selectorFixer;
-                    }
-
-                    isAdded = true;
 
                     if (reselectUtilsImportNode) {
                       const specifiersName = reselectUtilsImportNode.specifiers.map(

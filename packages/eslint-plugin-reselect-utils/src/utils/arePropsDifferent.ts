@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import { getTypeFromSymbol } from './getTypeFromSymbol';
 
 export const arePropsDifferent = (
   selectorProperties: ts.Symbol[],
@@ -10,21 +11,27 @@ export const arePropsDifferent = (
   }
 
   return selectorProperties.some((selectorProperty) => {
-    const propertyType = typeChecker.getTypeOfSymbolAtLocation(
-      selectorProperty,
-      selectorProperty.valueDeclaration,
-    );
+    const {
+      type: propertyType,
+      isOptional: isPropertyOptional,
+    } = getTypeFromSymbol(selectorProperty, typeChecker);
+    const propertyTypeString = propertyType
+      ? typeChecker.typeToString(propertyType)
+      : 'any';
 
     return !keySelectorProperties.find((keySelectorProperty) => {
-      const keySelectorPropertyType = typeChecker.getTypeOfSymbolAtLocation(
-        keySelectorProperty,
-        keySelectorProperty.valueDeclaration,
-      );
+      const {
+        type: keySelectorPropertyType,
+        isOptional: isKeySelectorPropertyOptional,
+      } = getTypeFromSymbol(keySelectorProperty, typeChecker);
+      const keySelectorPropertyTypeString = keySelectorPropertyType
+        ? typeChecker.typeToString(keySelectorPropertyType)
+        : 'any';
 
       return (
         selectorProperty.name === keySelectorProperty.name &&
-        typeChecker.typeToString(propertyType) ===
-          typeChecker.typeToString(keySelectorPropertyType)
+        propertyTypeString === keySelectorPropertyTypeString &&
+        isPropertyOptional === isKeySelectorPropertyOptional
       );
     });
   });

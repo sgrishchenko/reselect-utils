@@ -11,6 +11,9 @@ import { getKeySelectorProps } from '../utils/getKeySelectorProps';
 import { getSelectorCreatorReturnType } from '../utils/getSelectorCreatorReturnType';
 import { getCachedSelectorProps } from '../utils/getCachedSelectorProps';
 import { arePropsDifferent } from '../utils/arePropsDifferent';
+import { getPropSelectorString } from '../utils/getPropSelectorString';
+import { getKeySelectorProperty } from '../utils/getKeySelectorProperty';
+import { getImportFixerForDifferentProp } from '../utils/getImportFixerForDifferentProp';
 
 export enum Errors {
   DifferentProps = 'DifferentProps',
@@ -92,42 +95,27 @@ export const noDifferentPropsRule = ruleCreator({
                   messageId: Errors.DifferentProps,
                   node: callExpression.arguments[0],
                   fix(fixer) {
-                    const propSelectors = cachedSelectorProps
-                      .map((prop) => ({
-                        name: prop.name,
-                        type: typeChecker.typeToString(
-                          typeChecker.getTypeOfSymbolAtLocation(
-                            prop,
-                            prop.valueDeclaration,
-                          ),
-                        ),
-                      }))
-                      .map(
-                        (prop) =>
-                          `prop<{ ${prop.name}: ${prop.type} }>().${prop.name}()`,
-                      );
+                    const propSelectors = cachedSelectorProps.map((prop) =>
+                      getPropSelectorString(prop, typeChecker),
+                    );
 
                     const isComposedSelector = propSelectors.length > 1;
+                    const isDefaultKeySelector = propSelectors.length === 0;
                     const composedPropSelector = isComposedSelector
-                      ? `composeKeySelectors(${propSelectors.join(', ')})`
-                      : propSelectors[0];
+                      ? `composeKeySelectors(\n${propSelectors.join(', \n')}\n)`
+                      : propSelectors[0] ?? 'defaultKeySelector';
                     const resultKeySelector = `keySelector: ${composedPropSelector}`;
                     const argument = callExpression.arguments[0];
 
                     if (argument.type === AST_NODE_TYPES.ObjectExpression) {
-                      const keySelectorNode = argument.properties.find(
-                        (property) => {
-                          if (
-                            property.type === AST_NODE_TYPES.Property &&
-                            property.key.type === AST_NODE_TYPES.Identifier
-                          ) {
-                            return property.key.name === 'keySelector';
-                          }
-                          return false;
-                        },
+                      const keySelectorProperty = getKeySelectorProperty(
+                        argument,
                       );
-                      const selectorFixer = keySelectorNode
-                        ? fixer.replaceText(keySelectorNode, resultKeySelector)
+                      const selectorFixer = keySelectorProperty
+                        ? fixer.replaceText(
+                            keySelectorProperty,
+                            resultKeySelector,
+                          )
                         : // keySelector is added via spread operator we cant modify that object so insert as last property
                           fixer.insertTextBeforeRange(
                             [argument.range[1] - 1, argument.range[1] - 1],
@@ -135,44 +123,14 @@ export const noDifferentPropsRule = ruleCreator({
                               ? `${resultKeySelector}`
                               : `, ${resultKeySelector}`,
                           );
+                      const importFixer = getImportFixerForDifferentProp(
+                        fixer,
+                        reselectUtilsImportNode,
+                        isComposedSelector,
+                        isDefaultKeySelector,
+                      );
 
-                      if (reselectUtilsImportNode) {
-                        const specifiersName = reselectUtilsImportNode.specifiers.map(
-                          (specifier) => specifier.local.name,
-                        );
-                        const isPropMissing = specifiersName.every(
-                          (name) => name !== 'prop',
-                        );
-
-                        if (isPropMissing) {
-                          specifiersName.push('prop');
-                        }
-
-                        const isComposeMissing = specifiersName.every(
-                          (name) => name !== 'composeKeySelectors',
-                        );
-
-                        if (isComposeMissing && isComposedSelector) {
-                          specifiersName.push('composeKeySelectors');
-                        }
-                        const specifiers = specifiersName.join(', ');
-                        return [
-                          selectorFixer,
-                          fixer.replaceText(
-                            reselectUtilsImportNode,
-                            `import {${specifiers}} from 'reselect-utils';`,
-                          ),
-                        ];
-                      }
-
-                      const resultImport = isComposedSelector
-                        ? `import {prop, composeKeySelectors} from 'reselect-utils';`
-                        : `import {prop} from 'reselect-utils';`;
-
-                      return [
-                        selectorFixer,
-                        fixer.insertTextBeforeRange([0, 0], resultImport),
-                      ];
+                      return [selectorFixer, importFixer];
                     }
 
                     return null;

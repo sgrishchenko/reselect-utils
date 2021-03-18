@@ -11,7 +11,7 @@
     "test": "jest",
     "lint": "eslint --ext .js,.ts,.tsx .",
     "format": "prettier --write **/*.{js,ts,tsx,json,md}",
-    "compile": "tsc --noEmit",
+    "compile": "tsc --noEmit -t es2015",
     "clean": "shx rm -rf site",
     "site": "yarn nojekyll && yarn docz:build && yarn storybook:build && yarn typedoc:light && yarn typedoc:dark",
     "nojekyll": "shx mkdir -p site && shx touch site/.nojekyll",

@@ -252,6 +252,41 @@ ruleTester.run(
       {
         code: stripIndent`
         import createCachedSelector from 're-reselect';
+        
+        enum Field {}
+
+        createCachedSelector(
+          [
+            (state: unknown, props: { prop1?: Field }) => props.prop1,
+          ],
+          () => 1,
+        )({
+          keySelector: (state: unknown, props: { prop2?: Field }) => props.prop2,
+        });
+      `,
+        output: stripIndent`
+        import {prop} from 'reselect-utils';import createCachedSelector from 're-reselect';
+
+        enum Field {}
+
+        createCachedSelector(
+          [
+            (state: unknown, props: { prop1?: Field }) => props.prop1,
+          ],
+          () => 1,
+        )({
+          keySelector: prop<{ prop1?: Field }>().prop1(),
+        });
+      `,
+        errors: [
+          {
+            messageId: Errors.DifferentProps,
+          },
+        ],
+      },
+      {
+        code: stripIndent`
+        import createCachedSelector from 're-reselect';
         import {prop} from 'reselect-utils';
         
         enum Field {}

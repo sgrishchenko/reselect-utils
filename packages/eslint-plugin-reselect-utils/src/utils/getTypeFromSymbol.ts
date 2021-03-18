@@ -4,20 +4,6 @@ export const getTypeFromSymbol = (
   symbol: ts.Symbol,
   typeChecker: ts.TypeChecker,
 ) => {
-  if (symbol.valueDeclaration) {
-    const type = typeChecker.getTypeOfSymbolAtLocation(
-      symbol,
-      symbol.valueDeclaration,
-    );
-
-    return {
-      type,
-      isOptional:
-        ts.isPropertySignature(symbol.valueDeclaration) &&
-        symbol.valueDeclaration.questionToken !== undefined,
-    };
-  }
-
   const [declaration] = symbol.getDeclarations() ?? [];
 
   if (declaration) {

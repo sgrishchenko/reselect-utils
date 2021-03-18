@@ -11,10 +11,9 @@ export const createRuleTester = () => {
     },
   });
   const filename = resolve(__dirname, '../../file.ts');
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { run } = tester;
+  const run = tester.run.bind(tester);
   tester.run = (name, rule, { invalid = [], valid = [] }) =>
-    run.call(tester, name, rule, {
+    run(name, rule, {
       invalid: invalid.map((test) => ({ ...test, filename })),
       valid: valid.map((test) =>
         typeof test === 'string'

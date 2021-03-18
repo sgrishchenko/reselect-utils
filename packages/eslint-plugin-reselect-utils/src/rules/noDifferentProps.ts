@@ -3,7 +3,6 @@ import {
   ESLintUtils,
   TSESTree,
 } from '@typescript-eslint/experimental-utils';
-import ts from 'typescript';
 import { ruleCreator } from '../utils/ruleCreator';
 import { getCachedSelectorCreatorOptions } from '../utils/getCachedSelectorCreatorOptions';
 import { getKeySelector } from '../utils/getKeySelectorFromOptions';
@@ -14,6 +13,7 @@ import { arePropsDifferent } from '../utils/arePropsDifferent';
 import { getPropSelectorString } from '../utils/getPropSelectorString';
 import { getKeySelectorProperty } from '../utils/getKeySelectorProperty';
 import { getImportFixerForDifferentProp } from '../utils/getImportFixerForDifferentProp';
+import { isCachedSelectorCreator } from '../utils/isCachedSelectorCreator';
 
 export enum Errors {
   DifferentProps = 'DifferentProps',
@@ -52,91 +52,82 @@ export const noDifferentPropsRule = ruleCreator({
       CallExpression(callExpression) {
         const tsNode = esTreeNodeToTSNodeMap.get(callExpression);
 
-        if (ts.isCallExpression(tsNode.expression)) {
+        if (isCachedSelectorCreator(tsNode.expression)) {
           const expressionName = tsNode.expression.expression.getText();
 
-          if (
-            expressionName === 'createCachedSelector' ||
-            expressionName === 'cachedStruct' ||
-            expressionName === 'cachedSeq'
-          ) {
-            const options = getCachedSelectorCreatorOptions(
-              tsNode,
+          const options = getCachedSelectorCreatorOptions(tsNode, typeChecker);
+          const keySelector = getKeySelector(options);
+
+          const selectorCreatorReturnType = getSelectorCreatorReturnType(
+            expressionName === 'createCachedSelector'
+              ? tsNode.expression
+              : tsNode,
+            typeChecker,
+          );
+
+          if (keySelector && selectorCreatorReturnType) {
+            const keySelectorProps = getKeySelectorProps(
+              keySelector,
               typeChecker,
             );
-            const keySelector = getKeySelector(options);
 
-            const selectorCreatorReturnType = getSelectorCreatorReturnType(
-              expressionName === 'createCachedSelector'
-                ? tsNode.expression
-                : tsNode,
+            const cachedSelectorProps = getCachedSelectorProps(
+              selectorCreatorReturnType,
               typeChecker,
             );
 
-            if (keySelector && selectorCreatorReturnType) {
-              const keySelectorProps = getKeySelectorProps(
-                keySelector,
+            if (
+              arePropsDifferent(
+                cachedSelectorProps,
+                keySelectorProps,
                 typeChecker,
-              );
+              )
+            ) {
+              context.report({
+                messageId: Errors.DifferentProps,
+                node: callExpression.arguments[0],
+                fix(fixer) {
+                  const propSelectors = cachedSelectorProps.map((prop) =>
+                    getPropSelectorString(prop, typeChecker),
+                  );
 
-              const cachedSelectorProps = getCachedSelectorProps(
-                selectorCreatorReturnType,
-                typeChecker,
-              );
+                  const isComposedSelector = propSelectors.length > 1;
+                  const isDefaultKeySelector = propSelectors.length === 0;
+                  const composedPropSelector = isComposedSelector
+                    ? `composeKeySelectors(\n${propSelectors.join(', \n')}\n)`
+                    : propSelectors[0] ?? 'defaultKeySelector';
+                  const resultKeySelector = `keySelector: ${composedPropSelector}`;
+                  const argument = callExpression.arguments[0];
 
-              if (
-                arePropsDifferent(
-                  cachedSelectorProps,
-                  keySelectorProps,
-                  typeChecker,
-                )
-              ) {
-                context.report({
-                  messageId: Errors.DifferentProps,
-                  node: callExpression.arguments[0],
-                  fix(fixer) {
-                    const propSelectors = cachedSelectorProps.map((prop) =>
-                      getPropSelectorString(prop, typeChecker),
+                  if (argument.type === AST_NODE_TYPES.ObjectExpression) {
+                    const keySelectorProperty = getKeySelectorProperty(
+                      argument,
+                    );
+                    const selectorFixer = keySelectorProperty
+                      ? fixer.replaceText(
+                          keySelectorProperty,
+                          resultKeySelector,
+                        )
+                      : // keySelector is added via spread operator we cant modify that object so insert as last property
+                        fixer.insertTextBeforeRange(
+                          [argument.range[1] - 1, argument.range[1] - 1],
+                          argument.properties.length === 0
+                            ? `${resultKeySelector}`
+                            : `, ${resultKeySelector}`,
+                        );
+                    const importFixer = getImportFixerForDifferentProp(
+                      fixer,
+                      reselectUtilsImportNode,
+                      isComposedSelector,
+                      isDefaultKeySelector,
                     );
 
-                    const isComposedSelector = propSelectors.length > 1;
-                    const isDefaultKeySelector = propSelectors.length === 0;
-                    const composedPropSelector = isComposedSelector
-                      ? `composeKeySelectors(\n${propSelectors.join(', \n')}\n)`
-                      : propSelectors[0] ?? 'defaultKeySelector';
-                    const resultKeySelector = `keySelector: ${composedPropSelector}`;
-                    const argument = callExpression.arguments[0];
+                    return [selectorFixer, importFixer];
+                  }
 
-                    if (argument.type === AST_NODE_TYPES.ObjectExpression) {
-                      const keySelectorProperty = getKeySelectorProperty(
-                        argument,
-                      );
-                      const selectorFixer = keySelectorProperty
-                        ? fixer.replaceText(
-                            keySelectorProperty,
-                            resultKeySelector,
-                          )
-                        : // keySelector is added via spread operator we cant modify that object so insert as last property
-                          fixer.insertTextBeforeRange(
-                            [argument.range[1] - 1, argument.range[1] - 1],
-                            argument.properties.length === 0
-                              ? `${resultKeySelector}`
-                              : `, ${resultKeySelector}`,
-                          );
-                      const importFixer = getImportFixerForDifferentProp(
-                        fixer,
-                        reselectUtilsImportNode,
-                        isComposedSelector,
-                        isDefaultKeySelector,
-                      );
-
-                      return [selectorFixer, importFixer];
-                    }
-
-                    return null;
-                  },
-                });
-              }
+                  return null;
+                },
+              });
             }
           }
         }

@@ -3,10 +3,10 @@ import {
   AST_NODE_TYPES,
   TSESTree,
 } from '@typescript-eslint/experimental-utils';
-import ts from 'typescript';
 import { ruleCreator } from '../utils/ruleCreator';
 import { getCachedSelectorCreatorOptions } from '../utils/getCachedSelectorCreatorOptions';
 import { getKeySelector } from '../utils/getKeySelectorFromOptions';
+import { isCachedSelectorCreator } from '../utils/isCachedSelectorCreator';
 
 export enum Errors {
   KeySelectorIsMissing = 'keySelectorIsMissing',
@@ -45,70 +45,59 @@ export const requireKeySelectorRule = ruleCreator({
       CallExpression(callExpression) {
         const tsNode = esTreeNodeToTSNodeMap.get(callExpression);
 
-        if (ts.isCallExpression(tsNode.expression)) {
-          const expressionName = tsNode.expression.expression.getText();
+        if (isCachedSelectorCreator(tsNode.expression)) {
+          const options = getCachedSelectorCreatorOptions(tsNode, typeChecker);
+          const keySelector = getKeySelector(options);
 
-          if (
-            expressionName === 'createCachedSelector' ||
-            expressionName === 'cachedStruct' ||
-            expressionName === 'cachedSeq'
-          ) {
-            const options = getCachedSelectorCreatorOptions(
-              tsNode,
-              typeChecker,
-            );
-            const keySelector = getKeySelector(options);
+          if (keySelector === undefined) {
+            context.report({
+              messageId: Errors.KeySelectorIsMissing,
+              node: callExpression.arguments[0],
+              fix(fixer) {
+                const argument = callExpression.arguments[0];
+                const defaultKeySelector = `keySelector: defaultKeySelector`;
 
-            if (keySelector === undefined) {
-              context.report({
-                messageId: Errors.KeySelectorIsMissing,
-                node: callExpression.arguments[0],
-                fix(fixer) {
-                  const argument = callExpression.arguments[0];
-                  const defaultKeySelector = `keySelector: defaultKeySelector`;
+                if (argument.type === AST_NODE_TYPES.ObjectExpression) {
+                  const selectorFixer = fixer.insertTextBeforeRange(
+                    [argument.range[1] - 1, argument.range[1] - 1],
+                    `\n${defaultKeySelector}\n`,
+                  );
 
-                  if (argument.type === AST_NODE_TYPES.ObjectExpression) {
-                    const selectorFixer = fixer.insertTextBeforeRange(
-                      [argument.range[1] - 1, argument.range[1] - 1],
-                      `\n${defaultKeySelector}\n`,
+                  if (reselectUtilsImportNode) {
+                    const specifiersName = reselectUtilsImportNode.specifiers.map(
+                      (specifier) => specifier.local.name,
+                    );
+                    const isDefaultKeyExist = specifiersName.some(
+                      (name) => name === 'defaultKeySelector',
                     );
 
-                    if (reselectUtilsImportNode) {
-                      const specifiersName = reselectUtilsImportNode.specifiers.map(
-                        (specifier) => specifier.local.name,
-                      );
-                      const isDefaultKeyExist = specifiersName.some(
-                        (name) => name === 'defaultKeySelector',
-                      );
-
-                      if (isDefaultKeyExist) {
-                        return selectorFixer;
-                      }
-
-                      specifiersName.push('defaultKeySelector');
-
-                      const specifiers = specifiersName.join(', ');
-                      return [
-                        selectorFixer,
-                        fixer.replaceText(
-                          reselectUtilsImportNode,
-                          `import {${specifiers}} from 'reselect-utils';`,
-                        ),
-                      ];
+                    if (isDefaultKeyExist) {
+                      return selectorFixer;
                     }
 
+                    specifiersName.push('defaultKeySelector');
+
+                    const specifiers = specifiersName.join(', ');
                     return [
                       selectorFixer,
-                      fixer.insertTextBeforeRange(
-                        [0, 0],
-                        `import {defaultKeySelector} from 'reselect-utils';`,
+                      fixer.replaceText(
+                        reselectUtilsImportNode,
+                        `import {${specifiers}} from 'reselect-utils';`,
                       ),
                     ];
                   }
-                  return null;
-                },
-              });
-            }
+
+                  return [
+                    selectorFixer,
+                    fixer.insertTextBeforeRange(
+                      [0, 0],
+                      `import {defaultKeySelector} from 'reselect-utils';`,
+                    ),
+                  ];
+                }
+                return null;
+              },
+            });
           }
         }
       },

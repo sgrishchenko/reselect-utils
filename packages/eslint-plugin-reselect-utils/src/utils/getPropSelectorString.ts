@@ -1,4 +1,4 @@
-import * as ts from 'typescript';
+import ts from 'typescript';
 import { getTypeFromSymbol } from './getTypeFromSymbol';
 
 export const getPropSelectorString = (

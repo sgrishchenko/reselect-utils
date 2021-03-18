@@ -9,11 +9,12 @@ import { getKeySelector } from '../utils/getKeySelectorFromOptions';
 import { getKeySelectorProps } from '../utils/getKeySelectorProps';
 import { getSelectorCreatorReturnType } from '../utils/getSelectorCreatorReturnType';
 import { getCachedSelectorProps } from '../utils/getCachedSelectorProps';
-import { arePropsDifferent } from '../utils/arePropsDifferent';
+import { areParametersDifferent } from '../utils/areParametersDifferent';
 import { getPropSelectorString } from '../utils/getPropSelectorString';
 import { getKeySelectorProperty } from '../utils/getKeySelectorProperty';
 import { getImportFixerForDifferentProp } from '../utils/getImportFixerForDifferentProp';
 import { isCachedSelectorCreator } from '../utils/isCachedSelectorCreator';
+import { getParametersFromProps } from '../utils/getParametersFromProps';
 
 export enum Errors {
   DifferentProps = 'DifferentProps',
@@ -25,13 +26,13 @@ export const noDifferentPropsRule = ruleCreator({
   meta: {
     docs: {
       category: 'Possible Errors',
-      description: 'Cached selector and key selector must have same props',
+      description: 'Cached selector and key selector must have same props.',
       recommended: 'error',
     },
     fixable: 'code',
     messages: {
       [Errors.DifferentProps]:
-        'Cached selector and key selector must have same props',
+        'Cached selector and key selector must have same props. selector parameters = {{selectorParameters}}, key selector parameters = {{keySelectorParameters}}',
     },
     schema: [],
     type: 'problem',
@@ -76,16 +77,33 @@ export const noDifferentPropsRule = ruleCreator({
               typeChecker,
             );
 
+            const selectorParameters = getParametersFromProps(
+              cachedSelectorProps,
+              typeChecker,
+            );
+            const keySelectorParameters = getParametersFromProps(
+              keySelectorProps,
+              typeChecker,
+            );
+
             if (
-              arePropsDifferent(
-                cachedSelectorProps,
-                keySelectorProps,
-                typeChecker,
-              )
+              areParametersDifferent(selectorParameters, keySelectorParameters)
             ) {
+              const selectorParametersString = selectorParameters
+                .map((prop) => ` ${prop.name}: ${prop.typeString} `)
+                .join(';');
+
+              const keySelectorParametersString = keySelectorParameters
+                .map((prop) => ` ${prop.name}: ${prop.typeString} `)
+                .join(';');
+
               context.report({
                 messageId: Errors.DifferentProps,
                 node: callExpression.arguments[0],
+                data: {
+                  selectorParameters: `{${selectorParametersString}}`,
+                  keySelectorParameters: `{${keySelectorParametersString}}`,
+                },
                 fix(fixer) {
                   const propSelectors = cachedSelectorProps.map((prop) =>
                     getPropSelectorString(prop, typeChecker),

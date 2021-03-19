@@ -1,0 +1,37 @@
+{
+  "name": "eslint-plugin-reselect-utils",
+  "version": "2.0.0-beta.14",
+  "description": "A collection of eslint rules for selectors",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "typings": "lib/index.d.ts",
+  "repository": "git+https://github.com/sgrishchenko/reselect-utils.git",
+  "homepage": "https://sgrishchenko.github.io/reselect-utils/docz",
+  "author": "Sergei Grishchenko",
+  "license": "MIT",
+  "files": [
+    "dist/",
+    "es/",
+    "lib/"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "clean": "rimraf lib es dist",
+    "build:cjs": "tsc --outDir lib -d",
+    "build:es": "tsc --outDir es -m es2015",
+    "build": "yarn clean && yarn build:cjs && yarn build:es"
+  },
+  "dependencies": {
+    "@typescript-eslint/experimental-utils": "^4.17.0"
+  },
+  "peerDependencies": {
+    "@typescript-eslint/parser": "^4.17.0",
+    "typescript": "^4.2.3"
+  },
+  "devDependencies": {
+    "common-tags": "^1.8.0",
+    "re-reselect": "^4.0.0",
+    "reselect": "^4.0.0",
+    "reselect-utils": "2.0.0-beta.14"
+  }
+}

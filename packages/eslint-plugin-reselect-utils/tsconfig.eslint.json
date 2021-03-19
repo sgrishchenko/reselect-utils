@@ -1,8 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "strict": false,
-    "strictFunctionTypes": true
+    "strictNullChecks": false
   },
   "files": ["file.ts"]
 }

@@ -18,13 +18,13 @@ export const requireKeySelectorRule = ruleCreator({
   meta: {
     docs: {
       category: 'Possible Errors',
-      description: 'Cached selector can`t work without key selector',
+      description: 'Cached selector can`t work without key selector.',
       recommended: 'error',
     },
     fixable: 'code',
     messages: {
       [Errors.KeySelectorIsMissing]:
-        'Cached selector can`t work without key selector',
+        'Cached selector can`t work without key selector.',
     },
     schema: [],
     type: 'problem',

@@ -1,7 +1,4 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "strictNullChecks": false
-  },
   "files": ["file.ts"]
 }

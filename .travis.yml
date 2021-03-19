@@ -17,7 +17,7 @@ deploy:
   - provider: script
     script: >-
       yarn config set _authToken $NPM_AUTH_TOKEN &&
-      yarn workspace reselect-utils publish --non-interactive --tag beta
+      yarn workspace reselect-utils publish --non-interactive --tag beta &&
       yarn workspace eslint-plugin-reselect-utils publish --non-interactive --tag beta
     skip_cleanup: true
     on:

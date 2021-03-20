@@ -1,12 +1,12 @@
 import {
   ESLintUtils,
   AST_NODE_TYPES,
-  TSESTree,
 } from '@typescript-eslint/experimental-utils';
 import { ruleCreator } from '../utils/ruleCreator';
 import { getCachedSelectorCreatorOptions } from '../utils/getCachedSelectorCreatorOptions';
 import { getKeySelector } from '../utils/getKeySelectorFromOptions';
 import { isCachedSelectorCreator } from '../utils/isCachedSelectorCreator';
+import { getImportDeclaration } from '../utils/getImportDeclaration';
 
 export enum Errors {
   KeySelectorIsMissing = 'keySelectorIsMissing',
@@ -34,14 +34,8 @@ export const requireKeySelectorRule = ruleCreator({
       context,
     );
     const typeChecker = program.getTypeChecker();
-    let reselectUtilsImportNode: TSESTree.ImportDeclaration | undefined;
 
     return {
-      ImportDeclaration(importDeclaration) {
-        if (importDeclaration.source.value === 'reselect-utils') {
-          reselectUtilsImportNode = importDeclaration;
-        }
-      },
       CallExpression(callExpression) {
         const tsNode = esTreeNodeToTSNodeMap.get(callExpression);
 
@@ -61,6 +55,11 @@ export const requireKeySelectorRule = ruleCreator({
                   const selectorFixer = fixer.insertTextBeforeRange(
                     [argument.range[1] - 1, argument.range[1] - 1],
                     `\n${defaultKeySelector}\n`,
+                  );
+
+                  const reselectUtilsImportNode = getImportDeclaration(
+                    callExpression,
+                    'reselect-utils',
                   );
 
                   if (reselectUtilsImportNode) {

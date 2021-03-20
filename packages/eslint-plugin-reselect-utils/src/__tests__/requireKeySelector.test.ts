@@ -10,11 +10,11 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
       code: stripIndent`
         import createCachedSelector from 're-reselect';
         import {prop} from 'reselect-utils';
-      
+
         const getDefaultOptions = () => ({
           keySelector: () => 1,
         });
-      
+
         createCachedSelector(
           [],
           () => 1,
@@ -79,7 +79,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
           () => 1,
         )({
           ...getDefaultOptions(),
-        
+
         keySelector: defaultKeySelector
         });
       `,
@@ -132,7 +132,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
       output: stripIndent`
         import createCachedSelector from 're-reselect';
         import {prop, defaultKeySelector} from 'reselect-utils';
-        
+
         const getDefaultOptions = () => ({});
 
         createCachedSelector(
@@ -140,7 +140,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
           () => 1,
         )({
           ...getDefaultOptions(),
-        
+
         keySelector: defaultKeySelector
         });
       `,
@@ -167,7 +167,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
       output: stripIndent`
         import createCachedSelector from 're-reselect';
         import {defaultKeySelector} from 'reselect-utils';
-        
+
         const getDefaultOptions = () => ({});
 
         createCachedSelector(
@@ -175,7 +175,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
           () => 1,
         )({
           ...getDefaultOptions(),
-        
+
         keySelector: defaultKeySelector
         });
       `,
@@ -248,7 +248,7 @@ ruleTester.run('require-key-cached-struct-selector', requireKeySelectorRule, {
         cachedStruct({})
         ({
           ...getDefaultOptions(),
-        
+
         keySelector: defaultKeySelector
         });
       `,
@@ -269,7 +269,7 @@ ruleTester.run('require-key-cached-struct-selector', requireKeySelectorRule, {
         import {cachedStruct, defaultKeySelector} from 'reselect-utils';
 
         cachedStruct({})({
-        
+
         keySelector: defaultKeySelector
         });
       `,
@@ -340,7 +340,7 @@ ruleTester.run('require-key-cached-seq-selector', requireKeySelectorRule, {
 
         cachedSeq([])({
         ...getDefaultOptions(),
-        
+
         keySelector: defaultKeySelector
         });
       `,

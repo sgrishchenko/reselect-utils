@@ -11,274 +11,274 @@ ruleTester.run(
     valid: [
       {
         code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop, composeKeySelectors} from 'reselect-utils';;
+          import createCachedSelector from 're-reselect';
+          import {prop, composeKeySelectors} from 'reselect-utils';;
 
-        interface StateA {
-          stateA: {stateAField: number}
-        }
+          interface StateA {
+            stateA: {stateAField: number}
+          }
 
-        const selectorA = createCachedSelector(
-          [
-            (state: StateA) => state.stateA,
-            prop<{ prop1: number }>().prop1(),
-          ],
-          () => 1,
-        )({
-          keySelector: composeKeySelectors(
-            prop<{ prop1: number }>().prop1(),
-          )
-        });
-
-        interface StateB {
-          stateB: {stateBField: number}
-        }
-        const selectorB = createCachedSelector(
-          [
-            (state: StateB) => state.stateB,
-            prop<{ prop1: number }>().prop1(),
-          ],
-          () => 1,
-        )({
-          keySelector: prop<{ prop1: number }>().prop1(),
-        });
-
-        createCachedSelector(
-          [
-            selectorA,
-            selectorB,
-          ],
-          () => 1,
-        )({
-           keySelector: prop<{ prop1: number }>().prop1()
-        });
-      `,
-      },
-      {
-        code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop, composeKeySelectors} from 'reselect-utils';;
-
-        interface StateA {
-          stateA: {stateAField: number}
-        }
-        enum EnumType {
-          Field = 'field'
-        }
-        const selectorA = createCachedSelector(
-          [
-            (state: StateA) => state.stateA,
-            prop<{ prop1: EnumType }>().prop1(),
-          ],
-          () => 1,
-        )({
-          keySelector: composeKeySelectors(
-            prop<{ prop1: EnumType }>().prop1(),
-          )
-        });
-
-        interface StateB {
-          stateB: {stateBField: number}
-        }
-        const selectorB = createCachedSelector(
-          [
-            (state: StateB) => state.stateB,
-            prop<{ prop1: EnumType }>().prop1(),
-          ],
-          () => 1,
-        )({
-          keySelector: prop<{ prop1: EnumType }>().prop1(),
-        });
-
-        createCachedSelector(
-          [
-            selectorA,
-            selectorB,
-          ],
-          () => 1,
-        )({
-           keySelector: prop<{ prop1: EnumType }>().prop1()
-        });
-      `,
-      },
-      {
-        code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
-
-        const getDefaultOptions = () => ({
-          keySelector: prop<{ prop1: number }>().prop1(),
-        });
-
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1: number }) => props.prop1,
-          ],
-          () => 1,
-        )({
-          ...getDefaultOptions(),
-        });
-      `,
-      },
-      {
-        code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop, composeKeySelectors} from 'reselect-utils';;
-
-        const selectorA = createCachedSelector(
-          [
-            prop<{ prop1: number }>().prop1(),
-            prop<{ prop2: string }>().prop2(),
-          ],
-          () => 1,
-        )({
-          keySelector: composeKeySelectors(
-            prop<{ prop1: number }>().prop1(),
-            prop<{ prop2: string }>().prop2(),
-          )
-        });
-
-        const selectorB = createCachedSelector(
-          [
-            prop<{ prop1: number }>().prop1(),
-          ],
-          () => 1,
-        )({
-          keySelector: prop<{ prop1: number }>().prop1(),
-        });
-
-        createCachedSelector(
-          [
-            selectorA,
-            selectorB,
-          ],
-          () => 1,
-        )({
-           keySelector: composeKeySelectors(prop<{ prop1: number }>().prop1(), prop<{ prop2: string }>().prop2())
-        });
-      `,
-      },
-      {
-        code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop, composeKeySelectors} from 'reselect-utils';
-
-        const getDefaultOptions = () => ({
-          keySelector: composeKeySelectors(
-            prop<{ prop1: number }>().prop1(),
-            prop<{ prop2: string }>().prop2(),
-          ),
-        });
-
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1: number }) => props.prop1,
-            (state: unknown, props: { prop2: string }) => props.prop2,
-          ],
-          () => 1,
-        )({
-          ...getDefaultOptions(),
-        });
-      `,
-      },
-      {
-        code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop, defaultKeySelector} from 'reselect-utils';
-
-        const getDefaultOptions = () => ({
-          keySelector: defaultKeySelector,
-        });
-
-        createCachedSelector(
-          [
+          const selectorA = createCachedSelector(
+            [
+              (state: StateA) => state.stateA,
+              prop<{ prop1: number }>().prop1(),
+            ],
             () => 1,
-          ],
-          () => 1,
-        )({
-          ...getDefaultOptions(),
-        });
-      `,
+          )({
+            keySelector: composeKeySelectors(
+              prop<{ prop1: number }>().prop1(),
+            )
+          });
+
+          interface StateB {
+            stateB: {stateBField: number}
+          }
+          const selectorB = createCachedSelector(
+            [
+              (state: StateB) => state.stateB,
+              prop<{ prop1: number }>().prop1(),
+            ],
+            () => 1,
+          )({
+            keySelector: prop<{ prop1: number }>().prop1(),
+          });
+
+          createCachedSelector(
+            [
+              selectorA,
+              selectorB,
+            ],
+            () => 1,
+          )({
+             keySelector: prop<{ prop1: number }>().prop1()
+          });
+        `,
       },
       {
         code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop, composeKeySelectors} from 'reselect-utils';;
+          import createCachedSelector from 're-reselect';
+          import {prop, composeKeySelectors} from 'reselect-utils';;
 
-        interface StateA {
-          stateA: {stateAField: number}
-        }
-        enum EnumType {
-          Field = 'field'
-        }
-        const selectorA = createCachedSelector(
-          [
-            (state: StateA) => state.stateA,
-            prop<{ prop1?: EnumType }>().prop1(),
-          ],
-          () => 1,
-        )({
-          keySelector: composeKeySelectors(
-            prop<{ prop1?: EnumType }>().prop1(),
-          )
-        });
+          interface StateA {
+            stateA: {stateAField: number}
+          }
+          enum EnumType {
+            Field = 'field'
+          }
+          const selectorA = createCachedSelector(
+            [
+              (state: StateA) => state.stateA,
+              prop<{ prop1: EnumType }>().prop1(),
+            ],
+            () => 1,
+          )({
+            keySelector: composeKeySelectors(
+              prop<{ prop1: EnumType }>().prop1(),
+            )
+          });
 
-        interface StateB {
-          stateB: {stateBField: number}
-        }
-        const selectorB = createCachedSelector(
-          [
-            (state: StateB) => state.stateB,
-            prop<{ prop1?: EnumType }>().prop1(),
-          ],
-          () => 1,
-        )({
-          keySelector: prop<{ prop1?: EnumType }>().prop1(),
-        });
+          interface StateB {
+            stateB: {stateBField: number}
+          }
+          const selectorB = createCachedSelector(
+            [
+              (state: StateB) => state.stateB,
+              prop<{ prop1: EnumType }>().prop1(),
+            ],
+            () => 1,
+          )({
+            keySelector: prop<{ prop1: EnumType }>().prop1(),
+          });
 
-        createCachedSelector(
-          [
-            selectorA,
-            selectorB,
-          ],
-          () => 1,
-        )({
-           keySelector: prop<{ prop1?: EnumType }>().prop1()
-        });
-      `,
+          createCachedSelector(
+            [
+              selectorA,
+              selectorB,
+            ],
+            () => 1,
+          )({
+             keySelector: prop<{ prop1: EnumType }>().prop1()
+          });
+        `,
+      },
+      {
+        code: stripIndent`
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
+
+          const getDefaultOptions = () => ({
+            keySelector: prop<{ prop1: number }>().prop1(),
+          });
+
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1: number }) => props.prop1,
+            ],
+            () => 1,
+          )({
+            ...getDefaultOptions(),
+          });
+        `,
+      },
+      {
+        code: stripIndent`
+          import createCachedSelector from 're-reselect';
+          import {prop, composeKeySelectors} from 'reselect-utils';;
+
+          const selectorA = createCachedSelector(
+            [
+              prop<{ prop1: number }>().prop1(),
+              prop<{ prop2: string }>().prop2(),
+            ],
+            () => 1,
+          )({
+            keySelector: composeKeySelectors(
+              prop<{ prop1: number }>().prop1(),
+              prop<{ prop2: string }>().prop2(),
+            )
+          });
+
+          const selectorB = createCachedSelector(
+            [
+              prop<{ prop1: number }>().prop1(),
+            ],
+            () => 1,
+          )({
+            keySelector: prop<{ prop1: number }>().prop1(),
+          });
+
+          createCachedSelector(
+            [
+              selectorA,
+              selectorB,
+            ],
+            () => 1,
+          )({
+             keySelector: composeKeySelectors(prop<{ prop1: number }>().prop1(), prop<{ prop2: string }>().prop2())
+          });
+        `,
+      },
+      {
+        code: stripIndent`
+          import createCachedSelector from 're-reselect';
+          import {prop, composeKeySelectors} from 'reselect-utils';
+
+          const getDefaultOptions = () => ({
+            keySelector: composeKeySelectors(
+              prop<{ prop1: number }>().prop1(),
+              prop<{ prop2: string }>().prop2(),
+            ),
+          });
+
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1: number }) => props.prop1,
+              (state: unknown, props: { prop2: string }) => props.prop2,
+            ],
+            () => 1,
+          )({
+            ...getDefaultOptions(),
+          });
+        `,
+      },
+      {
+        code: stripIndent`
+          import createCachedSelector from 're-reselect';
+          import {prop, defaultKeySelector} from 'reselect-utils';
+
+          const getDefaultOptions = () => ({
+            keySelector: defaultKeySelector,
+          });
+
+          createCachedSelector(
+            [
+              () => 1,
+            ],
+            () => 1,
+          )({
+            ...getDefaultOptions(),
+          });
+        `,
+      },
+      {
+        code: stripIndent`
+          import createCachedSelector from 're-reselect';
+          import {prop, composeKeySelectors} from 'reselect-utils';;
+
+          interface StateA {
+            stateA: {stateAField: number}
+          }
+          enum EnumType {
+            Field = 'field'
+          }
+          const selectorA = createCachedSelector(
+            [
+              (state: StateA) => state.stateA,
+              prop<{ prop1?: EnumType }>().prop1(),
+            ],
+            () => 1,
+          )({
+            keySelector: composeKeySelectors(
+              prop<{ prop1?: EnumType }>().prop1(),
+            )
+          });
+
+          interface StateB {
+            stateB: {stateBField: number}
+          }
+          const selectorB = createCachedSelector(
+            [
+              (state: StateB) => state.stateB,
+              prop<{ prop1?: EnumType }>().prop1(),
+            ],
+            () => 1,
+          )({
+            keySelector: prop<{ prop1?: EnumType }>().prop1(),
+          });
+
+          createCachedSelector(
+            [
+              selectorA,
+              selectorB,
+            ],
+            () => 1,
+          )({
+             keySelector: prop<{ prop1?: EnumType }>().prop1()
+          });
+        `,
       },
     ],
     invalid: [
       {
         code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        
-        enum Field {}
+          import createCachedSelector from 're-reselect';
 
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1?: Field }) => props.prop1,
-          ],
-          () => 1,
-        )({
-          keySelector: (state: unknown, props: { prop2?: Field }) => props.prop2,
-        });
-      `,
+          enum Field {}
+
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1?: Field }) => props.prop1,
+            ],
+            () => 1,
+          )({
+            keySelector: (state: unknown, props: { prop2?: Field }) => props.prop2,
+          });
+        `,
         output: stripIndent`
-        import {prop} from 'reselect-utils';
-        import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
+          import createCachedSelector from 're-reselect';
 
-        enum Field {}
+          enum Field {}
 
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1?: Field }) => props.prop1,
-          ],
-          () => 1,
-        )({
-          keySelector: prop<{ prop1?: Field | undefined }>().prop1(),
-        });
-      `,
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1?: Field }) => props.prop1,
+            ],
+            () => 1,
+          )({
+            keySelector: prop<{ prop1?: Field | undefined }>().prop1(),
+          });
+        `,
         errors: [
           {
             messageId: Errors.DifferentProps,
@@ -287,35 +287,35 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
-        
-        enum Field {}
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
 
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1?: Field }) => props.prop1,
-          ],
-          () => 1,
-        )({
-          keySelector: prop<{ prop1: string }>().prop1(),
-        });
-      `,
+          enum Field {}
+
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1?: Field }) => props.prop1,
+            ],
+            () => 1,
+          )({
+            keySelector: prop<{ prop1: string }>().prop1(),
+          });
+        `,
         output: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
 
-        enum Field {}
+          enum Field {}
 
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1?: Field }) => props.prop1,
-          ],
-          () => 1,
-        )({
-          keySelector: prop<{ prop1?: Field | undefined }>().prop1(),
-        });
-      `,
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1?: Field }) => props.prop1,
+            ],
+            () => 1,
+          )({
+            keySelector: prop<{ prop1?: Field | undefined }>().prop1(),
+          });
+        `,
         errors: [
           {
             messageId: Errors.DifferentProps,
@@ -324,31 +324,31 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
 
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1?: number }) => props.prop1,
-          ],
-          () => 1,
-        )({
-          keySelector: prop<{ prop1: string }>().prop1(),
-        });
-      `,
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1?: number }) => props.prop1,
+            ],
+            () => 1,
+          )({
+            keySelector: prop<{ prop1: string }>().prop1(),
+          });
+        `,
         output: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
 
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1?: number }) => props.prop1,
-          ],
-          () => 1,
-        )({
-          keySelector: prop<{ prop1?: number | undefined }>().prop1(),
-        });
-      `,
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1?: number }) => props.prop1,
+            ],
+            () => 1,
+          )({
+            keySelector: prop<{ prop1?: number | undefined }>().prop1(),
+          });
+        `,
         errors: [
           {
             messageId: Errors.DifferentProps,
@@ -357,138 +357,31 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
 
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1: number }) => props.prop1,
-          ],
-          () => 1,
-        )({
-          keySelector: prop<{ prop1: string }>().prop1(),
-        });
-      `,
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1: number }) => props.prop1,
+            ],
+            () => 1,
+          )({
+            keySelector: prop<{ prop1: string }>().prop1(),
+          });
+        `,
         output: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
 
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1: number }) => props.prop1,
-          ],
-          () => 1,
-        )({
-          keySelector: prop<{ prop1: number }>().prop1(),
-        });
-      `,
-        errors: [
-          {
-            messageId: Errors.DifferentProps,
-          },
-        ],
-      },
-      {
-        code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
-
-        const getDefaultOptions = () => ({
-          keySelector: prop<{ prop1: string }>().prop1(),
-        });
-
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1: number }) => props.prop1,
-          ],
-          () => 1,
-        )({...getDefaultOptions()});
-      `,
-        output: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
-
-        const getDefaultOptions = () => ({
-          keySelector: prop<{ prop1: string }>().prop1(),
-        });
-
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1: number }) => props.prop1,
-          ],
-          () => 1,
-        )({...getDefaultOptions(), keySelector: prop<{ prop1: number }>().prop1()});
-      `,
-        errors: [
-          {
-            messageId: Errors.DifferentProps,
-          },
-        ],
-      },
-      {
-        code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
-
-        const getDefaultOptions = () => ({
-          keySelector: prop<{ prop2: number }>().prop2(),
-        });
-
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1: number }) => props.prop1,
-          ],
-          () => 1,
-        )({...getDefaultOptions()});
-      `,
-        output: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
-
-        const getDefaultOptions = () => ({
-          keySelector: prop<{ prop2: number }>().prop2(),
-        });
-
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1: number }) => props.prop1,
-          ],
-          () => 1,
-        )({...getDefaultOptions(), keySelector: prop<{ prop1: number }>().prop1()});
-      `,
-        errors: [
-          {
-            messageId: Errors.DifferentProps,
-          },
-        ],
-      },
-      {
-        code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
-
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1: number }) => props.prop1,
-          ],
-          () => 1,
-        )({
-            keySelector: prop<{ prop2: number }>().prop2(),
-         });
-      `,
-        output: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
-
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1: number }) => props.prop1,
-          ],
-          () => 1,
-        )({
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1: number }) => props.prop1,
+            ],
+            () => 1,
+          )({
             keySelector: prop<{ prop1: number }>().prop1(),
-         });
-      `,
+          });
+        `,
         errors: [
           {
             messageId: Errors.DifferentProps,
@@ -497,36 +390,143 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
 
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1: number }) => props.prop1,
-            (state: unknown, props: { prop2: number }) => props.prop2,
-          ],
-          () => 1,
-        )({
-            keySelector: prop<{ prop2: number }>().prop2(),
-         });
-      `,
+          const getDefaultOptions = () => ({
+            keySelector: prop<{ prop1: string }>().prop1(),
+          });
+
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1: number }) => props.prop1,
+            ],
+            () => 1,
+          )({...getDefaultOptions()});
+        `,
         output: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop, composeKeySelectors} from 'reselect-utils';
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
 
-        createCachedSelector(
-          [
-            (state: unknown, props: { prop1: number }) => props.prop1,
-            (state: unknown, props: { prop2: number }) => props.prop2,
-          ],
-          () => 1,
-        )({
+          const getDefaultOptions = () => ({
+            keySelector: prop<{ prop1: string }>().prop1(),
+          });
+
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1: number }) => props.prop1,
+            ],
+            () => 1,
+          )({...getDefaultOptions(), keySelector: prop<{ prop1: number }>().prop1()});
+        `,
+        errors: [
+          {
+            messageId: Errors.DifferentProps,
+          },
+        ],
+      },
+      {
+        code: stripIndent`
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
+
+          const getDefaultOptions = () => ({
+            keySelector: prop<{ prop2: number }>().prop2(),
+          });
+
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1: number }) => props.prop1,
+            ],
+            () => 1,
+          )({...getDefaultOptions()});
+        `,
+        output: stripIndent`
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
+
+          const getDefaultOptions = () => ({
+            keySelector: prop<{ prop2: number }>().prop2(),
+          });
+
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1: number }) => props.prop1,
+            ],
+            () => 1,
+          )({...getDefaultOptions(), keySelector: prop<{ prop1: number }>().prop1()});
+        `,
+        errors: [
+          {
+            messageId: Errors.DifferentProps,
+          },
+        ],
+      },
+      {
+        code: stripIndent`
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
+
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1: number }) => props.prop1,
+            ],
+            () => 1,
+          )({
+            keySelector: prop<{ prop2: number }>().prop2(),
+          });
+        `,
+        output: stripIndent`
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
+
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1: number }) => props.prop1,
+            ],
+            () => 1,
+          )({
+            keySelector: prop<{ prop1: number }>().prop1(),
+          });
+        `,
+        errors: [
+          {
+            messageId: Errors.DifferentProps,
+          },
+        ],
+      },
+      {
+        code: stripIndent`
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
+
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1: number }) => props.prop1,
+              (state: unknown, props: { prop2: number }) => props.prop2,
+            ],
+            () => 1,
+          )({
+            keySelector: prop<{ prop2: number }>().prop2(),
+          });
+        `,
+        output: stripIndent`
+          import createCachedSelector from 're-reselect';
+          import {prop, composeKeySelectors} from 'reselect-utils';
+
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1: number }) => props.prop1,
+              (state: unknown, props: { prop2: number }) => props.prop2,
+            ],
+            () => 1,
+          )({
             keySelector: composeKeySelectors(
-        prop<{ prop1: number }>().prop1(), 
-        prop<{ prop2: number }>().prop2()
-        ),
-         });
-      `,
+          prop<{ prop1: number }>().prop1(), 
+          prop<{ prop2: number }>().prop2()
+          ),
+          });
+        `,
         errors: [
           {
             messageId: Errors.DifferentProps,
@@ -535,27 +535,27 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop} from 'reselect-utils';
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
 
-        createCachedSelector(
-          [],
-          () => 1,
-        )({
+          createCachedSelector(
+            [],
+            () => 1,
+          )({
             keySelector: prop<{ prop2: number }>().prop2(),
-         });
-      `,
+          });
+        `,
         output: stripIndent`
-        import createCachedSelector from 're-reselect';
-        import {prop, defaultKeySelector} from 'reselect-utils';
-        
-        createCachedSelector(
-          [],
-          () => 1,
-        )({
+          import createCachedSelector from 're-reselect';
+          import {prop, defaultKeySelector} from 'reselect-utils';
+
+          createCachedSelector(
+            [],
+            () => 1,
+          )({
             keySelector: defaultKeySelector,
-         });
-      `,
+          });
+        `,
         errors: [
           {
             messageId: Errors.DifferentProps,
@@ -724,7 +724,7 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
         const getDefaultOptions = () => ({
           keySelector: prop<{ prop1: number }>().prop1(),
         });
-      
+
         cachedSeq([
           (state: unknown, props: { prop1: number }) => props.prop1,
         ])({
@@ -742,7 +742,7 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
             prop<{ prop2: number }>().prop2(),
           ),
         });
-      
+
         cachedSeq([
           (state: unknown, props: { prop1: number; prop2: number }) => props.prop1,
           (state: unknown, props: { prop1: number; prop2: number }) => props.prop2,
@@ -756,7 +756,7 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
     {
       code: stripIndent`
         import {cachedSeq, prop} from 'reselect-utils';
-      
+
         cachedSeq([
           (state: unknown, props: { prop1: number }) => props.prop1,
         ])({
@@ -765,7 +765,7 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
       `,
       output: stripIndent`
         import {cachedSeq, prop} from 'reselect-utils';
-      
+
         cachedSeq([
           (state: unknown, props: { prop1: number }) => props.prop1,
         ])({
@@ -785,7 +785,7 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
         const getDefaultOptions = () => ({
           keySelector: prop<{ prop1: string }>().prop1(),
         });
-      
+
         cachedSeq([
           (state: unknown, props: { prop1: number }) => props.prop1,
         ])({...getDefaultOptions()});
@@ -796,7 +796,7 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
         const getDefaultOptions = () => ({
           keySelector: prop<{ prop1: string }>().prop1(),
         });
-      
+
         cachedSeq([
           (state: unknown, props: { prop1: number }) => props.prop1,
         ])({...getDefaultOptions(), keySelector: prop<{ prop1: number }>().prop1()});
@@ -814,7 +814,7 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
         const getDefaultOptions = () => ({
           keySelector: prop<{ prop2: number }>().prop2(),
         });
-      
+
         cachedSeq([
           (state: unknown, props: { prop1: number }) => props.prop1,
         ])({...getDefaultOptions()});
@@ -825,7 +825,7 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
         const getDefaultOptions = () => ({
           keySelector: prop<{ prop2: number }>().prop2(),
         });
-      
+
         cachedSeq([
           (state: unknown, props: { prop1: number }) => props.prop1,
         ])({...getDefaultOptions(), keySelector: prop<{ prop1: number }>().prop1()});
@@ -839,7 +839,7 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
     {
       code: stripIndent`
         import {cachedSeq, prop} from 'reselect-utils';
-      
+
         cachedSeq([
           (state: unknown, props: { prop1: number }) => props.prop1,
         ])({
@@ -848,7 +848,7 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
       `,
       output: stripIndent`
         import {cachedSeq, prop} from 'reselect-utils';
-      
+
         cachedSeq([
           (state: unknown, props: { prop1: number }) => props.prop1,
         ])({

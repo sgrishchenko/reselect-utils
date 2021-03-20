@@ -265,7 +265,8 @@ ruleTester.run(
         });
       `,
         output: stripIndent`
-        import {prop} from 'reselect-utils';import createCachedSelector from 're-reselect';
+        import {prop} from 'reselect-utils';
+        import createCachedSelector from 're-reselect';
 
         enum Field {}
 

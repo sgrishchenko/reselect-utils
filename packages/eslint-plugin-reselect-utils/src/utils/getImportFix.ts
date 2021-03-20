@@ -31,5 +31,5 @@ export const getImportFix = (
 
   return importNode
     ? fixer.replaceText(importNode, importText)
-    : fixer.insertTextBeforeRange([0, 0], importText);
+    : fixer.insertTextBeforeRange([0, 0], `${importText}\n`);
 };

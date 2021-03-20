@@ -6,7 +6,7 @@ import { ruleCreator } from '../utils/ruleCreator';
 import { getCachedSelectorCreatorOptions } from '../utils/getCachedSelectorCreatorOptions';
 import { getKeySelector } from '../utils/getKeySelectorFromOptions';
 import { isCachedSelectorCreator } from '../utils/isCachedSelectorCreator';
-import { getImportDeclaration } from '../utils/getImportDeclaration';
+import { getImportFix } from '../utils/getImportFix';
 
 export enum Errors {
   KeySelectorIsMissing = 'keySelectorIsMissing',
@@ -52,47 +52,19 @@ export const requireKeySelectorRule = ruleCreator({
                 const defaultKeySelector = `keySelector: defaultKeySelector`;
 
                 if (argument.type === AST_NODE_TYPES.ObjectExpression) {
-                  const selectorFixer = fixer.insertTextBeforeRange(
+                  const selectorFix = fixer.insertTextBeforeRange(
                     [argument.range[1] - 1, argument.range[1] - 1],
                     `\n${defaultKeySelector}\n`,
                   );
 
-                  const reselectUtilsImportNode = getImportDeclaration(
+                  const importFix = getImportFix(
+                    fixer,
                     callExpression,
                     'reselect-utils',
+                    ['defaultKeySelector'],
                   );
 
-                  if (reselectUtilsImportNode) {
-                    const specifiersName = reselectUtilsImportNode.specifiers.map(
-                      (specifier) => specifier.local.name,
-                    );
-                    const isDefaultKeyExist = specifiersName.some(
-                      (name) => name === 'defaultKeySelector',
-                    );
-
-                    if (isDefaultKeyExist) {
-                      return selectorFixer;
-                    }
-
-                    specifiersName.push('defaultKeySelector');
-
-                    const specifiers = specifiersName.join(', ');
-                    return [
-                      selectorFixer,
-                      fixer.replaceText(
-                        reselectUtilsImportNode,
-                        `import {${specifiers}} from 'reselect-utils';`,
-                      ),
-                    ];
-                  }
-
-                  return [
-                    selectorFixer,
-                    fixer.insertTextBeforeRange(
-                      [0, 0],
-                      `import {defaultKeySelector} from 'reselect-utils';`,
-                    ),
-                  ];
+                  return [selectorFix, importFix];
                 }
                 return null;
               },

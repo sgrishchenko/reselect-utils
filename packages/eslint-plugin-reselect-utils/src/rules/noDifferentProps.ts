@@ -1,7 +1,6 @@
 import {
   AST_NODE_TYPES,
   ESLintUtils,
-  TSESTree,
 } from '@typescript-eslint/experimental-utils';
 import { ruleCreator } from '../utils/ruleCreator';
 import { getCachedSelectorCreatorOptions } from '../utils/getCachedSelectorCreatorOptions';
@@ -12,9 +11,9 @@ import { getCachedSelectorProps } from '../utils/getCachedSelectorProps';
 import { areParametersDifferent } from '../utils/areParametersDifferent';
 import { getPropSelectorString } from '../utils/getPropSelectorString';
 import { getKeySelectorProperty } from '../utils/getKeySelectorProperty';
-import { getImportFixerForDifferentProp } from '../utils/getImportFixerForDifferentProp';
 import { isCachedSelectorCreator } from '../utils/isCachedSelectorCreator';
 import { getParametersFromProps } from '../utils/getParametersFromProps';
+import { getImportFix } from '../utils/getImportFix';
 
 export enum Errors {
   DifferentProps = 'DifferentProps',
@@ -42,14 +41,8 @@ export const noDifferentPropsRule = ruleCreator({
       context,
     );
     const typeChecker = program.getTypeChecker();
-    let reselectUtilsImportNode: TSESTree.ImportDeclaration | undefined;
 
     return {
-      ImportDeclaration(importDeclaration) {
-        if (importDeclaration.source.value === 'reselect-utils') {
-          reselectUtilsImportNode = importDeclaration;
-        }
-      },
       CallExpression(callExpression) {
         const tsNode = esTreeNodeToTSNodeMap.get(callExpression);
 
@@ -121,7 +114,7 @@ export const noDifferentPropsRule = ruleCreator({
                     const keySelectorProperty = getKeySelectorProperty(
                       argument,
                     );
-                    const selectorFixer = keySelectorProperty
+                    const selectorFix = keySelectorProperty
                       ? fixer.replaceText(
                           keySelectorProperty,
                           resultKeySelector,
@@ -133,14 +126,23 @@ export const noDifferentPropsRule = ruleCreator({
                             ? `${resultKeySelector}`
                             : `, ${resultKeySelector}`,
                         );
-                    const importFixer = getImportFixerForDifferentProp(
+
+                    const specifierNames = ['prop'];
+                    if (isComposedSelector) {
+                      specifierNames.push('composeKeySelectors');
+                    }
+                    if (isDefaultKeySelector) {
+                      specifierNames.push('defaultKeySelector');
+                    }
+
+                    const importFix = getImportFix(
                       fixer,
-                      reselectUtilsImportNode,
-                      isComposedSelector,
-                      isDefaultKeySelector,
+                      callExpression,
+                      'reselect-utils',
+                      specifierNames,
                     );
 
-                    return [selectorFixer, importFixer];
+                    return [selectorFix, importFix];
                   }
 
                   return null;

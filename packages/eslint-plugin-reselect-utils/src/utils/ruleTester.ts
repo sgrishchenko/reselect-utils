@@ -1,18 +1,24 @@
-import { join, resolve } from 'path';
+import { resolve } from 'path';
 import { TSESLint } from '@typescript-eslint/experimental-utils';
 
 export const createRuleTester = () => {
+  const parser = require.resolve('@typescript-eslint/parser');
+  const project = resolve(__dirname, '../../tsconfig.eslint.json');
+  const filename = resolve(__dirname, '../../file.ts');
+
   const tester = new TSESLint.RuleTester({
-    parser: require.resolve('@typescript-eslint/parser'),
+    parser,
     parserOptions: {
       ecmaVersion: 2020,
-      project: join(__dirname, '../../tsconfig.eslint.json'),
+      project,
       sourceType: 'module',
     },
   });
-  const filename = resolve(__dirname, '../../file.ts');
+
   const run = tester.run.bind(tester);
-  tester.run = (name, rule, { invalid = [], valid = [] }) =>
+  tester.run = (name, rule, tests) => {
+    const { invalid = [], valid = [] } = tests;
+
     run(name, rule, {
       invalid: invalid.map((test) => ({ ...test, filename })),
       valid: valid.map((test) =>
@@ -21,6 +27,7 @@ export const createRuleTester = () => {
           : { ...test, filename },
       ),
     });
+  };
 
   return tester;
 };

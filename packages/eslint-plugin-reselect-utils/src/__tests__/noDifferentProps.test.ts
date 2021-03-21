@@ -12,7 +12,7 @@ ruleTester.run(
       {
         code: stripIndent`
           import createCachedSelector from 're-reselect';
-          import {prop, composeKeySelectors} from 'reselect-utils';;
+          import {prop, composeKeySelectors} from 'reselect-utils';
 
           interface StateA {
             stateA: {stateAField: number}
@@ -57,7 +57,7 @@ ruleTester.run(
       {
         code: stripIndent`
           import createCachedSelector from 're-reselect';
-          import {prop, composeKeySelectors} from 'reselect-utils';;
+          import {prop, composeKeySelectors} from 'reselect-utils';
 
           interface StateA {
             stateA: {stateAField: number}
@@ -123,7 +123,7 @@ ruleTester.run(
       {
         code: stripIndent`
           import createCachedSelector from 're-reselect';
-          import {prop, composeKeySelectors} from 'reselect-utils';;
+          import {prop, composeKeySelectors} from 'reselect-utils';
 
           const selectorA = createCachedSelector(
             [
@@ -203,7 +203,7 @@ ruleTester.run(
       {
         code: stripIndent`
           import createCachedSelector from 're-reselect';
-          import {prop, composeKeySelectors} from 'reselect-utils';;
+          import {prop, composeKeySelectors} from 'reselect-utils';
 
           interface StateA {
             stateA: {stateAField: number}

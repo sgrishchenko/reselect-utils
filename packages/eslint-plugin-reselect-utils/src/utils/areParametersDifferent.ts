@@ -1,14 +1,8 @@
+import { ParameterInfo } from './getParametersFromProps';
+
 export const areParametersDifferent = (
-  selectorParameters: {
-    name: string;
-    typeString: string;
-    isOptional: boolean;
-  }[],
-  keySelectorParameters: {
-    name: string;
-    typeString: string;
-    isOptional: boolean;
-  }[],
+  selectorParameters: ParameterInfo[],
+  keySelectorParameters: ParameterInfo[],
 ) => {
   if (selectorParameters.length !== keySelectorParameters.length) {
     return true;

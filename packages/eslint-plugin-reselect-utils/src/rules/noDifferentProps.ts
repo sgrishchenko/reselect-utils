@@ -6,7 +6,7 @@ import { ruleCreator } from '../utils/ruleCreator';
 import { getCachedSelectorCreatorOptions } from '../utils/getCachedSelectorCreatorOptions';
 import { getKeySelector } from '../utils/getKeySelector';
 import { areParametersDifferent } from '../utils/areParametersDifferent';
-import { getPropSelectorString } from '../utils/getPropSelectorString';
+import { getPropSelectorText } from '../utils/getPropSelectorText';
 import { getKeySelectorProperty } from '../utils/getKeySelectorProperty';
 import { isCachedSelectorCreator } from '../utils/isCachedSelectorCreator';
 import { getParametersFromProps } from '../utils/getParametersFromProps';
@@ -92,8 +92,8 @@ export const noDifferentPropsRule = ruleCreator({
                   keySelectorParameters: `{${keySelectorParametersString}}`,
                 },
                 fix(fixer) {
-                  const propSelectors = cachedSelectorProps.map((prop) =>
-                    getPropSelectorString(prop, typeChecker),
+                  const propSelectors = selectorParameters.map(
+                    getPropSelectorText,
                   );
 
                   const isComposedSelector = propSelectors.length > 1;

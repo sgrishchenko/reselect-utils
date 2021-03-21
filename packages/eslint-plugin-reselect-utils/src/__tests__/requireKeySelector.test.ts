@@ -79,7 +79,6 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
           () => 1,
         )({
           ...getDefaultOptions(),
-
         keySelector: defaultKeySelector
         });
       `,
@@ -140,7 +139,6 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
           () => 1,
         )({
           ...getDefaultOptions(),
-
         keySelector: defaultKeySelector
         });
       `,
@@ -175,7 +173,6 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
           () => 1,
         )({
           ...getDefaultOptions(),
-
         keySelector: defaultKeySelector
         });
       `,
@@ -248,7 +245,6 @@ ruleTester.run('require-key-cached-struct-selector', requireKeySelectorRule, {
         cachedStruct({})
         ({
           ...getDefaultOptions(),
-
         keySelector: defaultKeySelector
         });
       `,
@@ -269,7 +265,6 @@ ruleTester.run('require-key-cached-struct-selector', requireKeySelectorRule, {
         import {cachedStruct, defaultKeySelector} from 'reselect-utils';
 
         cachedStruct({})({
-
         keySelector: defaultKeySelector
         });
       `,
@@ -340,7 +335,6 @@ ruleTester.run('require-key-cached-seq-selector', requireKeySelectorRule, {
 
         cachedSeq([])({
         ...getDefaultOptions(),
-
         keySelector: defaultKeySelector
         });
       `,

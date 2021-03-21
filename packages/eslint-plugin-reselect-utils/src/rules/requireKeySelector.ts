@@ -65,6 +65,7 @@ export const requireKeySelectorRule = ruleCreator({
                   const keySelectorFix = getKeySelectorFix(
                     fixer,
                     argument,
+                    sourceCode,
                     defaultKeySelector,
                   );
 

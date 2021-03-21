@@ -115,6 +115,7 @@ export const noDifferentPropsRule = ruleCreator({
                     const keySelectorFix = getKeySelectorFix(
                       fixer,
                       argument,
+                      sourceCode,
                       composedPropSelector,
                     );
 

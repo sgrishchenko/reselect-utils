@@ -421,7 +421,6 @@ ruleTester.run(
             () => 1,
           )({
             ...getDefaultOptions(),
-          
           keySelector: prop<{ prop1: number }>().prop1()
           });
         `,
@@ -464,7 +463,6 @@ ruleTester.run(
             () => 1,
           )({
             ...getDefaultOptions(),
-          
           keySelector: prop<{ prop1: number }>().prop1()
           });
         `,
@@ -666,7 +664,6 @@ ruleTester.run('no-different-props-cached-struct', noDifferentPropsRule, {
           prop1: (state: unknown, props: { prop1: number }) => props.prop1,
         })({
           ...getDefaultOptions(),
-        
         keySelector: prop<{ prop1: number }>().prop1()
         });
       `,
@@ -701,7 +698,6 @@ ruleTester.run('no-different-props-cached-struct', noDifferentPropsRule, {
           prop1: (state: unknown, props: { prop1: number }) => props.prop1,
         })({
           ...getDefaultOptions(),
-        
         keySelector: prop<{ prop1: number }>().prop1()
         });
       `,
@@ -827,7 +823,6 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
           (state: unknown, props: { prop1: number }) => props.prop1,
         ])({
           ...getDefaultOptions(),
-        
         keySelector: prop<{ prop1: number }>().prop1()
         });
       `,
@@ -862,7 +857,6 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
           (state: unknown, props: { prop1: number }) => props.prop1,
         ])({
           ...getDefaultOptions(),
-        
         keySelector: prop<{ prop1: number }>().prop1()
         });
       `,

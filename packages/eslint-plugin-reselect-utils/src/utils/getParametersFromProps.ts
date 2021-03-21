@@ -1,6 +1,6 @@
 import ts from 'typescript';
 import { getTypeFromSymbol } from './getTypeFromSymbol';
-import { unknownPropsType } from './getPropSelectorString';
+import { unknownPropType } from './getPropSelectorString';
 
 export const getParametersFromProps = (
   props: ts.Symbol[],
@@ -8,7 +8,7 @@ export const getParametersFromProps = (
 ) =>
   props.map((prop) => {
     const { type, isOptional } = getTypeFromSymbol(prop, typeChecker);
-    const typeString = type ? typeChecker.typeToString(type) : unknownPropsType;
+    const typeString = type ? typeChecker.typeToString(type) : unknownPropType;
 
     return {
       name: prop.name,

@@ -4,7 +4,7 @@ import {
 } from '@typescript-eslint/experimental-utils';
 import { ruleCreator } from '../utils/ruleCreator';
 import { getCachedSelectorCreatorOptions } from '../utils/getCachedSelectorCreatorOptions';
-import { getKeySelector } from '../utils/getKeySelectorFromOptions';
+import { getKeySelector } from '../utils/getKeySelector';
 import { isCachedSelectorCreator } from '../utils/isCachedSelectorCreator';
 import { getImportFix } from '../utils/getImportFix';
 
@@ -39,7 +39,7 @@ export const requireKeySelectorRule = ruleCreator({
       CallExpression(callExpression) {
         const tsNode = esTreeNodeToTSNodeMap.get(callExpression);
 
-        if (isCachedSelectorCreator(tsNode.expression)) {
+        if (isCachedSelectorCreator(tsNode)) {
           const options = getCachedSelectorCreatorOptions(tsNode, typeChecker);
           const keySelector = getKeySelector(options);
 

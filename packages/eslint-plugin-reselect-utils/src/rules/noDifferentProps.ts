@@ -4,16 +4,14 @@ import {
 } from '@typescript-eslint/experimental-utils';
 import { ruleCreator } from '../utils/ruleCreator';
 import { getCachedSelectorCreatorOptions } from '../utils/getCachedSelectorCreatorOptions';
-import { getKeySelector } from '../utils/getKeySelectorFromOptions';
-import { getKeySelectorProps } from '../utils/getKeySelectorProps';
-import { getSelectorCreatorReturnType } from '../utils/getSelectorCreatorReturnType';
-import { getCachedSelectorProps } from '../utils/getCachedSelectorProps';
+import { getKeySelector } from '../utils/getKeySelector';
 import { areParametersDifferent } from '../utils/areParametersDifferent';
 import { getPropSelectorString } from '../utils/getPropSelectorString';
 import { getKeySelectorProperty } from '../utils/getKeySelectorProperty';
 import { isCachedSelectorCreator } from '../utils/isCachedSelectorCreator';
 import { getParametersFromProps } from '../utils/getParametersFromProps';
 import { getImportFix } from '../utils/getImportFix';
+import { getSelectorProps } from '../utils/getSelectorProps';
 
 export enum Errors {
   DifferentProps = 'DifferentProps',
@@ -46,27 +44,23 @@ export const noDifferentPropsRule = ruleCreator({
       CallExpression(callExpression) {
         const tsNode = esTreeNodeToTSNodeMap.get(callExpression);
 
-        if (isCachedSelectorCreator(tsNode.expression)) {
-          const expressionName = tsNode.expression.expression.getText();
-
+        if (isCachedSelectorCreator(tsNode)) {
           const options = getCachedSelectorCreatorOptions(tsNode, typeChecker);
           const keySelector = getKeySelector(options);
 
-          const selectorCreatorReturnType = getSelectorCreatorReturnType(
-            expressionName === 'createCachedSelector'
-              ? tsNode.expression
-              : tsNode,
-            typeChecker,
-          );
-
-          if (keySelector && selectorCreatorReturnType) {
-            const keySelectorProps = getKeySelectorProps(
+          if (keySelector) {
+            const keySelectorType = typeChecker.getTypeOfSymbolAtLocation(
               keySelector,
+              keySelector.valueDeclaration,
+            );
+            const cachedSelectorType = typeChecker.getTypeAtLocation(tsNode);
+
+            const keySelectorProps = getSelectorProps(
+              keySelectorType,
               typeChecker,
             );
-
-            const cachedSelectorProps = getCachedSelectorProps(
-              selectorCreatorReturnType,
+            const cachedSelectorProps = getSelectorProps(
+              cachedSelectorType,
               typeChecker,
             );
 

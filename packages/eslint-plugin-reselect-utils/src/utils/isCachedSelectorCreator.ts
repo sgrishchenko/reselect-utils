@@ -8,11 +8,11 @@ const cachedSelectorCreators = [
   'createCachedSequenceSelector',
 ];
 
-export const isCachedSelectorCreator = (
-  expression: ts.Expression,
-): expression is ts.CallExpression => {
-  if (ts.isCallExpression(expression)) {
-    const expressionName = expression.expression.getText();
+export const isCachedSelectorCreator = (callExpression: ts.CallExpression) => {
+  const leftHandSideExpression = callExpression.expression;
+
+  if (ts.isCallExpression(leftHandSideExpression)) {
+    const expressionName = leftHandSideExpression.expression.getText();
 
     return cachedSelectorCreators.includes(expressionName);
   }

@@ -7,6 +7,8 @@ import { getCachedSelectorCreatorOptions } from '../utils/getCachedSelectorCreat
 import { getKeySelector } from '../utils/getKeySelector';
 import { isCachedSelectorCreator } from '../utils/isCachedSelectorCreator';
 import { getImportFix } from '../utils/getImportFix';
+import { getCommaTokenFix } from '../utils/getCommaTokenFix';
+import { getKeySelectorFix } from '../utils/getKeySelectorFix';
 
 export enum Errors {
   KeySelectorIsMissing = 'keySelectorIsMissing',
@@ -30,6 +32,7 @@ export const requireKeySelectorRule = ruleCreator({
     type: 'problem',
   },
   create: (context) => {
+    const sourceCode = context.getSourceCode();
     const { esTreeNodeToTSNodeMap, program } = ESLintUtils.getParserServices(
       context,
     );
@@ -49,12 +52,20 @@ export const requireKeySelectorRule = ruleCreator({
               node: callExpression.arguments[0],
               fix(fixer) {
                 const argument = callExpression.arguments[0];
-                const defaultKeySelector = `keySelector: defaultKeySelector`;
+
+                const defaultKeySelector = `defaultKeySelector`;
 
                 if (argument.type === AST_NODE_TYPES.ObjectExpression) {
-                  const selectorFix = fixer.insertTextBeforeRange(
-                    [argument.range[1] - 1, argument.range[1] - 1],
-                    `\n${defaultKeySelector}\n`,
+                  const commaTokenFix = getCommaTokenFix(
+                    fixer,
+                    argument,
+                    sourceCode,
+                  );
+
+                  const keySelectorFix = getKeySelectorFix(
+                    fixer,
+                    argument,
+                    defaultKeySelector,
                   );
 
                   const importFix = getImportFix(
@@ -64,7 +75,7 @@ export const requireKeySelectorRule = ruleCreator({
                     ['defaultKeySelector'],
                   );
 
-                  return [selectorFix, importFix];
+                  return [commaTokenFix, keySelectorFix, importFix];
                 }
                 return null;
               },

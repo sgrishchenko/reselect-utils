@@ -402,7 +402,9 @@ ruleTester.run(
               (state: unknown, props: { prop1: number }) => props.prop1,
             ],
             () => 1,
-          )({...getDefaultOptions()});
+          )({
+            ...getDefaultOptions()
+          });
         `,
         output: stripIndent`
           import createCachedSelector from 're-reselect';
@@ -417,7 +419,11 @@ ruleTester.run(
               (state: unknown, props: { prop1: number }) => props.prop1,
             ],
             () => 1,
-          )({...getDefaultOptions(), keySelector: prop<{ prop1: number }>().prop1()});
+          )({
+            ...getDefaultOptions(),
+          
+          keySelector: prop<{ prop1: number }>().prop1()
+          });
         `,
         errors: [
           {
@@ -439,7 +445,9 @@ ruleTester.run(
               (state: unknown, props: { prop1: number }) => props.prop1,
             ],
             () => 1,
-          )({...getDefaultOptions()});
+          )({
+            ...getDefaultOptions()
+          });
         `,
         output: stripIndent`
           import createCachedSelector from 're-reselect';
@@ -454,7 +462,11 @@ ruleTester.run(
               (state: unknown, props: { prop1: number }) => props.prop1,
             ],
             () => 1,
-          )({...getDefaultOptions(), keySelector: prop<{ prop1: number }>().prop1()});
+          )({
+            ...getDefaultOptions(),
+          
+          keySelector: prop<{ prop1: number }>().prop1()
+          });
         `,
         errors: [
           {
@@ -639,7 +651,9 @@ ruleTester.run('no-different-props-cached-struct', noDifferentPropsRule, {
 
         cachedStruct({
           prop1: (state: unknown, props: { prop1: number }) => props.prop1,
-        })({...getDefaultOptions()});
+        })({
+          ...getDefaultOptions()
+        });
       `,
       output: stripIndent`
         import {cachedStruct, prop} from 'reselect-utils';
@@ -650,7 +664,11 @@ ruleTester.run('no-different-props-cached-struct', noDifferentPropsRule, {
 
         cachedStruct({
           prop1: (state: unknown, props: { prop1: number }) => props.prop1,
-        })({...getDefaultOptions(), keySelector: prop<{ prop1: number }>().prop1()});
+        })({
+          ...getDefaultOptions(),
+        
+        keySelector: prop<{ prop1: number }>().prop1()
+        });
       `,
       errors: [
         {
@@ -668,7 +686,9 @@ ruleTester.run('no-different-props-cached-struct', noDifferentPropsRule, {
 
         cachedStruct({
           prop1: (state: unknown, props: { prop1: number }) => props.prop1,
-        })({...getDefaultOptions()});
+        })({
+          ...getDefaultOptions()
+        });
       `,
       output: stripIndent`
         import {cachedStruct, prop} from 'reselect-utils';
@@ -679,7 +699,11 @@ ruleTester.run('no-different-props-cached-struct', noDifferentPropsRule, {
 
         cachedStruct({
           prop1: (state: unknown, props: { prop1: number }) => props.prop1,
-        })({...getDefaultOptions(), keySelector: prop<{ prop1: number }>().prop1()});
+        })({
+          ...getDefaultOptions(),
+        
+        keySelector: prop<{ prop1: number }>().prop1()
+        });
       `,
       errors: [
         {
@@ -788,7 +812,9 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
 
         cachedSeq([
           (state: unknown, props: { prop1: number }) => props.prop1,
-        ])({...getDefaultOptions()});
+        ])({
+          ...getDefaultOptions()
+        });
       `,
       output: stripIndent`
         import {cachedSeq, prop} from 'reselect-utils';
@@ -799,7 +825,11 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
 
         cachedSeq([
           (state: unknown, props: { prop1: number }) => props.prop1,
-        ])({...getDefaultOptions(), keySelector: prop<{ prop1: number }>().prop1()});
+        ])({
+          ...getDefaultOptions(),
+        
+        keySelector: prop<{ prop1: number }>().prop1()
+        });
       `,
       errors: [
         {
@@ -817,7 +847,9 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
 
         cachedSeq([
           (state: unknown, props: { prop1: number }) => props.prop1,
-        ])({...getDefaultOptions()});
+        ])({
+          ...getDefaultOptions()
+        });
       `,
       output: stripIndent`
         import {cachedSeq, prop} from 'reselect-utils';
@@ -828,7 +860,11 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
 
         cachedSeq([
           (state: unknown, props: { prop1: number }) => props.prop1,
-        ])({...getDefaultOptions(), keySelector: prop<{ prop1: number }>().prop1()});
+        ])({
+          ...getDefaultOptions(),
+        
+        keySelector: prop<{ prop1: number }>().prop1()
+        });
       `,
       errors: [
         {

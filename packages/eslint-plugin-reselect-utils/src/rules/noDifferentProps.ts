@@ -7,11 +7,12 @@ import { getCachedSelectorCreatorOptions } from '../utils/getCachedSelectorCreat
 import { getKeySelector } from '../utils/getKeySelector';
 import { areParametersDifferent } from '../utils/areParametersDifferent';
 import { getPropSelectorText } from '../utils/getPropSelectorText';
-import { getKeySelectorProperty } from '../utils/getKeySelectorProperty';
 import { isCachedSelectorCreator } from '../utils/isCachedSelectorCreator';
 import { getParametersFromProps } from '../utils/getParametersFromProps';
 import { getImportFix } from '../utils/getImportFix';
 import { getSelectorProps } from '../utils/getSelectorProps';
+import { getCommaTokenFix } from '../utils/getCommaTokenFix';
+import { getKeySelectorFix } from '../utils/getKeySelectorFix';
 
 export enum Errors {
   DifferentProps = 'DifferentProps',
@@ -35,6 +36,7 @@ export const noDifferentPropsRule = ruleCreator({
     type: 'problem',
   },
   create: (context) => {
+    const sourceCode = context.getSourceCode();
     const { esTreeNodeToTSNodeMap, program } = ESLintUtils.getParserServices(
       context,
     );
@@ -92,34 +94,29 @@ export const noDifferentPropsRule = ruleCreator({
                   keySelectorParameters: `{${keySelectorParametersString}}`,
                 },
                 fix(fixer) {
+                  const argument = callExpression.arguments[0];
+
                   const propSelectors = selectorParameters.map(
                     getPropSelectorText,
                   );
-
                   const isComposedSelector = propSelectors.length > 1;
                   const isDefaultKeySelector = propSelectors.length === 0;
                   const composedPropSelector = isComposedSelector
                     ? `composeKeySelectors(\n${propSelectors.join(', \n')}\n)`
                     : propSelectors[0] ?? 'defaultKeySelector';
-                  const resultKeySelector = `keySelector: ${composedPropSelector}`;
-                  const argument = callExpression.arguments[0];
 
                   if (argument.type === AST_NODE_TYPES.ObjectExpression) {
-                    const keySelectorProperty = getKeySelectorProperty(
+                    const commaTokenFix = getCommaTokenFix(
+                      fixer,
                       argument,
+                      sourceCode,
                     );
-                    const selectorFix = keySelectorProperty
-                      ? fixer.replaceText(
-                          keySelectorProperty,
-                          resultKeySelector,
-                        )
-                      : // keySelector is added via spread operator we cant modify that object so insert as last property
-                        fixer.insertTextBeforeRange(
-                          [argument.range[1] - 1, argument.range[1] - 1],
-                          argument.properties.length === 0
-                            ? `${resultKeySelector}`
-                            : `, ${resultKeySelector}`,
-                        );
+
+                    const keySelectorFix = getKeySelectorFix(
+                      fixer,
+                      argument,
+                      composedPropSelector,
+                    );
 
                     const specifierNames = ['prop'];
                     if (isComposedSelector) {
@@ -136,7 +133,7 @@ export const noDifferentPropsRule = ruleCreator({
                       specifierNames,
                     );
 
-                    return [selectorFix, importFix];
+                    return [commaTokenFix, keySelectorFix, importFix];
                   }
 
                   return null;

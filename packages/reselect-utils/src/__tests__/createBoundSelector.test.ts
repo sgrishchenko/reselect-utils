@@ -5,10 +5,8 @@ import { createStructuredSelector } from '../createStructuredSelector';
 import { NamedParametricSelector } from '../types';
 import { defaultKeySelector, isCachedSelector } from '../helpers';
 import { createPropSelector } from '../createPropSelector';
-import {
-  composeKeySelectors,
-  isComposedKeySelector,
-} from '../composeKeySelectors';
+import { isComposedKeySelector } from '../createKeySelectorComposer';
+import { stringComposeKeySelectors } from '../stringComposeKeySelectors';
 
 describe('createBoundSelector', () => {
   const personSelector = (state: State, props: { personId: number }) =>
@@ -206,7 +204,7 @@ describe('createBoundSelector', () => {
       }>().value4();
 
       const selector = createCachedSelector([], () => {})({
-        keySelector: composeKeySelectors(
+        keySelector: stringComposeKeySelectors(
           firstPropSelector,
           secondPropSelector,
           thirdPropSelector,
@@ -241,7 +239,10 @@ describe('createBoundSelector', () => {
     }>().value2();
 
     const selector = createCachedSelector([], () => {})({
-      keySelector: composeKeySelectors(firstPropSelector, secondPropSelector),
+      keySelector: stringComposeKeySelectors(
+        firstPropSelector,
+        secondPropSelector,
+      ),
     });
 
     const boundSelector = createBoundSelector(selector, {
@@ -265,7 +266,7 @@ describe('createBoundSelector', () => {
     }>().value2();
 
     const selector = createCachedSelector([], () => {})({
-      keySelector: composeKeySelectors(
+      keySelector: stringComposeKeySelectors(
         firstPropSelector,
         secondPropSelector,
         defaultKeySelector,
@@ -297,7 +298,10 @@ describe('createBoundSelector', () => {
     }>().value2();
 
     const selector = createCachedSelector([], () => {})({
-      keySelector: composeKeySelectors(firstPropSelector, secondPropSelector),
+      keySelector: stringComposeKeySelectors(
+        firstPropSelector,
+        secondPropSelector,
+      ),
     });
 
     const boundSelector = createBoundSelector(selector, {
@@ -321,7 +325,7 @@ describe('createBoundSelector', () => {
     const thirdPropSelector = createPropSelector<{ value3: number }>().value3();
 
     const selector = createCachedSelector([], () => {})({
-      keySelector: composeKeySelectors(
+      keySelector: stringComposeKeySelectors(
         firstPropSelector,
         secondPropSelector,
         thirdPropSelector,
@@ -353,7 +357,7 @@ describe('createBoundSelector', () => {
       [firstPropSelector, secondPropSelector, thirdPropSelector],
       () => {},
     )({
-      keySelector: composeKeySelectors(
+      keySelector: stringComposeKeySelectors(
         firstPropSelector,
         secondPropSelector,
         thirdPropSelector,

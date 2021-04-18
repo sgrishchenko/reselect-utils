@@ -14,13 +14,21 @@ import { getSelectorProps } from '../utils/getSelectorProps';
 import { getCommaTokenFix } from '../utils/getCommaTokenFix';
 import { getKeySelectorFix } from '../utils/getKeySelectorFix';
 
+export type Options = {
+  composer?: 'stringComposeKeySelectors' | 'arrayComposeKeySelectors' | string;
+};
+
 export enum Errors {
   DifferentProps = 'DifferentProps',
 }
 
 export const noDifferentPropsRule = ruleCreator({
   name: 'no-different-props',
-  defaultOptions: [],
+  defaultOptions: [
+    {
+      composer: 'stringComposeKeySelectors',
+    },
+  ] as [Options],
   meta: {
     docs: {
       category: 'Possible Errors',
@@ -32,10 +40,20 @@ export const noDifferentPropsRule = ruleCreator({
       [Errors.DifferentProps]:
         'Cached selector and key selector must have same props. selector parameters = {{selectorParameters}}, key selector parameters = {{keySelectorParameters}}',
     },
-    schema: [],
+    schema: [
+      {
+        type: 'object',
+        properties: {
+          composer: {
+            type: 'string',
+          },
+        },
+      },
+    ],
     type: 'problem',
   },
-  create: (context) => {
+  create: (context, [options]) => {
+    const { composer = 'stringComposeKeySelectors' } = options;
     const sourceCode = context.getSourceCode();
     const { esTreeNodeToTSNodeMap, program } = ESLintUtils.getParserServices(
       context,
@@ -47,8 +65,11 @@ export const noDifferentPropsRule = ruleCreator({
         const tsNode = esTreeNodeToTSNodeMap.get(callExpression);
 
         if (isCachedSelectorCreator(tsNode)) {
-          const options = getCachedSelectorCreatorOptions(tsNode, typeChecker);
-          const keySelector = getKeySelector(options);
+          const cachedOptions = getCachedSelectorCreatorOptions(
+            tsNode,
+            typeChecker,
+          );
+          const keySelector = getKeySelector(cachedOptions);
 
           if (keySelector) {
             const keySelectorType = typeChecker.getTypeOfSymbolAtLocation(
@@ -102,7 +123,7 @@ export const noDifferentPropsRule = ruleCreator({
                   const isComposedSelector = propSelectors.length > 1;
                   const isDefaultKeySelector = propSelectors.length === 0;
                   const composedPropSelector = isComposedSelector
-                    ? `composeKeySelectors(\n${propSelectors.join(', \n')}\n)`
+                    ? `${composer}(\n${propSelectors.join(', \n')}\n)`
                     : propSelectors[0] ?? 'defaultKeySelector';
 
                   if (argument.type === AST_NODE_TYPES.ObjectExpression) {
@@ -121,7 +142,7 @@ export const noDifferentPropsRule = ruleCreator({
 
                     const specifierNames = ['prop'];
                     if (isComposedSelector) {
-                      specifierNames.push('composeKeySelectors');
+                      specifierNames.push(composer);
                     }
                     if (isDefaultKeySelector) {
                       specifierNames.push('defaultKeySelector');

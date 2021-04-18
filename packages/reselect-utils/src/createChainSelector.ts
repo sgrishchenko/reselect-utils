@@ -8,7 +8,9 @@ import {
   isCachedSelector,
   defaultKeySelector,
 } from './helpers';
-import { composingKeySelectorCreator } from './composingKeySelectorCreator';
+import { createKeySelectorCreator } from './createKeySelectorCreator';
+import { KeySelectorComposer } from './createKeySelectorComposer';
+import { stringComposeKeySelectors } from './stringComposeKeySelectors';
 
 const sumString = (source: unknown) => {
   const stringSource = String(source);
@@ -39,6 +41,7 @@ const generateSelectorKey = (selector: unknown) => {
 
 export type ChainSelectorOptions = {
   cacheObjectCreator?: () => ICacheObject;
+  keySelectorComposer?: KeySelectorComposer;
 };
 
 export type SelectorChain<R1, S, P, R2> =
@@ -141,7 +144,12 @@ export class SelectorMonad<
       ? this.selector.keySelector
       : defaultKeySelector;
 
-    const { cacheObjectCreator = () => undefined } = options;
+    const {
+      cacheObjectCreator = () => undefined,
+      keySelectorComposer = stringComposeKeySelectors,
+    } = options;
+
+    const keySelectorCreator = createKeySelectorCreator(keySelectorComposer);
 
     const higherOrderSelector = createCachedSelector(
       this.selector,
@@ -201,7 +209,7 @@ export class SelectorMonad<
     const higherOrderKeySelector = createCachedSelector(
       higherOrderSelector,
       (derivedSelector) =>
-        composingKeySelectorCreator({
+        keySelectorCreator({
           inputSelectors: [higherOrderSelector, derivedSelector],
         }),
     )({

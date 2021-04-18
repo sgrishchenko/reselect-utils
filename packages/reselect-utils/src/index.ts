@@ -41,9 +41,14 @@ export {
   createCachedStructuredSelector as cachedStruct,
 } from './createCachedStructuredSelector';
 
+/* Caches */
+export { TreeCache } from './TreeCache';
+
 /* Key Selector Composition */
-export { composeKeySelectors } from './composeKeySelectors';
-export { composingKeySelectorCreator } from './composingKeySelectorCreator';
+export { createKeySelectorComposer } from './createKeySelectorComposer';
+export { stringComposeKeySelectors } from './stringComposeKeySelectors';
+export { arrayComposeKeySelectors } from './arrayComposeKeySelectors';
+export { createKeySelectorCreator } from './createKeySelectorCreator';
 
 /* Configuration */
 export { setDebugMode, isDebugMode, defaultKeySelector } from './helpers';

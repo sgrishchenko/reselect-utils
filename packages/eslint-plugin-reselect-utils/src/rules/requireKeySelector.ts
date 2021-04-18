@@ -43,8 +43,11 @@ export const requireKeySelectorRule = ruleCreator({
         const tsNode = esTreeNodeToTSNodeMap.get(callExpression);
 
         if (isCachedSelectorCreator(tsNode)) {
-          const options = getCachedSelectorCreatorOptions(tsNode, typeChecker);
-          const keySelector = getKeySelector(options);
+          const cachedOptions = getCachedSelectorCreatorOptions(
+            tsNode,
+            typeChecker,
+          );
+          const keySelector = getKeySelector(cachedOptions);
 
           if (keySelector === undefined) {
             context.report({

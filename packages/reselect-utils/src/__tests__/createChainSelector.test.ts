@@ -6,8 +6,9 @@ import { createSequenceSelector } from '../createSequenceSelector';
 import { State, commonState } from '../__data__/state';
 import { createPathSelector } from '../createPathSelector';
 import { createPropSelector } from '../createPropSelector';
-import { composingKeySelectorCreator } from '../composingKeySelectorCreator';
+import { createKeySelectorCreator } from '../createKeySelectorCreator';
 import { NamedParametricSelector, NamedSelector } from '../types';
+import { stringComposeKeySelectors } from '../stringComposeKeySelectors';
 
 describe('createChainSelector', () => {
   const personSelector = (state: State, props: { id: number }) =>
@@ -325,7 +326,7 @@ describe('createChainSelector', () => {
         [personByMessageIdSelector],
         ({ firstName = '', secondName = '' }) => `${firstName} ${secondName}`,
       )({
-        keySelectorCreator: composingKeySelectorCreator,
+        keySelectorCreator: createKeySelectorCreator(stringComposeKeySelectors),
       });
 
       expect(fullNameByMessageSelector(commonState, { messageId: 100 })).toBe(

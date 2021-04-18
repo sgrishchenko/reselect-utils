@@ -15,11 +15,12 @@ import {
   getObjectPaths,
 } from './helpers';
 import {
-  composeKeySelectors,
   isComposedKeySelector,
-} from './composeKeySelectors';
+  KeySelectorComposer,
+} from './createKeySelectorComposer';
 import { isPropSelector } from './createPropSelector';
-import { excludeDefaultSelectors } from './composingKeySelectorCreator';
+import { excludeDefaultSelectors } from './createKeySelectorCreator';
+import { stringComposeKeySelectors } from './stringComposeKeySelectors';
 
 const generateBindingName = <P>(binding: P) => {
   const structure = Object.keys(binding).reduce(
@@ -52,6 +53,7 @@ export type BoundSelectorOptions<S, P2, P1 extends Partial<P2>, R> = {
     baseSelector: ParametricSelector<S, P1, R>,
     binding: P2,
   ) => ParametricSelector<S, Omit<P1, keyof P2>, R>;
+  keySelectorComposer?: KeySelectorComposer;
 };
 
 const innerCreateBoundSelector = <S, P2, P1 extends Partial<P2>, R>(
@@ -81,6 +83,9 @@ export const createBoundSelector = <
   const bindingStrategy =
     (options.bindingStrategy as typeof innerCreateBoundSelector) ??
     innerCreateBoundSelector;
+
+  const keySelectorComposer =
+    options.keySelectorComposer ?? stringComposeKeySelectors;
 
   const boundSelector = bindingStrategy(baseSelector, binding);
 
@@ -145,7 +150,7 @@ export const createBoundSelector = <
         const [keySelector] = keySelectors;
         cachedBoundSelector.keySelector = keySelector;
       } else {
-        cachedBoundSelector.keySelector = composeKeySelectors(...keySelectors);
+        cachedBoundSelector.keySelector = keySelectorComposer(...keySelectors);
       }
     } else {
       cachedBoundSelector.keySelector = bindingStrategy(

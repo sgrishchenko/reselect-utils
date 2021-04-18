@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
-    "@rollup/plugin-typescript": "^5.0.0",
+    "@rollup/plugin-typescript": "^8.2.1",
     "@storybook/addon-actions": "^5.3.19",
     "@storybook/addon-storysource": "^5.3.19",
     "@storybook/react": "^5.3.19",
@@ -71,7 +71,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-feather": "^2.0.9",
-    "rollup": "^2.18.1",
+    "rollup": "^2.45.2",
     "shx": "^0.3.3",
     "theme-ui": "^0.2.52",
     "ts-jest": "^26.4.4",

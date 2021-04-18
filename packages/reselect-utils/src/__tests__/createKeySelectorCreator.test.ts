@@ -1,4 +1,4 @@
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { createPropSelector } from '../createPropSelector';
 import { createKeySelectorCreator } from '../createKeySelectorCreator';
 import { createPathSelector } from '../createPathSelector';

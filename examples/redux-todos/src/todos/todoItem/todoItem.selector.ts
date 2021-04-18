@@ -1,4 +1,4 @@
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { path, prop } from 'reselect-utils';
 import { todoSelector } from '../todos.selector';
 import { TodoItemProps } from './todoItem.interface';

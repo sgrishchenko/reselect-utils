@@ -8,7 +8,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
   valid: [
     {
       code: stripIndent`
-        import createCachedSelector from 're-reselect';
+        import {createCachedSelector} from 're-reselect';
         import {prop} from 'reselect-utils';
 
         const getDefaultOptions = () => ({
@@ -25,7 +25,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
     },
     {
       code: stripIndent`
-        import createCachedSelector from 're-reselect';
+        import {createCachedSelector} from 're-reselect';
 
         const getDefaultOptions = () => ({});
 
@@ -40,7 +40,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
     },
     {
       code: stripIndent`
-        import createCachedSelector from 're-reselect';
+        import {createCachedSelector} from 're-reselect';
 
         const getDefaultOptions = () => ({});
 
@@ -57,7 +57,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
   invalid: [
     {
       code: stripIndent`
-        import createCachedSelector from 're-reselect';
+        import {createCachedSelector} from 're-reselect';
 
         const getDefaultOptions = () => ({});
 
@@ -70,7 +70,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
       `,
       output: stripIndent`
         import {defaultKeySelector} from 'reselect-utils';
-        import createCachedSelector from 're-reselect';
+        import {createCachedSelector} from 're-reselect';
 
         const getDefaultOptions = () => ({});
 
@@ -90,7 +90,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
     },
     {
       code: stripIndent`
-        import createCachedSelector from 're-reselect';
+        import {createCachedSelector} from 're-reselect';
 
         createCachedSelector(
           [],
@@ -99,7 +99,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
       `,
       output: stripIndent`
         import {defaultKeySelector} from 'reselect-utils';
-        import createCachedSelector from 're-reselect';
+        import {createCachedSelector} from 're-reselect';
 
         createCachedSelector(
           [],
@@ -116,7 +116,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
     },
     {
       code: stripIndent`
-        import createCachedSelector from 're-reselect';
+        import {createCachedSelector} from 're-reselect';
         import {prop} from 'reselect-utils';
 
         const getDefaultOptions = () => ({});
@@ -129,7 +129,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
         });
       `,
       output: stripIndent`
-        import createCachedSelector from 're-reselect';
+        import {createCachedSelector} from 're-reselect';
         import {prop, defaultKeySelector} from 'reselect-utils';
 
         const getDefaultOptions = () => ({});
@@ -150,7 +150,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
     },
     {
       code: stripIndent`
-        import createCachedSelector from 're-reselect';
+        import {createCachedSelector} from 're-reselect';
         import {defaultKeySelector} from 'reselect-utils';
 
         const getDefaultOptions = () => ({});
@@ -163,7 +163,7 @@ ruleTester.run('require-key-create-cached-selector', requireKeySelectorRule, {
         });
       `,
       output: stripIndent`
-        import createCachedSelector from 're-reselect';
+        import {createCachedSelector} from 're-reselect';
         import {defaultKeySelector} from 'reselect-utils';
 
         const getDefaultOptions = () => ({});

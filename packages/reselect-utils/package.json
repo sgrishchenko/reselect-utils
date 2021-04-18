@@ -30,7 +30,7 @@
     "@types/react": "^17.0.0",
     "cytoscape": "^3.17.1",
     "cytoscape-dagre": "^2.3.2",
-    "re-reselect": "^3.4.0",
+    "re-reselect": "^4.0.0",
     "react": "^16.13.1",
     "reselect": "^4.0.0",
     "reselect-tools": "^0.0.7"

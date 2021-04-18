@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { chain, path, prop, bound } from 'reselect-utils';
 import { TodoFilter } from '../todosView.interface';
 import { todosSelector } from '../../todos/todos.selector';

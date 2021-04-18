@@ -1,4 +1,4 @@
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { createPathSelector } from '../createPathSelector';
 import { commonState, State, Document } from '../__data__/state';
 import { isCachedSelector } from '../helpers';

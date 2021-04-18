@@ -67,7 +67,7 @@ const messagePersonSelector = (state: State, props: { messageId: number }) => {
 It is working solution, but you can't use this selector as input for [Cached Selector](https://github.com/toomuchdesign/re-reselect#createcachedselector), because it fully uncached. Let's try to re-write this example via [re-reselect](https://github.com/toomuchdesign/re-reselect):
 
 ```typescript
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { prop } from 'reselect-utils';
 
 const messagePersonSelector = createCachedSelector(
@@ -85,7 +85,7 @@ const messagePersonSelector = createCachedSelector(
 `Prop Selector` is described [here](/guides/path-and-prop-selectors#prop-selector). Now our solution has become only worth. This selector is still fully uncached, because it depends on whole state. Additionally, written selector has an ugly combiner, which calls other selectors right in body. Reselect Utils propose next way:
 
 ```typescript
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { prop, createChainSelector, createBoundSelector } from 'reselect-utils';
 
 const personsSelector = (state: State) => state.persons;
@@ -141,7 +141,7 @@ documentPersonSelector(state, { documentId: 222 }); // => { firstName: 'Harry', 
 `Chain Selector` uses monad pattern like the Promises. In chain callback you receive result of previous selector, and you should return a new derived selector. `Chain Selector` is flexible enough, you can make decisions and use conditions in chain callback:
 
 ```typescript
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { prop, chain } from 'reselect-utils';
 
 const personsSelector = (state: State) => state.persons;
@@ -209,7 +209,7 @@ const exampleState: State = {
 As you can see, child with id `102` haven't a parent, so this relation is optional. We can write next selector for this case:
 
 ```typescript
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { prop, chain, bound, empty } from 'reselect-utils';
 
 const parentsSelector = (state: State) => state.firstGeneration;
@@ -246,7 +246,7 @@ We have used `Empty Selector` here. `Empty Selector` is a selector, which always
 Another task, that can be solved via `Chain Selector`, is aggregation. For example, you have these selectors:
 
 ```typescript
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { prop } from 'reselect-utils';
 
 const personsSelector = (state: State) => state.persons;

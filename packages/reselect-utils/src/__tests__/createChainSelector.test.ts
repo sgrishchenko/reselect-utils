@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { createChainSelector } from '../createChainSelector';
 import { createBoundSelector } from '../createBoundSelector';
 import { createSequenceSelector } from '../createSequenceSelector';

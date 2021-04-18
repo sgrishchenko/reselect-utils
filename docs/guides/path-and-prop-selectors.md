@@ -72,7 +72,7 @@ const state = {
 In this case you need provide `personId` property in your selector. [Re-reselect](https://github.com/toomuchdesign/re-reselect) library is better for parametric selector, so now we can write something like this:
 
 ```js
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 
 const personFullNameSelector = createCachedSelector(
   (state, props) => state.persons[props.personId]?.firstName,

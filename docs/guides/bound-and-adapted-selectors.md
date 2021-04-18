@@ -40,7 +40,7 @@ const state = {
 And you have this selector:
 
 ```typescript
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { prop } from 'reselect-utils';
 
 const messagesSelector = (state: State) => state.messages;
@@ -84,7 +84,7 @@ messageDiffSelector(state, { sourceMessageId, targetMessageId });
 You can create it this way:
 
 ```typescript
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { createAdaptedSelector, adapt } from 'reselect-utils';
 
 const sourceMessageSelector = createAdaptedSelector(

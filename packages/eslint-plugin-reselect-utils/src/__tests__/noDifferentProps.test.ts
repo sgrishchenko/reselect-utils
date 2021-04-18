@@ -11,7 +11,7 @@ ruleTester.run(
     valid: [
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop, stringComposeKeySelectors} from 'reselect-utils';
 
           interface StateA {
@@ -56,7 +56,7 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop, stringComposeKeySelectors} from 'reselect-utils';
 
           interface StateA {
@@ -103,7 +103,7 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           const getDefaultOptions = () => ({
@@ -122,7 +122,7 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop, stringComposeKeySelectors} from 'reselect-utils';
 
           const selectorA = createCachedSelector(
@@ -160,7 +160,7 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop, stringComposeKeySelectors} from 'reselect-utils';
 
           const getDefaultOptions = () => ({
@@ -183,7 +183,7 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop, defaultKeySelector} from 'reselect-utils';
 
           const getDefaultOptions = () => ({
@@ -202,7 +202,7 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop, stringComposeKeySelectors} from 'reselect-utils';
 
           interface StateA {
@@ -251,7 +251,7 @@ ruleTester.run(
     invalid: [
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
 
           enum Field {}
 
@@ -266,7 +266,7 @@ ruleTester.run(
         `,
         output: stripIndent`
           import {prop} from 'reselect-utils';
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
 
           enum Field {}
 
@@ -287,7 +287,7 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           enum Field {}
@@ -302,7 +302,7 @@ ruleTester.run(
           });
         `,
         output: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           enum Field {}
@@ -324,7 +324,7 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           createCachedSelector(
@@ -337,7 +337,7 @@ ruleTester.run(
           });
         `,
         output: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           createCachedSelector(
@@ -357,7 +357,7 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           createCachedSelector(
@@ -370,7 +370,7 @@ ruleTester.run(
           });
         `,
         output: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           createCachedSelector(
@@ -390,7 +390,7 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           const getDefaultOptions = () => ({
@@ -407,7 +407,7 @@ ruleTester.run(
           });
         `,
         output: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           const getDefaultOptions = () => ({
@@ -432,7 +432,7 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           const getDefaultOptions = () => ({
@@ -449,7 +449,7 @@ ruleTester.run(
           });
         `,
         output: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           const getDefaultOptions = () => ({
@@ -474,7 +474,7 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           createCachedSelector(
@@ -487,7 +487,7 @@ ruleTester.run(
           });
         `,
         output: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           createCachedSelector(
@@ -507,7 +507,7 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           createCachedSelector(
@@ -521,7 +521,7 @@ ruleTester.run(
           });
         `,
         output: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop, stringComposeKeySelectors} from 'reselect-utils';
 
           createCachedSelector(
@@ -550,7 +550,7 @@ ruleTester.run(
           },
         ],
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           createCachedSelector(
@@ -564,7 +564,7 @@ ruleTester.run(
           });
         `,
         output: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop, arrayComposeKeySelectors} from 'reselect-utils';
 
           createCachedSelector(
@@ -588,7 +588,7 @@ ruleTester.run(
       },
       {
         code: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop} from 'reselect-utils';
 
           createCachedSelector(
@@ -599,7 +599,7 @@ ruleTester.run(
           });
         `,
         output: stripIndent`
-          import createCachedSelector from 're-reselect';
+          import {createCachedSelector} from 're-reselect';
           import {prop, defaultKeySelector} from 'reselect-utils';
 
           createCachedSelector(

@@ -1,5 +1,5 @@
 import { createSelector, ParametricSelector, Selector } from 'reselect';
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { Options, ParametricOptions } from './types';
 import { createStructuredSelector } from './createStructuredSelector';
 

@@ -1,5 +1,5 @@
 import { ParametricSelector, Selector } from 'reselect';
-import createCachedSelector, { ICacheObject } from 're-reselect';
+import { createCachedSelector, ICacheObject } from 're-reselect';
 import { NamedSelector, NamedParametricSelector } from './types';
 import {
   defineDynamicSelectorName,

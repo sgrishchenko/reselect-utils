@@ -51,7 +51,7 @@ const personsAndMessagesSelector = struct({
 If you use a parametric selector, you can use [Re-reselect](https://github.com/toomuchdesign/re-reselect). Reselect Utils provides `Cached Structured Selector` for these purposes. For example, we have next selectors:
 
 ```typescript
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 
 const personSelector = createCachedSelector(
   personsSelector,
@@ -88,7 +88,7 @@ const personAndMessageSelector = cachedStruct({
 There is also another type of structure besides objects - arrays. Reselect Utils provides `Sequence Selector` helper for them:
 
 ```typescript
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { bound, createSequenceSelector } from 'reselect-utils';
 
 const personSelector = createCachedSelector(
@@ -134,7 +134,7 @@ firstTwoPersonsSelector(state); // => [{ firstName: 'Marry', ... }, { firstName:
 If you try to combine parametric selectors, there is a cached version of `Sequence Selector`:
 
 ```typescript
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { path, prop, bound, cachedSeq } from 'reselect-utils';
 
 type Props = {

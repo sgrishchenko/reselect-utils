@@ -26,7 +26,7 @@ const state = {
   },
 };
 
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 import { prop } from 'reselect-utils';
 
 const personsSelector = (state: State) => state.persons;

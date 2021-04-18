@@ -12,7 +12,7 @@ ruleTester.run(
       {
         code: stripIndent`
           import createCachedSelector from 're-reselect';
-          import {prop, composeKeySelectors} from 'reselect-utils';
+          import {prop, stringComposeKeySelectors} from 'reselect-utils';
 
           interface StateA {
             stateA: {stateAField: number}
@@ -25,7 +25,7 @@ ruleTester.run(
             ],
             () => 1,
           )({
-            keySelector: composeKeySelectors(
+            keySelector: stringComposeKeySelectors(
               prop<{ prop1: number }>().prop1(),
             )
           });
@@ -57,7 +57,7 @@ ruleTester.run(
       {
         code: stripIndent`
           import createCachedSelector from 're-reselect';
-          import {prop, composeKeySelectors} from 'reselect-utils';
+          import {prop, stringComposeKeySelectors} from 'reselect-utils';
 
           interface StateA {
             stateA: {stateAField: number}
@@ -72,7 +72,7 @@ ruleTester.run(
             ],
             () => 1,
           )({
-            keySelector: composeKeySelectors(
+            keySelector: stringComposeKeySelectors(
               prop<{ prop1: EnumType }>().prop1(),
             )
           });
@@ -123,7 +123,7 @@ ruleTester.run(
       {
         code: stripIndent`
           import createCachedSelector from 're-reselect';
-          import {prop, composeKeySelectors} from 'reselect-utils';
+          import {prop, stringComposeKeySelectors} from 'reselect-utils';
 
           const selectorA = createCachedSelector(
             [
@@ -132,7 +132,7 @@ ruleTester.run(
             ],
             () => 1,
           )({
-            keySelector: composeKeySelectors(
+            keySelector: stringComposeKeySelectors(
               prop<{ prop1: number }>().prop1(),
               prop<{ prop2: string }>().prop2(),
             )
@@ -154,17 +154,17 @@ ruleTester.run(
             ],
             () => 1,
           )({
-             keySelector: composeKeySelectors(prop<{ prop1: number }>().prop1(), prop<{ prop2: string }>().prop2())
+             keySelector: stringComposeKeySelectors(prop<{ prop1: number }>().prop1(), prop<{ prop2: string }>().prop2())
           });
         `,
       },
       {
         code: stripIndent`
           import createCachedSelector from 're-reselect';
-          import {prop, composeKeySelectors} from 'reselect-utils';
+          import {prop, stringComposeKeySelectors} from 'reselect-utils';
 
           const getDefaultOptions = () => ({
-            keySelector: composeKeySelectors(
+            keySelector: stringComposeKeySelectors(
               prop<{ prop1: number }>().prop1(),
               prop<{ prop2: string }>().prop2(),
             ),
@@ -203,7 +203,7 @@ ruleTester.run(
       {
         code: stripIndent`
           import createCachedSelector from 're-reselect';
-          import {prop, composeKeySelectors} from 'reselect-utils';
+          import {prop, stringComposeKeySelectors} from 'reselect-utils';
 
           interface StateA {
             stateA: {stateAField: number}
@@ -218,7 +218,7 @@ ruleTester.run(
             ],
             () => 1,
           )({
-            keySelector: composeKeySelectors(
+            keySelector: stringComposeKeySelectors(
               prop<{ prop1?: EnumType }>().prop1(),
             )
           });
@@ -522,7 +522,7 @@ ruleTester.run(
         `,
         output: stripIndent`
           import createCachedSelector from 're-reselect';
-          import {prop, composeKeySelectors} from 'reselect-utils';
+          import {prop, stringComposeKeySelectors} from 'reselect-utils';
 
           createCachedSelector(
             [
@@ -531,7 +531,50 @@ ruleTester.run(
             ],
             () => 1,
           )({
-            keySelector: composeKeySelectors(
+            keySelector: stringComposeKeySelectors(
+          prop<{ prop1: number }>().prop1(), 
+          prop<{ prop2: number }>().prop2()
+          ),
+          });
+        `,
+        errors: [
+          {
+            messageId: Errors.DifferentProps,
+          },
+        ],
+      },
+      {
+        options: [
+          {
+            composer: 'arrayComposeKeySelectors',
+          },
+        ],
+        code: stripIndent`
+          import createCachedSelector from 're-reselect';
+          import {prop} from 'reselect-utils';
+
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1: number }) => props.prop1,
+              (state: unknown, props: { prop2: number }) => props.prop2,
+            ],
+            () => 1,
+          )({
+            keySelector: prop<{ prop2: number }>().prop2(),
+          });
+        `,
+        output: stripIndent`
+          import createCachedSelector from 're-reselect';
+          import {prop, arrayComposeKeySelectors} from 'reselect-utils';
+
+          createCachedSelector(
+            [
+              (state: unknown, props: { prop1: number }) => props.prop1,
+              (state: unknown, props: { prop2: number }) => props.prop2,
+            ],
+            () => 1,
+          )({
+            keySelector: arrayComposeKeySelectors(
           prop<{ prop1: number }>().prop1(), 
           prop<{ prop2: number }>().prop2()
           ),
@@ -595,10 +638,10 @@ ruleTester.run('no-different-props-cached-struct', noDifferentPropsRule, {
     },
     {
       code: stripIndent`
-        import {cachedStruct, prop, composeKeySelectors} from 'reselect-utils';
+        import {cachedStruct, prop, stringComposeKeySelectors} from 'reselect-utils';
 
         const getDefaultOptions = () => ({
-          keySelector: composeKeySelectors(
+          keySelector: stringComposeKeySelectors(
             prop<{ prop1: number }>().prop1(),
             prop<{ prop2: string }>().prop2(),
           ),
@@ -754,10 +797,10 @@ ruleTester.run('no-different-props-cached-seq', noDifferentPropsRule, {
     },
     {
       code: stripIndent`
-        import {cachedSeq, prop, composeKeySelectors} from 'reselect-utils';
+        import {cachedSeq, prop, stringComposeKeySelectors} from 'reselect-utils';
 
         const getDefaultOptions = () => ({
-          keySelector: composeKeySelectors(
+          keySelector: stringComposeKeySelectors(
             prop<{ prop1: number }>().prop1(),
             prop<{ prop2: number }>().prop2(),
           ),

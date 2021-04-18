@@ -231,7 +231,7 @@ export const innerCreatePathSelector = (
   };
 
   return new Proxy(proxyTarget, {
-    get: (target, key: string | number) =>
+    get: (target, key) =>
       innerCreatePathSelector(baseSelector, [...path, String(key)], applyMeta),
   });
 };

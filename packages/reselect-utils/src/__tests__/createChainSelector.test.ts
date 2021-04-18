@@ -99,7 +99,7 @@ describe('createChainSelector', () => {
       .build();
 
     expect(personByMessageIdSelector.selectorName).toMatchInlineSnapshot(
-      `"messageSelector (will be chained 11430) (will be chained 11285)"`,
+      `"messageSelector (will be chained 9012) (will be chained 8867)"`,
     );
 
     personByMessageIdSelector(commonState, { id: 100 });
@@ -115,7 +115,7 @@ describe('createChainSelector', () => {
     expect(
       (higherOrderSelector as NamedSelector<unknown, unknown>).selectorName,
     ).toMatchInlineSnapshot(
-      `"higher order for messageSelector (chained by personSelector (id -> [*])) (11285)"`,
+      `"higher order for messageSelector (chained by personSelector (id -> [*])) (8867)"`,
     );
   });
 

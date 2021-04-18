@@ -47,4 +47,4 @@ export { arrayComposeKeySelectors } from './arrayComposeKeySelectors';
 export { createKeySelectorCreator } from './createKeySelectorCreator';
 
 /* Configuration */
-export { setDebugMode, isDebugMode } from './helpers';
+export { setDebugMode, isDebugMode, defaultKeySelector } from './helpers';

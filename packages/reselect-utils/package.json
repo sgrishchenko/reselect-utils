@@ -1,6 +1,6 @@
 {
   "name": "reselect-utils",
-  "version": "2.0.0-beta.14",
+  "version": "2.0.0-beta.16",
   "description": "A collection of helpers and utilities for selectors",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -18,7 +18,7 @@
   "sideEffects": false,
   "scripts": {
     "clean": "rimraf lib es dist",
-    "build:cjs": "tsc --outDir lib -d",
+    "build:cjs": "tsc --outDir lib -d -t es5",
     "build:es": "tsc --outDir es -m es2015",
     "build:umd": "rollup -c ../../rollup.config.ts",
     "build": "yarn clean && yarn build:cjs && yarn build:es && yarn build:umd"

@@ -29,9 +29,6 @@
     "typescript": "^4.2.3"
   },
   "devDependencies": {
-    "common-tags": "^1.8.0",
-    "re-reselect": "^4.0.0",
-    "reselect": "^4.0.0",
-    "reselect-utils": "2.0.0-beta.14"
+    "common-tags": "^1.8.0"
   }
 }

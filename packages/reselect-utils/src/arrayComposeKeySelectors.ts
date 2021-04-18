@@ -1,13 +1,7 @@
-import { KeySelector, ParametricKeySelector } from 're-reselect';
-import {
-  composedKeySelectorSymbol,
-  KeySelectorComposer,
-} from './composeKeySelectors';
+import { createKeySelectorComposer } from './createKeySelectorComposer';
 
-export const arrayComposeKeySelectors = (<S, P>(
-  ...keySelectors: (KeySelector<S> | ParametricKeySelector<S, P>)[]
-) => {
-  const resultSelector = (state: S, props: P) => {
+export const arrayComposeKeySelectors = createKeySelectorComposer(
+  (...keySelectors) => (state, props) => {
     let keyPath: unknown[] = [];
 
     for (let i = 0; i < keySelectors.length; i += 1) {
@@ -21,13 +15,5 @@ export const arrayComposeKeySelectors = (<S, P>(
     }
 
     return keyPath;
-  };
-
-  resultSelector.dependencies = keySelectors;
-
-  Object.defineProperty(resultSelector, composedKeySelectorSymbol, {
-    value: true,
-  });
-
-  return resultSelector;
-}) as KeySelectorComposer;
+  },
+);

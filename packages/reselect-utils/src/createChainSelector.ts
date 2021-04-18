@@ -9,7 +9,7 @@ import {
   defaultKeySelector,
 } from './helpers';
 import { createKeySelectorCreator } from './createKeySelectorCreator';
-import { KeySelectorComposer } from './composeKeySelectors';
+import { KeySelectorComposer } from './createKeySelectorComposer';
 import { stringComposeKeySelectors } from './stringComposeKeySelectors';
 
 const sumString = (source: unknown) => {

@@ -1,6 +1,6 @@
 import { stringComposeKeySelectors } from '../stringComposeKeySelectors';
 import { createPropSelector } from '../createPropSelector';
-import { isComposedKeySelector } from '../composeKeySelectors';
+import { isComposedKeySelector } from '../createKeySelectorComposer';
 
 describe('stringComposeKeySelectors', () => {
   const firstPropSelector = createPropSelector<{ value1: number }>().value1();

@@ -17,7 +17,7 @@ import {
 import {
   isComposedKeySelector,
   KeySelectorComposer,
-} from './composeKeySelectors';
+} from './createKeySelectorComposer';
 import { isPropSelector } from './createPropSelector';
 import { excludeDefaultSelectors } from './createKeySelectorCreator';
 import { stringComposeKeySelectors } from './stringComposeKeySelectors';

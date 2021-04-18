@@ -575,3 +575,29 @@ export type KeySelectorComposer = {
     ...keySelectors: ParametricKeySelector<S, P>[]
   ): OutputParametricKeySelector<S, P, ParametricKeySelector<S, P>[]>;
 };
+
+export function createKeySelectorComposer<S, P>(
+  baseKeySelectorComposer: (
+    ...keySelectors: (KeySelector<S> | ParametricKeySelector<S, P>)[]
+  ) => ParametricKeySelector<S, P>,
+): KeySelectorComposer {
+  return ((
+    ...keySelectors: (KeySelector<S> | ParametricKeySelector<S, P>)[]
+  ) => {
+    const resultSelector = baseKeySelectorComposer(
+      ...keySelectors,
+    ) as OutputParametricKeySelector<
+      S,
+      P,
+      (KeySelector<S> | ParametricKeySelector<S, P>)[]
+    >;
+
+    resultSelector.dependencies = keySelectors;
+
+    Object.defineProperty(resultSelector, composedKeySelectorSymbol, {
+      value: true,
+    });
+
+    return resultSelector;
+  }) as KeySelectorComposer;
+}

@@ -4,7 +4,7 @@ import { arePathsEqual, defaultKeySelector, isCachedSelector } from './helpers';
 import {
   isComposedKeySelector,
   KeySelectorComposer,
-} from './composeKeySelectors';
+} from './createKeySelectorComposer';
 
 const areSelectorsEqual = (selector: unknown, another: unknown) => {
   if (selector === another) {

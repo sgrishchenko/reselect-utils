@@ -42,6 +42,7 @@ export {
 } from './createCachedStructuredSelector';
 
 /* Key Selector Composition */
+export { createKeySelectorComposer } from './createKeySelectorComposer';
 export { stringComposeKeySelectors } from './stringComposeKeySelectors';
 export { arrayComposeKeySelectors } from './arrayComposeKeySelectors';
 export { createKeySelectorCreator } from './createKeySelectorCreator';

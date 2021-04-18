@@ -5,7 +5,7 @@ import { createStructuredSelector } from '../createStructuredSelector';
 import { NamedParametricSelector } from '../types';
 import { defaultKeySelector, isCachedSelector } from '../helpers';
 import { createPropSelector } from '../createPropSelector';
-import { isComposedKeySelector } from '../composeKeySelectors';
+import { isComposedKeySelector } from '../createKeySelectorComposer';
 import { stringComposeKeySelectors } from '../stringComposeKeySelectors';
 
 describe('createBoundSelector', () => {

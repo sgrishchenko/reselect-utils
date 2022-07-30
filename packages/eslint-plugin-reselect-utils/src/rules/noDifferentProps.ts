@@ -31,7 +31,6 @@ export const noDifferentPropsRule = ruleCreator({
   ] as [Options],
   meta: {
     docs: {
-      category: 'Possible Errors',
       description: 'Cached selector and key selector must have same props.',
       recommended: 'error',
     },

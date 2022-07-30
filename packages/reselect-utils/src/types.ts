@@ -10,7 +10,7 @@ import {
   ParametricKeySelectorCreator,
 } from 're-reselect';
 
-export type NamedSelector<S, R, D = any[]> = Selector<S, R> & {
+export type NamedSelector<S, R, D = any[]> = Selector<S, R, never> & {
   selectorName?: string;
   dependencies?: D;
 };

@@ -19,7 +19,6 @@ export const requireKeySelectorRule = ruleCreator({
   defaultOptions: [],
   meta: {
     docs: {
-      category: 'Possible Errors',
       description: 'Cached selector can`t work without key selector.',
       recommended: 'error',
     },

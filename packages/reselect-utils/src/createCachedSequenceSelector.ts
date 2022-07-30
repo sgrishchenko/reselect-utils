@@ -4,10 +4,10 @@ import { Options, ParametricOptions } from './types';
 import { createSequenceSelector } from './createSequenceSelector';
 
 export function createCachedSequenceSelector<S, R>(
-  selectors: Selector<S, R>[],
+  selectors: Selector<S, R, never>[],
 ): (
-  options: Options<S, (...results: R[]) => R[], Selector<S, R>[]>,
-) => Selector<S, R[]>;
+  options: Options<S, (...results: R[]) => R[], Selector<S, R, never>[]>,
+) => Selector<S, R[], never>;
 
 export function createCachedSequenceSelector<S, P, R>(
   selectors: ParametricSelector<S, P, R>[],

@@ -5,14 +5,14 @@ import { createStructuredSelector } from './createStructuredSelector';
 
 export function createCachedStructuredSelector<M>(
   selectors: M,
-): M extends { [K in keyof M]: Selector<infer S, unknown> }
+): M extends { [K in keyof M]: Selector<infer S, unknown, never> }
   ? (
       options: Options<
         S,
         (...results: unknown[]) => { [K in keyof M]: ReturnType<M[K]> },
-        Selector<S, unknown>[]
+        Selector<S, unknown, never>[]
       >,
-    ) => Selector<S, { [K in keyof M]: ReturnType<M[K]> }>
+    ) => Selector<S, { [K in keyof M]: ReturnType<M[K]> }, never>
   : M extends { [K in keyof M]: ParametricSelector<infer S, infer P, unknown> }
   ? (
       options: ParametricOptions<

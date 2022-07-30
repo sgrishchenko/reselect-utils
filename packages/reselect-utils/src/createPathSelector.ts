@@ -237,10 +237,10 @@ export const innerCreatePathSelector = (
 };
 
 export function createPathSelector<S, R>(
-  baseSelector: Selector<S, R>,
+  baseSelector: Selector<S, R, never>,
 ): IsOptional<R> extends true
-  ? OptionalPathSelectorType<S, R, [Selector<S, R>]>
-  : RequiredPathSelectorType<S, R, [Selector<S, R>]>;
+  ? OptionalPathSelectorType<S, R, [Selector<S, R, never>]>
+  : RequiredPathSelectorType<S, R, [Selector<S, R, never>]>;
 
 export function createPathSelector<S, P, R>(
   baseSelector: ParametricSelector<S, P, R>,

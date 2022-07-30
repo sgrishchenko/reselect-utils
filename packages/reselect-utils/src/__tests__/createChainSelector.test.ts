@@ -86,6 +86,7 @@ describe('createChainSelector', () => {
     (fullNameNamedSelector as NamedParametricSelector<
       unknown,
       unknown,
+      unknown,
       unknown
     >).selectorName = 'fullNameNamedSelector';
 

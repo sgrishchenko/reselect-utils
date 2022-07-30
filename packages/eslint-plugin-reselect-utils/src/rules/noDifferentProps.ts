@@ -71,7 +71,7 @@ export const noDifferentPropsRule = ruleCreator({
           );
           const keySelector = getKeySelector(cachedOptions);
 
-          if (keySelector) {
+          if (keySelector && keySelector.valueDeclaration) {
             const keySelectorType = typeChecker.getTypeOfSymbolAtLocation(
               keySelector,
               keySelector.valueDeclaration,

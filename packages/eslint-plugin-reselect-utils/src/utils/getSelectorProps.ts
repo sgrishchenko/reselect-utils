@@ -13,7 +13,7 @@ export const getSelectorProps = (
   }
 
   const [, props] = signature.parameters;
-  if (props === undefined) {
+  if (props === undefined || props.valueDeclaration === undefined) {
     return [];
   }
 

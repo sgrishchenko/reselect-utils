@@ -31,7 +31,6 @@ export const noDifferentPropsRule = ruleCreator({
   ] as [Options],
   meta: {
     docs: {
-      category: 'Possible Errors',
       description: 'Cached selector and key selector must have same props.',
       recommended: 'error',
     },
@@ -71,7 +70,7 @@ export const noDifferentPropsRule = ruleCreator({
           );
           const keySelector = getKeySelector(cachedOptions);
 
-          if (keySelector) {
+          if (keySelector && keySelector.valueDeclaration) {
             const keySelectorType = typeChecker.getTypeOfSymbolAtLocation(
               keySelector,
               keySelector.valueDeclaration,

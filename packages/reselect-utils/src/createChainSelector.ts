@@ -45,7 +45,7 @@ export type ChainSelectorOptions = {
 };
 
 export type SelectorChain<R1, S, P, R2> =
-  | ((result: R1) => Selector<S, R2>)
+  | ((result: R1) => Selector<S, R2, never>)
   | ((result: R1) => ParametricSelector<S, P, R2>);
 
 export type SelectorChainHierarchy<
@@ -54,15 +54,15 @@ export type SelectorChainHierarchy<
 > = C & { parentChain?: H };
 
 export type SelectorCreator<S, P, R1, R2> = (
-  selector: Selector<S, R1> | ParametricSelector<S, P, R1>,
+  selector: Selector<S, R1, never> | ParametricSelector<S, P, R1>,
   combiner: (result: R1) => R2,
-) => Selector<S, R2> | ParametricSelector<S, P, R2>;
+) => Selector<S, R2, never> | ParametricSelector<S, P, R2>;
 
 export class SelectorMonad<
   S1,
   P1,
   R1,
-  SelectorType extends Selector<S1, R1> | ParametricSelector<S1, P1, R1>,
+  SelectorType extends Selector<S1, R1, never> | ParametricSelector<S1, P1, R1>,
   SelectorChainType extends SelectorChainHierarchy<any, any>
 > {
   private readonly selector: SelectorType;
@@ -82,16 +82,16 @@ export class SelectorMonad<
   }
 
   public chain<S2, R2>(
-    fn: (result: R1) => Selector<S2, R2>,
+    fn: (result: R1) => Selector<S2, R2, never>,
     options?: ChainSelectorOptions,
-  ): SelectorType extends Selector<S1, R1>
+  ): SelectorType extends Selector<S1, R1, never>
     ? SelectorMonad<
         S1 & S2,
         void,
         R2,
         NamedSelector<S1 & S2, R2>,
         SelectorChainHierarchy<
-          (result: R1) => Selector<S2, R2>,
+          (result: R1) => Selector<S2, R2, never>,
           SelectorChainType
         >
       >
@@ -101,7 +101,7 @@ export class SelectorMonad<
         R2,
         NamedParametricSelector<S1 & S2, P1, R2>,
         SelectorChainHierarchy<
-          (result: R1) => Selector<S2, R2>,
+          (result: R1) => Selector<S2, R2, never>,
           SelectorChainType
         >
       >;
@@ -109,7 +109,7 @@ export class SelectorMonad<
   public chain<S2, P2, R2>(
     fn: (result: R1) => ParametricSelector<S2, P2, R2>,
     options?: ChainSelectorOptions,
-  ): SelectorType extends Selector<S1, R1>
+  ): SelectorType extends Selector<S1, R1, never>
     ? SelectorMonad<
         S1 & S2,
         P2,
@@ -276,9 +276,9 @@ export class SelectorMonad<
 }
 
 export function createChainSelector<S, R>(
-  selector: Selector<S, R>,
+  selector: Selector<S, R, never>,
   options?: ChainSelectorOptions,
-): SelectorMonad<S, void, R, Selector<S, R>, void>;
+): SelectorMonad<S, void, R, Selector<S, R, never>, void>;
 
 export function createChainSelector<S, P, R>(
   selector: ParametricSelector<S, P, R>,
@@ -286,7 +286,7 @@ export function createChainSelector<S, P, R>(
 ): SelectorMonad<S, P, R, ParametricSelector<S, P, R>, void>;
 
 export function createChainSelector<S, P, R>(
-  selector: Selector<S, R> | ParametricSelector<S, P, R>,
+  selector: Selector<S, R, never> | ParametricSelector<S, P, R>,
   options?: ChainSelectorOptions,
 ) {
   return new SelectorMonad<S, P, R, typeof selector, never>(

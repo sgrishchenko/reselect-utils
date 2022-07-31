@@ -3,8 +3,8 @@ import { defaultKeySelector, isCachedSelector } from './helpers';
 import { CachedSelector } from './types';
 
 export const createEmptySelector = <S, P, R>(
-  baseSelector: ParametricSelector<S, P, R> | Selector<S, R>,
-): Selector<S, R | undefined> => {
+  baseSelector: ParametricSelector<S, P, R> | Selector<S, R, never>,
+): Selector<S, R | undefined, never> => {
   const emptySelector = () => undefined;
 
   if (isCachedSelector(baseSelector)) {

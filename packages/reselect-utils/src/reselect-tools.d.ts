@@ -16,7 +16,9 @@ declare module 'reselect-tools' {
 
   type Edges = Edge[];
 
-  type AnySelector = Selector<any, any, never> | ParametricSelector<any, any, any>;
+  type AnySelector =
+    | Selector<any, any, never>
+    | ParametricSelector<any, any, any>;
 
   type CheckResult = {
     isNamed: boolean;

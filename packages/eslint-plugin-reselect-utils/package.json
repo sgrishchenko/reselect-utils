@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-reselect-utils",
-  "version": "2.0.0-beta.18",
+  "version": "2.0.0-beta.19",
   "description": "A collection of eslint rules for selectors",
   "main": "lib/index.js",
   "module": "es/index.js",

@@ -17,7 +17,7 @@
   "sideEffects": false,
   "scripts": {
     "clean": "rimraf lib es dist",
-    "build:cjs": "tsc --outDir lib -d",
+    "build:cjs": "tsc --outDir lib",
     "build:es": "tsc --outDir es -m es2015",
     "build": "yarn clean && yarn build:cjs && yarn build:es"
   },

@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "rootDir": "src"
+    "rootDir": "src",
+    // specifically disable declarations for the plugin
+    "declaration": false,
+    "declarationMap": false
   },
   "include": ["src"],
   "exclude": ["src/__data__/**", "src/__tests__/**", "src/__stories__/**"]
